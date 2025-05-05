@@ -1,5 +1,6 @@
 using UnityEngine;
 namespace ImageMath{
+    [FilePath]
     public abstract partial record ColorTransformOperation: TextureOperation {
         public ColorTransformOperation(Texture texture) : base(texture) { }
         public ColorTransformOperation() : base() { }

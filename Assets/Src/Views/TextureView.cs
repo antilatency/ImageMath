@@ -169,7 +169,7 @@ namespace ImageMath.Views{
             return Texture as RenderTexture;
         }
 
-        internal static TextureView GetByName(string name){
+        public static TextureView GetByName(string name){
             var found = GameObject.FindObjectsOfType<TextureView>(true).FirstOrDefault(x => x.name == name);
             if (found == null) {
                 found = new GameObject(name).AddComponent<TextureView>();

@@ -11,6 +11,18 @@ using UnityEngine;
 #nullable enable
 namespace ImageMath{
 
+    internal static class PathExtensions {
+        public static bool IsSubPathOf(this string path, string baseDirPath) {
+            string normalizedPath = Path.GetFullPath(path.Replace('/', '\\').TrimEnd('\\'));
+            string normalizedBaseDirPath = Path.GetFullPath(baseDirPath.Replace('/', '\\').TrimEnd('\\'));
+
+            if (string.Equals(normalizedPath, normalizedBaseDirPath, StringComparison.OrdinalIgnoreCase)) {
+                return true;
+            }
+            return normalizedPath.StartsWith(normalizedBaseDirPath+Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
     public class Generator {
 
         [MenuItem("ImageMath/Generate %G")]
@@ -18,6 +30,14 @@ namespace ImageMath{
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             ClassDescription opeationClass = new ClassDescription(typeof(Operation), null);
+
+            //Delete all ImageMathGenerated folders
+            var directoriesToDelete = Directory.EnumerateDirectories(Application.dataPath, ImageMathGeneratedDirectoryName, SearchOption.AllDirectories).ToList();
+            directoriesToDelete.ForEach(d => {
+                if (d != null){
+                    Directory.Delete(d, true);
+                }
+            });
 
 
             foreach (var assembly in assemblies){
@@ -28,7 +48,18 @@ namespace ImageMath{
 
 
                         var classDescription = opeationClass.FindOrCreate(type);
+                        var filePath = GetFilePath(type);
+                        var isFileInsideAssets = filePath.IsSubPathOf(Application.dataPath);
+                        if (isFileInsideAssets){
+                            GenerateCsPartial(classDescription);
+                            if (!type.IsAbstract){
+                                GenerateShaderForType(classDescription);
+                            }
+                        }
                         
+
+
+
                         /*if (type.IsAbstract){
                             continue;
                         }
@@ -39,7 +70,7 @@ namespace ImageMath{
                 }
             }
 
-            var flattened = new List<ClassDescription>();
+            /*var flattened = new List<ClassDescription>();
             opeationClass.FlattenChildren(flattened);
             foreach (var classDescription in flattened){
                 GenerateCsPartial(classDescription);
@@ -48,8 +79,19 @@ namespace ImageMath{
                 }                
             }
 
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh();*/
         }
+
+        public static string? GetFilePath(Type type){
+            var filePathAttribute = type.GetCustomAttribute<FilePathAttribute>();
+            if (filePathAttribute == null){
+                return null;
+            }
+            var filePath = filePathAttribute.FilePath;
+            return filePath;
+        }
+
+
         const string ImageMathGeneratedDirectoryName = "ImageMathGenerated";
 
         public static string GetPathFromType(Type type, string extension){
@@ -71,19 +113,22 @@ namespace ImageMath{
             };
 
 
-            var _record = new Scope($"public partial record {classDescription.Name}"){
-                applyShaderParametersGroup                    
+            var _record = new Group{
+                "[ImageMath.Generated]",
+                new Scope($"public partial record {classDescription.Name}"){
+                    applyShaderParametersGroup                    
+                }
             };
+
             var _namespace = classDescription.Namespace;
-            if (!string.IsNullOrEmpty(_namespace)){
-                _record = new Scope($"namespace {_namespace}"){
-                    _record
-                };
-            }
 
             var content = new Group() {
                 "using UnityEngine;"
-                ,_record
+                ,!string.IsNullOrEmpty(_namespace)
+                ?new Scope($"namespace {_namespace}"){
+                    _record
+                }
+                : _record
             };
 
             /*var namespaceElements = string.IsNullOrEmpty(hierarchy[0].Namespace)
@@ -92,9 +137,17 @@ namespace ImageMath{
 
             var pathElements = namespaceElements.Prepend(ImageMathGeneratedDirectoryName).Prepend("Assets").Append(hierarchy[0].Name+".cs").ToArray();
             */
-            string path = GetPathFromType(classDescription.Type, ".cs");
+            var mainFilePath = GetFilePath(classDescription.Type);
+            if (mainFilePath == null){
+                throw new Exception($"FilePathAttribute not found for {classDescription.Type.Name}");
+            }
+            var fileName = Path.GetFileName(mainFilePath);
+            var diretctory = Path.GetDirectoryName(mainFilePath)!;
+            var generatedFilePath = Path.Combine(diretctory, ImageMathGeneratedDirectoryName, fileName);
+
+            //string path = GetPathFromType(classDescription.Type, ".cs");
             
-            WriteAllText(path, content.ToString());
+            WriteAllText(generatedFilePath, content.ToString());
             
         }
 
@@ -155,9 +208,17 @@ namespace ImageMath{
 
                 template = template.Remove(insert.Index, insert.Length).Insert(insert.Index, value);
             }
-            var path = GetPathFromType(classDescription.Type, ".shader");
-            WriteAllText(path, template);
-            //Debug.Log(template);
+
+
+            var mainFilePath = GetFilePath(classDescription.Type);
+            if (mainFilePath == null){
+                throw new Exception($"FilePathAttribute not found for {classDescription.Type.Name}");
+            }
+            var fileName = Path.ChangeExtension(Path.GetFileName(mainFilePath), ".shader");
+            var diretctory = Path.GetDirectoryName(mainFilePath)!;
+            var generatedFilePath = Path.Combine(diretctory, ImageMathGeneratedDirectoryName,"Resources", fileName);
+
+            WriteAllText(generatedFilePath, template);
         }
 
         public static string GetParameters(ClassDescription classDescription){

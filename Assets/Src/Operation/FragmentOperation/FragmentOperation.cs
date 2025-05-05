@@ -6,7 +6,9 @@ using UnityEngine.Rendering;
 
 #nullable enable
 namespace ImageMath {
+    [FilePath]
     public abstract partial record FragmentOperation: Operation {
+
         public ChannelMask ChannelMask = ChannelMask.All;
         protected void ApplyChannelMask() {
             Shader.SetGlobalInt("ImageMath_ChannelMask", (int)ChannelMask);

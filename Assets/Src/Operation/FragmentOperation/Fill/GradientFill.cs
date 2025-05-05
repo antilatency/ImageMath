@@ -1,5 +1,6 @@
 using UnityEngine;
 namespace ImageMath{
+    [FilePath]
     public partial record GradientFill: FragmentOperation {
         public Vector4 ColorA = new Vector4(0, 0, 0, 1);
         public Vector4 ColorB = new Vector4(1, 1, 1, 1);

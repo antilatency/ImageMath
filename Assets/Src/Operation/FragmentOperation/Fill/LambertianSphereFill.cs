@@ -1,6 +1,7 @@
 using UnityEngine;
 
 namespace ImageMath{
+    [FilePath]
     public partial record LambertianSphereFill: FragmentOperation {
         public Vector3 Color;
         public Vector3 LightDirection;

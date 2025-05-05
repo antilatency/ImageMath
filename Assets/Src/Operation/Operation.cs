@@ -13,6 +13,16 @@ using UnityEditor;
 #nullable enable
 namespace ImageMath {
 
+    public class GeneratedAttribute : Attribute {
+    }
+
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    public class FilePathAttribute : Attribute {
+        public string FilePath { get; }
+        public FilePathAttribute([System.Runtime.CompilerServices.CallerFilePath] string filePath = "") {
+            FilePath = filePath;
+        }
+    }
     public abstract record Operation {
 
         protected virtual void ApplyShaderParameters() {
@@ -20,6 +30,7 @@ namespace ImageMath {
 
 
         #if UNITY_EDITOR
+
         protected static string LoadCode(string? name = null, [System.Runtime.CompilerServices.CallerFilePath] string filePath = "") {
             if (string.IsNullOrEmpty(name)) {
                 name = System.IO.Path.GetFileNameWithoutExtension(filePath);

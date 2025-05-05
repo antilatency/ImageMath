@@ -1,5 +1,6 @@
 using UnityEngine;
 namespace ImageMath{
+    [FilePath]
     public partial record ColorFill: FragmentOperation {
         public Vector4 Color;
         public ColorFill(Vector4 color) {

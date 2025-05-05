@@ -1,5 +1,6 @@
 using UnityEngine;
 namespace ImageMath{
+    [FilePath]
     public partial record LineFill: FragmentOperation {
         public Vector4 Color = new Vector4(1, 1, 1, 1);
         public float LineWidth = 0.1f;

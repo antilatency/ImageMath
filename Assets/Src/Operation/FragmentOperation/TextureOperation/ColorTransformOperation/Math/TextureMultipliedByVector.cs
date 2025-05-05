@@ -1,5 +1,6 @@
 using UnityEngine;
 namespace ImageMath{
+    [FilePath]
     public partial record TextureMultipliedByVector : ColorTransformOperation{
         public Vector4 Multiplier = new Vector4(1, 1, 1, 1);
         public TextureMultipliedByVector(Texture texture, Vector4 multiplier) : base(texture) {

@@ -1,6 +1,6 @@
 using UnityEngine;
 namespace ImageMath{
-
+    [FilePath]
     public partial record EllipseFill: FragmentOperation {
         public Vector4 InnerColor = Vector4.one;
         public Vector4 OuterColor = Vector4.zero;
