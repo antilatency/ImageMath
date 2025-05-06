@@ -23,7 +23,10 @@ namespace ImageMath {
             FilePath = filePath;
         }
     }
+
     public abstract record Operation {
+
+        public static string GetShaderFileName(ClassDescription classDescription) => classDescription.Type.FullName+".shader"; 
 
         protected virtual void ApplyShaderParameters() {
         }
@@ -53,9 +56,7 @@ namespace ImageMath {
             return $"#include \"{path}\"";
         }
 
-        public string GetShaderName() => GetType().FullName.Replace('.','/');
-        public static string GetShaderName(Type type) => type.FullName.Replace('.','/');
-        public static string GetShaderName(ClassDescription classDescription) => GetShaderName(classDescription.Type);
+        
 
         /*public static void CollectIncludes(List<string> includes) {
 

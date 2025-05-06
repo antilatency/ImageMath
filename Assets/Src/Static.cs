@@ -9,7 +9,7 @@ using Cache;
 
 namespace ImageMath {
 
-    public static class Static {
+    public static partial class Static {
 
 
         /*private static RenderTextureDescriptor DefaultRenderTextureDescriptor => new RenderTextureDescriptor(0, 0) {
@@ -203,9 +203,27 @@ namespace ImageMath {
 
         public static Color[] GetPixels(this RenderTexture renderTexture) {
             //FIXME: use cache
-            var texture = renderTexture.ToTexture();
-            var pixels = texture.GetPixels();
-            UnityEngine.Object.DestroyImmediate(texture);
+            using var texture = renderTexture.ToTempTexture();
+            var pixels = texture.Value.GetPixels();
+            return pixels;
+        }
+
+        public static Vector4[] GetRawTextureData(this Texture texture) {
+            Vector4[] pixels;
+            if (texture is Texture2D texture2D) {
+                pixels = texture2D.GetRawTextureData<Vector4>().ToArray();
+            } else
+            if (texture is RenderTexture renderTexture) {
+                pixels = renderTexture.GetRawTextureData();
+            } else {
+                throw new NotImplementedException();
+            }
+            return pixels;
+        }
+
+        public static Vector4[] GetRawTextureData(this RenderTexture renderTexture) {             
+            using var texture = renderTexture.ToTempTexture();
+            var pixels = texture.Value.GetRawTextureData<Vector4>().ToArray();
             return pixels;
         }
 
@@ -214,6 +232,13 @@ namespace ImageMath {
             renderTexture.ToTexture(texture, apply);
             return texture;
         }
+
+        public static CacheItem<Texture2D> ToTempTexture(this RenderTexture renderTexture, bool apply = false) {
+            var item = GetTempTexture2DFloat4(renderTexture.width, renderTexture.height);
+            renderTexture.ToTexture(item.Value, apply);
+            return item;
+        }
+            
 
         public static Texture2D ToTexture(this RenderTexture renderTexture, Texture2D texture, bool apply = false) {
             if (texture == null) {
@@ -393,10 +418,30 @@ namespace ImageMath {
             return texture.GetPixelBilinear(uv.x, uv.y);
         }
 
+        public static ComputeBuffer CreateComputeBuffer(ComputeBufferParameters parameters) {
+            return new ComputeBuffer(parameters.Count, parameters.Stride, parameters.Type);
+        }
+
+
+        public static CacheItem<ComputeBuffer> GetTempComputeBuffer(ComputeBufferParameters parameters, [CallerFilePath] string file = "", [CallerLineNumber] int line = 0) {
+
+            var item = Cache.Static.GetByDescription<ComputeBuffer>(parameters);
+            if (item == null) {
+                item = new CacheItem<ComputeBuffer> {
+                    Description = parameters,
+                    Value = CreateComputeBuffer(parameters),
+                    Destructor = x => {
+                        x.Dispose();
+                    },
+                    Validator = x => x.IsValid()
+                };
+                Cache.Static.Add(item);
+            }
+            item.Acquire(file, line);
+            return item;
+        }
 
 
     }
-
-
 
 }

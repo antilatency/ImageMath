@@ -25,61 +25,59 @@ namespace ImageMath{
 
     public class Generator {
 
-        [MenuItem("ImageMath/Generate %G")]
-        public static void Generate(){
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-            ClassDescription opeationClass = new ClassDescription(typeof(Operation), null);
-
-            //Delete all ImageMathGenerated folders
+        [MenuItem("ImageMath/Delete Generated Files")]
+        public static void DeleteGeneratedFiles(){
             var directoriesToDelete = Directory.EnumerateDirectories(Application.dataPath, ImageMathGeneratedDirectoryName, SearchOption.AllDirectories).ToList();
             directoriesToDelete.ForEach(d => {
                 if (d != null){
                     Directory.Delete(d, true);
                 }
             });
+        }
 
+        [MenuItem("ImageMath/Generate %G")]
+        public static void Generate(){
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            foreach (var assembly in assemblies){
-                var types = assembly.GetTypes();
-                //Debug.Log($"Assembly: {assembly.FullName}");
-                foreach (var type in types){
-                    if (type.IsClass && type.IsSubclassOf(typeof(Operation))){
+            ClassDescription opeationClass = new ClassDescription(typeof(Operation), null);
 
+            DeleteGeneratedFiles();
 
-                        var classDescription = opeationClass.FindOrCreate(type);
-                        var filePath = GetFilePath(type);
-                        var isFileInsideAssets = filePath.IsSubPathOf(Application.dataPath);
-                        if (isFileInsideAssets){
-                            GenerateCsPartial(classDescription);
-                            if (!type.IsAbstract){
-                                GenerateShaderForType(classDescription);
-                            }
+            try{
+                foreach (var assembly in assemblies){
+                    var types = assembly.GetTypes();
+                    //Debug.Log($"Assembly: {assembly.FullName}");
+                    foreach (var type in types){
+                        if (type.IsClass && type.IsSubclassOf(typeof(Operation))){
+                            opeationClass.FindOrCreate(type);                       
                         }
-                        
-
-
-
-                        /*if (type.IsAbstract){
-                            continue;
-                        }
-                        
-                        GenerateShaderForType(hierarchy);*/
-                        
                     }
                 }
+
+                var flattened = new List<ClassDescription>();
+                opeationClass.FlattenChildren(flattened);
+                foreach (var classDescription in flattened){
+                    var type = classDescription.Type;
+                    var filePath = GetFilePath(type);
+                    if (filePath == null){
+                        Debug.LogError($"FilePathAttribute not found for {type.Name}");
+                        continue;
+                    }
+                    var isFileInsideAssets = filePath.IsSubPathOf(Application.dataPath);
+                    if (isFileInsideAssets){
+                        GenerateCsPartial(classDescription);
+                        if (!type.IsAbstract){
+                            GenerateShaderForType(classDescription);
+                        }
+                    }               
+                }
+            } catch (Exception e){
+                Debug.LogError(e.Message);
             }
 
-            /*var flattened = new List<ClassDescription>();
-            opeationClass.FlattenChildren(flattened);
-            foreach (var classDescription in flattened){
-                GenerateCsPartial(classDescription);
-                if (!classDescription.Type.IsAbstract){
-                    GenerateShaderForType(classDescription);
-                }                
-            }
+            
 
-            AssetDatabase.Refresh();*/
+            AssetDatabase.Refresh();
         }
 
         public static string? GetFilePath(Type type){
@@ -214,7 +212,7 @@ namespace ImageMath{
             if (mainFilePath == null){
                 throw new Exception($"FilePathAttribute not found for {classDescription.Type.Name}");
             }
-            var fileName = Path.ChangeExtension(Path.GetFileName(mainFilePath), ".shader");
+            var fileName = CallStaticMethod<string>(classDescription, "GetShaderFileName");
             var diretctory = Path.GetDirectoryName(mainFilePath)!;
             var generatedFilePath = Path.Combine(diretctory, ImageMathGeneratedDirectoryName,"Resources", fileName);
 

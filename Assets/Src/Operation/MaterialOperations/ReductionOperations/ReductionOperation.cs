@@ -1,0 +1,16 @@
+using System.Net.NetworkInformation;
+using UnityEngine;
+namespace ImageMath{
+    [FilePath]
+    public abstract partial record ReductionOperation : MaterialOperation{
+        public Texture Texture;
+        public ReductionOperation(Texture texture) {
+            Texture = texture;
+        }
+        public ReductionOperation() : base() { }
+        public static string GetFragmentShaderBody() => LoadCode("ReductionOperation.FragmentShaderBody.cginc");
+        public static string GetInitialization() => "";
+        public static string GetFinalization() => "";
+
+    }
+}
