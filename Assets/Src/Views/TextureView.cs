@@ -3,6 +3,11 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 #nullable enable
 namespace ImageMath.Views{
     [ExecuteAlways]
@@ -176,5 +181,52 @@ namespace ImageMath.Views{
             }
             return found;
         }
+
+        #if UNITY_EDITOR
+        [ContextMenu("Save Image As PNG")]
+        private void SaveImageAsPNG() {
+            SaveImageAsPNG(false,x=>x.SavePNG(),"png");
+        }
+        [ContextMenu("Save Image As PNG (Pack to sRGB)")]
+        private void SaveImageAsPNGPackToSRGB() {
+            SaveImageAsPNG(true,x=>x.SavePNG(),"png");
+        }
+
+        [ContextMenu("Save Image As EXR")]
+        private void SaveImageAsEXR() {
+            SaveImageAsPNG(false,x=>x.SaveEXR(),"exr");
+        }
+
+
+        private void SaveImageAsPNG(bool packToSRGB, Func<Texture,byte[]> Encode, string extension) {
+            if (Texture == null){
+                Debug.LogWarning("No texture assigned.");
+                return;
+            }
+
+            byte[] pngData;
+            if (packToSRGB){
+                using var temp = Static.GetTempRenderTexture(Texture.width, Texture.height);
+                new PackSRGB(Texture).AssignTo(temp);
+                pngData = Encode(temp.Value);                       
+            } else {
+                pngData = Encode(Texture);
+            }
+
+            string path = EditorUtility.SaveFilePanel(
+                $"Save Image As {extension.ToUpper()}",
+                "",
+                gameObject.name + "." + extension,
+                extension
+            );
+
+            if (!string.IsNullOrEmpty(path)){
+                System.IO.File.WriteAllBytes(path, pngData);
+                Debug.Log("Image saved to: " + path);
+            }
+        }
+        #endif
+
+
     }
 }

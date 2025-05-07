@@ -288,6 +288,18 @@ namespace ImageMath {
             throw new NotImplementedException();
         }
 
+        public static byte[] SaveEXR(this Texture texture) {
+            if (texture is Texture2D texture2D) {
+                return texture2D.EncodeToEXR();
+            }
+            if (texture is RenderTexture renderTexture) {
+                var t = renderTexture.ToTexture();
+                return t.EncodeToEXR();
+            }
+            throw new NotImplementedException();
+        }
+
+
         public static string SimpleFormatExtension = ".f4a2d";
 
         public static void ClearAlpha(this RenderTexture renderTexture, float value = 1) {
