@@ -1,0 +1,14 @@
+{
+  "name": "com.antilatency.imagemath",
+  "displayName": "ImageMath",
+  "version": "1.0.0",
+  "author": "Antilatency",
+  "homepage": "https://antilatency.com",
+  "description": "ImageMath",
+  "keywords": [
+    "Antilatency",
+    "ImageMath"
+  ],
+  "dependencies": {
+  }
+}
