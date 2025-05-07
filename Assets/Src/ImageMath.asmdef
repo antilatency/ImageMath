@@ -1,9 +1,7 @@
 {
     "name": "ImageMath",
     "rootNamespace": "",
-    "references": [
-        "Cache"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
