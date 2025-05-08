@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
+
 using ImageMath;
 using ImageMath.Views;
 using UnityEngine;
@@ -80,23 +77,32 @@ public class BasicTests : MonoBehaviour {
         MinValue = reductionInput.Minimum(ReductorDownScalePerIteration);
 
         
-
-
-        /*pixels = reductionResult.GetRawTextureData();
-        AverageValue = AverageWeightedByAlphaOperation.SoftwareReduction(pixels); */
-
-        /*MaxValue = new Max{
-            Texture = inputTexture,
-        }.Execute();*/
+        TransparencyInfillTest();
 
     }
-    
+    [Range(0, 1)]
+    public float TransparencyInfillPower = 1.0f;
 
-    public Vector2Int PixelIndex;
-    public Texture2D TestTexture2D;
+    void TransparencyInfillTest() {
+        var inputTexture = TextureView.GetByName("TransparencyInfillInput").ResizeRenderTexture(512, 512,true);
+        new UVFill(){
+        }.AssignTo(inputTexture);
+
+        new EllipseFill(new Vector4(0, 0, 0, 0), Vector4.one, null, Vector2.one * 0.25f)
+        .MultiplyTo(inputTexture);
+
+        inputTexture.GenerateMips();
+
+        var outputTexture = TextureView.GetByName("TransparencyInfillResult").ResizeRenderTexture(512, 512);
 
 
+        new TransparencyInfill(inputTexture){
+            Power = TransparencyInfillPower,
+        }.AssignTo(outputTexture);
 
+        outputTexture.ClearAlpha();
+
+    }
 
     /*public bool[] InputArray = new bool[10];
     public int[] OutputArray = new int[3];
