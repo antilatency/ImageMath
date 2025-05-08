@@ -1,8 +1,5 @@
 using UnityEngine;
 namespace ImageMath{
-
-
-
     [FilePath]
     public partial record ConvexHullSelect : ColorTransformOperation{
         
