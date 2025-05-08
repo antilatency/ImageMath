@@ -20,13 +20,17 @@ namespace ImageMath{
 
         public static Parameter? Create(FieldInfo field) {
             Parameter? result = null;
-            result = VectorParameter.Create(field);
+            /*result = VectorParameter.Create(field);
+            if (result != null) return result;*/
+            result = StructParameter.Create(field);
             if (result != null) return result;
-            result = ScalarParameter.Create(field);
-            if (result != null) return result;
+
             result = TextureParameter.Create(field);
             if (result != null) return result;
-            result = MatrixParameter.Create(field);
+
+
+            result = ArrayParameter.Create(field);
+            
             return result;
         }
     }

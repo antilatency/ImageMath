@@ -107,7 +107,7 @@ namespace ImageMath{
         public static void GenerateCsPartial(ClassDescription classDescription){
             var applyShaderParametersGroup = new Scope("protected override void ApplyShaderParameters()"){
                 "base.ApplyShaderParameters();",
-                classDescription.Parameters.Select(p => p.GetShaderParameterAssignmentCode())
+                classDescription.Parameters.SelectMany(p =>  p.GetShaderParameterAssignmentCode().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)).Select(l => l.TrimEnd())
             };
 
 
