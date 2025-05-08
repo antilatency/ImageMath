@@ -64,15 +64,16 @@ namespace ImageMath {
 
         public static string GetCustomCodeCombined(ClassDescription classDescription) {
             var hierarchy = classDescription.GetHierarchy().ToArray();
-            var includes = new List<string>();
+            var stringBuilder = new StringBuilder();
             for (int i = hierarchy.Length - 1; i >= 0; i--) {
                 var type = hierarchy[i];
                 var method = type.GetMethod("GetCustomCode", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
                 if (method != null) {
-                    method.Invoke(null, new object[] { includes });
+                    var code = (string)method.Invoke(null, null);
+                    stringBuilder.AppendLine(code);
                 }
             }
-            return "";
+            return stringBuilder.ToString();
         }      
 
         public static string GetConstants(){
