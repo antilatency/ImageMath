@@ -12,6 +12,8 @@ Shader "ImageMath/ConvexHullSelect"{
         #define SquareRootOf2 1.4142135623730950488016887242097
         #define Epsilon 10e-6
 
+
+
         struct VSI {
             float4 position : POSITION;
             float2 uv : TEXCOORD0;

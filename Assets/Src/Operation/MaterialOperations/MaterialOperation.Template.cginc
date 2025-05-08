@@ -10,6 +10,8 @@ Shader "@GetShaderName"{
 
         @GetConstants
 
+        @GetCustomCodeCombined
+
         struct VSI {
             float4 position : POSITION;
             float2 uv : TEXCOORD0;

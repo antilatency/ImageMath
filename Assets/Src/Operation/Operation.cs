@@ -62,12 +62,12 @@ namespace ImageMath {
 
         }*/
 
-        public static string GetIncludes(ClassDescription classDescription) {
+        public static string GetCustomCodeCombined(ClassDescription classDescription) {
             var hierarchy = classDescription.GetHierarchy().ToArray();
             var includes = new List<string>();
             for (int i = hierarchy.Length - 1; i >= 0; i--) {
                 var type = hierarchy[i];
-                var method = type.GetMethod("CollectIncludes", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+                var method = type.GetMethod("GetCustomCode", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
                 if (method != null) {
                     method.Invoke(null, new object[] { includes });
                 }
