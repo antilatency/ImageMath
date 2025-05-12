@@ -2,7 +2,7 @@ using UnityEngine;
 namespace ImageMath{
     [FilePath]
     public partial record ColorFill: RectOperation {
-        public Vector4 Color;
+        public Vector4 Color {get; set;}
         public ColorFill(Vector4 color) {
             Color = color;
         }

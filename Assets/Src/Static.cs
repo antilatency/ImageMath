@@ -12,12 +12,6 @@ namespace ImageMath {
     public static partial class Static {
 
 
-        /*private static RenderTextureDescriptor DefaultRenderTextureDescriptor => new RenderTextureDescriptor(0, 0) {
-            autoGenerateMips = false,
-            useMipMap = false,
-        };*/
-
-
         private static RenderTextureDescriptor GetDefaultRenderTextureDescriptor(int width, int height, bool useMipMap, RenderTextureFormat format) {
             var descriptor = new RenderTextureDescriptor(width, height) {
                 autoGenerateMips = false,
@@ -136,7 +130,7 @@ namespace ImageMath {
             if (item == null) {
                 item = new CacheItem<Texture2D> {
                     Description = description,
-                    Value = CreateFloat4Texture2D(width,height),
+                    Value = CreateTexture2DFloat4(width,height),
                     Destructor = x => {
                         UnityEngine.Object.DestroyImmediate(x);
                     },
@@ -158,6 +152,35 @@ namespace ImageMath {
         public static RenderTexture CreateRenderTexture(int width, int height = 0, bool useMipMap = false, RenderTextureFormat format = RenderTextureFormat.ARGBFloat) {
             if (height <= 0) height = width;
             return new RenderTexture(GetDefaultRenderTextureDescriptor(width, height, useMipMap, format));
+        }
+
+        public static Texture3D CreateTexture3DFloat4(Vector3Int size, bool useMipMap = false){
+            var flags = useMipMap ? TextureCreationFlags.MipChain : TextureCreationFlags.None;
+            var result = new Texture3D(size.x, size.y, size.z, GraphicsFormat.R32G32B32A32_SFloat, flags);
+            return result;
+        }
+
+        public static CacheItem<Texture3D> GetTempTexture3DFloat4(Vector3Int size, bool useMipMap = false,
+            [CallerFilePath] string file = "",
+            [CallerLineNumber] int line = 0){
+            var description = new {
+                Size = size,
+                UseMipMap = useMipMap
+            };
+            var item = Cache.Static.GetByDescription<Texture3D>(description);
+            if (item == null) {
+                item = new CacheItem<Texture3D> {
+                    Description = description,
+                    Value = CreateTexture3DFloat4(size, useMipMap),
+                    Destructor = x => {
+                        UnityEngine.Object.DestroyImmediate(x);
+                    },
+                    Validator = x => x
+                };
+                Cache.Static.Add(item);
+            }
+            item.Acquire(file, line);
+            return item;
         }
 
 
@@ -226,6 +249,39 @@ namespace ImageMath {
             var pixels = texture.Value.GetRawTextureData<Vector4>().ToArray();
             return pixels;
         }
+
+        public static void SetRawTextureData(this Texture texture, Vector4[] pixels, bool apply = true) {
+            if (texture is Texture2D texture2D) {
+                if (pixels.Length != texture2D.width * texture2D.height) {
+                    //resize array
+                    var newPixels = new Vector4[texture2D.width * texture2D.height];
+                    Array.Copy(pixels, newPixels, Math.Min(pixels.Length, newPixels.Length));
+                    pixels = newPixels;
+                }
+                texture2D.SetPixelData(pixels, 0, 0);
+                if (apply)
+                    texture2D.Apply();
+            } else
+            if (texture is Texture3D texture3D) {
+                if (pixels.Length != texture3D.width * texture3D.height * texture3D.depth) {
+                    //resize array
+                    var newPixels = new Vector4[texture3D.width * texture3D.height * texture3D.depth];
+                    Array.Copy(pixels, newPixels, Math.Min(pixels.Length, newPixels.Length));
+                    pixels = newPixels;
+                }
+                texture3D.SetPixelData(pixels, 0, 0);
+                if (apply)
+                    texture3D.Apply();
+            } else
+            if (texture is RenderTexture renderTexture) {
+                using var tempTexture = GetTempTexture2DFloat4(renderTexture.width, renderTexture.height);
+                tempTexture.Value.SetRawTextureData(pixels, true);
+                renderTexture.Assign(tempTexture.Value);
+            } else {
+                throw new NotImplementedException();
+            }
+        }
+
 
         public static Texture2D ToTexture(this RenderTexture renderTexture, bool apply = false) {
             var texture = new Texture2D(renderTexture.width, renderTexture.height, renderTexture.graphicsFormat, TextureCreationFlags.None);
@@ -357,7 +413,7 @@ namespace ImageMath {
 
         public static Texture2D LoadSimpleFormat(byte[] data, bool apply = true) {
             var textureData = ReadSimpleFormat<Color>(data);
-            return CreateFloat4Texture2D(textureData.width, textureData.pixels, apply);
+            return CreateTexture2DFloat4(textureData.width, textureData.pixels, apply);
         }
 
 
@@ -365,15 +421,15 @@ namespace ImageMath {
             return ReadSimpleFormat<Color>(data);
         }
 
-        public static Texture2D CreateFloat4Texture2D(int width, int height) {
+        public static Texture2D CreateTexture2DFloat4(int width, int height) {
             Texture2D texture = new Texture2D(width, height, GraphicsFormat.R32G32B32A32_SFloat, TextureCreationFlags.None);
             texture.anisoLevel = 0;
             return texture;
         }
 
-        public static Texture2D CreateFloat4Texture2D(int width, Color[] pixels, bool apply = true) {
+        public static Texture2D CreateTexture2DFloat4(int width, Color[] pixels, bool apply = true) {
             var height = pixels.Length / width;
-            Texture2D texture = CreateFloat4Texture2D(width, height);
+            Texture2D texture = CreateTexture2DFloat4(width, height);
             texture.SetPixelData(pixels,0,0);
             if (apply)
                 texture.Apply();

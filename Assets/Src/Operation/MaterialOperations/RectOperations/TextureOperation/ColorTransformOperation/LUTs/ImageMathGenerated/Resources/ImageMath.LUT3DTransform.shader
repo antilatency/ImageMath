@@ -1,4 +1,4 @@
-Shader "ImageMath/ConvexHullSelect"{
+Shader "ImageMath/LUT3DTransform"{
     Properties {}
     SubShader {
         Cull Off ZWrite Off ZTest Always
@@ -28,10 +28,14 @@ Shader "ImageMath/ConvexHullSelect"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InvertRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        float4 ImageMath_A64V0[64];
-        #define Planes ImageMath_A64V0
-        int ImageMath_A64V0_Size;
-        #define Planes_Size ImageMath_A64V0_Size
+        Texture3D<float4> ImageMath_T1;
+        #define LUT ImageMath_T1
+        SamplerState samplerImageMath_T1;
+        #define samplerLUT samplerImageMath_T1
+        float3 ImageMath_V2;
+        #define DomainMin ImageMath_V2
+        float3 ImageMath_V3;
+        #define DomainMax ImageMath_V3
         Texture2D<float4> ImageMath_T0;
         #define Texture ImageMath_T0
         SamplerState samplerImageMath_T0;
@@ -53,17 +57,7 @@ Shader "ImageMath/ConvexHullSelect"{
         
         float4 frag(VSO input) : SV_Target {
             float4 inputColor = Texture.Sample(samplerTexture, input.uv);
-            float3 color = inputColor.rgb;
-            float maxDistance = -1;
-            float4 closestPlane = float4(1,0,0,0);
-            for (int p = 0; p < Planes_Size; p++){
-                float4 plane = Planes[p];
-                float distance = dot(plane.xyz, color) + plane.w;
-                if (distance > 0){
-                    return 0;
-                }
-            }
-            return float4(color, 1);
+            #include "D:\ImageMath\Assets\Src\Operation\MaterialOperations\RectOperations\TextureOperation\ColorTransformOperation\LUTs\LUT3DTransform.ColorTransform.cginc"
         }
 
         ENDCG

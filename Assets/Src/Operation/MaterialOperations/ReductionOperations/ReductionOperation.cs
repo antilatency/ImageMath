@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ImageMath{
     [FilePath]
     public abstract partial record ReductionOperation : MaterialOperation{
-        public Texture Texture;
+        public Texture Texture {get; set;}
         public ReductionOperation(Texture texture) {
             Texture = texture;
         }

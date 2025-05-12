@@ -4,7 +4,7 @@ namespace ImageMath{
     public partial record ConvexHullSelect : ColorTransformOperation{
         
         [DynamicArray(64)]
-        public Vector4[] Planes = null;
+        public Vector4[] Planes {get; set;} = null;
 
         public static Vector4 PlaneToVector4(Plane plane) {
             return new Vector4(plane.normal.x, plane.normal.y, plane.normal.z, plane.distance);

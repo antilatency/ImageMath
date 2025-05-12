@@ -2,9 +2,9 @@ using UnityEngine;
 namespace ImageMath{
     [FilePath]
     public partial record UnpackLog : ColorTransformOperation{
-        public Vector3 WhiteLevel = new Vector3(1, 1, 1);
-        public Vector3 BlackLevel = new Vector3(0, 0, 0);
-        public Vector3 ExponentScale = new Vector3(1, 1, 1);
+        public Vector3 WhiteLevel {get; set;} = new Vector3(1, 1, 1);
+        public Vector3 BlackLevel {get; set;} = new Vector3(0, 0, 0);
+        public Vector3 ExponentScale {get; set;} = new Vector3(1, 1, 1);
 
         public UnpackLog(Texture texture) : base(texture) { }
         public UnpackLog() : base() { }

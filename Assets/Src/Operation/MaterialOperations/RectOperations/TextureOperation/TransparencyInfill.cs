@@ -2,7 +2,7 @@ using UnityEngine;
 namespace ImageMath{
     [FilePath]
     public partial record TransparencyInfill: TextureOperation {
-        public float Power = 1.0f;
+        public float Power {get; set;} = 1.0f;
 
         public TransparencyInfill(Texture texture) : base(texture) { }
         

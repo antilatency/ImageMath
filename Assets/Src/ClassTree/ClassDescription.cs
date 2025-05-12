@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 #nullable enable
 namespace ImageMath{
@@ -16,13 +17,20 @@ namespace ImageMath{
 
         public ClassDescription(Type type, ClassDescription? parent){
             Type = type;
-            var fields = type.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly);
+            /*var fields = type.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly);
             foreach (var field in fields){
-                var parameter = Parameter.Create(field);
-                if (parameter != null){
-                    Parameters.Add(parameter);
-                } 
+                UnityEngine.Debug.LogWarning($"Field {field.Name} in {type.Name} is not supported. Only properties are supported.");
+            }*/
+            var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly);
+            foreach (var property in properties){
+                if (property.CanRead){
+                    var parameter = Parameter.Create(property);
+                    if (parameter != null){
+                        Parameters.Add(parameter);
+                    } 
+                }
             }
+
             if (parent != null){
                 Parent = parent;
                 ParametersIndices = new Dictionary<string,int>(parent.ParametersIndices);

@@ -6,28 +6,28 @@ namespace ImageMath{
         public abstract string GetPrefix();
 
         public string GetShaderVariableName() => $"ImageMath_{GetPrefix()}{Index}";
-        public string GetDefine() => $"#define {field.Name} {GetShaderVariableName()}";
+        public string GetDefine() => $"#define {_propertyInfo.Name} {GetShaderVariableName()}";
 
         public abstract string GetShaderParameterAssignmentCode();
         public abstract string GetHLSLDeclaration();
 
         public int Index = 0;
-        protected FieldInfo field;
+        protected PropertyInfo _propertyInfo;
 
-        public Parameter(FieldInfo field) {
-            this.field = field;
+        public Parameter(PropertyInfo propertyInfo) {
+            _propertyInfo = propertyInfo;
         }
 
-        public static Parameter? Create(FieldInfo field) {
+        public static Parameter? Create(PropertyInfo propertyInfo) {
             Parameter? result = null;
 
-            result = StructParameter.Create(field);
+            result = StructParameter.Create(propertyInfo);
             if (result != null) return result;
 
-            result = TextureParameter.Create(field);
+            result = TextureParameter.Create(propertyInfo);
             if (result != null) return result;
 
-            result = ArrayParameter.Create(field);            
+            result = ArrayParameter.Create(propertyInfo);            
             return result;
         }
     }

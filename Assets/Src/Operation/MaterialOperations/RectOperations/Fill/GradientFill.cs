@@ -2,10 +2,10 @@ using UnityEngine;
 namespace ImageMath{
     [FilePath]
     public partial record GradientFill: RectOperation {
-        public Vector4 ColorA = new Vector4(0, 0, 0, 1);
-        public Vector4 ColorB = new Vector4(1, 1, 1, 1);
-        public Vector2 PointA = new Vector2(0, 0);
-        public Vector2 PointB = new Vector2(1, 0);
+        public Vector4 ColorA {get; set;} = new Vector4(0, 0, 0, 1);
+        public Vector4 ColorB {get; set;} = new Vector4(1, 1, 1, 1);
+        public Vector2 PointA {get; set;} = new Vector2(0, 0);
+        public Vector2 PointB {get; set;} = new Vector2(1, 0);
         public GradientFill(Vector4 colorA, Vector4 colorB, Vector2? pointA, Vector2? pointB) {
             ColorA = colorA;
             ColorB = colorB;

@@ -3,7 +3,7 @@
 
 #nullable enable
 using UnityEngine;
-
+/*
 namespace ImageMath {
     [FilePath]
     public partial record Max: ReduceOperation {
@@ -53,3 +53,4 @@ namespace ImageMath {
         }
     }
 }
+*/

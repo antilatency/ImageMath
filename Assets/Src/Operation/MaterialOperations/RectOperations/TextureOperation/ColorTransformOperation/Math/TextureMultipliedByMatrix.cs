@@ -2,7 +2,7 @@ using UnityEngine;
 namespace ImageMath{
     [FilePath]
     public partial record TextureMultipliedByMatrix : ColorTransformOperation{
-        public Matrix4x4 Multiplier = Matrix4x4.identity;
+        public Matrix4x4 Multiplier {get; set;} = Matrix4x4.identity;
         public TextureMultipliedByMatrix(Texture texture, Matrix4x4 multiplier) : base(texture) {
             Multiplier = multiplier;
         }

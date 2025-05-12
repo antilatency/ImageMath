@@ -169,9 +169,10 @@ namespace ImageMath.Views{
                     DestroyImmediate(CreatedTexture);
             }
 
-            CreatedTexture = ImageMath.Static.CreateRenderTexture(width, height,useMipMap);
+            var createdRenderTexture = ImageMath.Static.CreateRenderTexture(width, height,useMipMap);
+            CreatedTexture = createdRenderTexture;
             Texture = CreatedTexture;
-            return Texture as RenderTexture;
+            return createdRenderTexture;
         }
 
         public static TextureView GetByName(string name){

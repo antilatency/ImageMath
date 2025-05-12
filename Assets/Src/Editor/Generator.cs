@@ -150,6 +150,9 @@ namespace ImageMath{
         }
 
         static void WriteAllText(string path, string content){
+            //fix endings
+            content = content.Replace("\r\n", "\n").Replace("\r", "\n").TrimEnd('\n');
+
             string directory = Path.GetDirectoryName(path)!;
             if (!Directory.Exists(directory)){
                 Directory.CreateDirectory(directory);

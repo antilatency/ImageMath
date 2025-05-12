@@ -16,23 +16,23 @@ namespace ImageMath{
         };
 
 
-        public override string GetPrefix() => SupportedTypes[field.FieldType].prefix;
+        public override string GetPrefix() => SupportedTypes[_propertyInfo.PropertyType].prefix;
         
 
         public override string GetShaderParameterAssignmentCode() {
-            return $"Shader.{SupportedTypes[field.FieldType].setGlobalMethodName}(\"{GetShaderVariableName()}\", {field.Name});";
+            return $"Shader.{SupportedTypes[_propertyInfo.PropertyType].setGlobalMethodName}(\"{GetShaderVariableName()}\", {_propertyInfo.Name});";
         }
 
         public override string GetHLSLDeclaration() {
-            var info = SupportedTypes[field.FieldType];
+            var info = SupportedTypes[_propertyInfo.PropertyType];
             return $"{info.hlslType}{info.hlslTypeSize} {GetShaderVariableName()};\n{GetDefine()}";
         }
 
-        private StructParameter(FieldInfo field) : base(field) {}
+        private StructParameter(PropertyInfo propertyInfo) : base(propertyInfo) {}
 
-        public static new StructParameter? Create(FieldInfo field) {
-            if (SupportedTypes.ContainsKey(field.FieldType)){
-                return new StructParameter(field);
+        public static new StructParameter? Create(PropertyInfo propertyInfo) {
+            if (SupportedTypes.ContainsKey(propertyInfo.PropertyType)){
+                return new StructParameter(propertyInfo);
             }
             return null;
         }
