@@ -24,7 +24,7 @@ Shader "@GetShaderName"{
 
         float4 ImageMath_RenderTargetSize;
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
-        #define InvertRenderTargetSize ImageMath_RenderTargetSize.zw
+        #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
         @GetParameters
 

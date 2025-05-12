@@ -99,6 +99,23 @@ namespace ImageMath {
             return line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        public static string ToCubeFileContent(LUT3DBase<T> lut) {
+            var result = new System.Text.StringBuilder();
+            
+            result.AppendLine($"LUT_3D_SIZE {lut.Size}");
+            result.AppendLine($"DOMAIN_MIN {lut.DomainMin.x} {lut.DomainMin.y} {lut.DomainMin.z}");
+            result.AppendLine($"DOMAIN_MAX {lut.DomainMax.x} {lut.DomainMax.y} {lut.DomainMax.z}");
+            result.AppendLine($"TITLE {lut.Title}");
+
+            var cells = lut.Texture.GetRawTextureData();
+            for (int i = 0; i < lut.Size * lut.Size * lut.Size; i++) {
+                var cell = cells[i];
+                result.AppendLine($"{cell.x} {cell.y} {cell.z}");
+            }
+            
+            return result.ToString();
+        }
+
     }
 
 }
