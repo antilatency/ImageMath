@@ -26,7 +26,7 @@ Shader "ImageMath/GradientFill"{
 
         float4 ImageMath_RenderTargetSize;
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
-        #define InvertRenderTargetSize ImageMath_RenderTargetSize.zw
+        #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
         float4 ImageMath_V2;
         #define ColorA ImageMath_V2

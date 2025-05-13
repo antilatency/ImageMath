@@ -26,7 +26,7 @@ Shader "ImageMath/UnpackSRGB"{
 
         float4 ImageMath_RenderTargetSize;
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
-        #define InvertRenderTargetSize ImageMath_RenderTargetSize.zw
+        #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
         Texture2D<float4> ImageMath_T0;
         #define Texture ImageMath_T0

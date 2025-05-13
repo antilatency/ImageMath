@@ -26,7 +26,7 @@ Shader "ImageMath/TextureMultipliedByMatrix"{
 
         float4 ImageMath_RenderTargetSize;
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
-        #define InvertRenderTargetSize ImageMath_RenderTargetSize.zw
+        #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
         float4x4 ImageMath_M0;
         #define Multiplier ImageMath_M0

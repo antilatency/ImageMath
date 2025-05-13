@@ -26,7 +26,7 @@ Shader "ImageMath/ConvexHullSelect"{
 
         float4 ImageMath_RenderTargetSize;
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
-        #define InvertRenderTargetSize ImageMath_RenderTargetSize.zw
+        #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
         float4 ImageMath_A64V0[64];
         #define Planes ImageMath_A64V0

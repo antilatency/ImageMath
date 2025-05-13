@@ -1,6 +1,9 @@
 using System;
 using System.Reflection;
+
 using Codice.Utils;
+using Scopes;
+using Scopes.C;
 
 #nullable enable
 
@@ -18,7 +21,9 @@ namespace ImageMath{
         public override string GetPrefix() => $"A{_size}{GetElementTypePrefix()}";
         public override string GetShaderParameterAssignmentCode() {
             var info = StructParameter.SupportedTypes[_elementType];
-            var result = $"Shader.{info.setGlobalMethodName}Array(\"{GetShaderVariableName()}\", {_propertyInfo.Name});";
+            var array = new float[5];
+            
+            var result = $"Shader.{info.setGlobalMethodName}Array(\"{GetShaderVariableName()}\", ExpandArray({_propertyInfo.Name},{_size}));";
             if (_isDynamicArray) {
                 result = $"{result}\nShader.SetGlobalInt(\"{GetShaderVariableName()}_Size\", {_propertyInfo.Name}.Length);";
             } else {

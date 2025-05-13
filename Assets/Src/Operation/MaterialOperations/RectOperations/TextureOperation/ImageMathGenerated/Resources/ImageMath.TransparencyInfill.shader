@@ -26,7 +26,7 @@ Shader "ImageMath/TransparencyInfill"{
 
         float4 ImageMath_RenderTargetSize;
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
-        #define InvertRenderTargetSize ImageMath_RenderTargetSize.zw
+        #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
         float ImageMath_F0;
         #define Power ImageMath_F0

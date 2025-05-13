@@ -86,5 +86,23 @@ namespace ImageMath {
 
         #endif
 
+        protected static T[] ExpandArray<T>(T[] array, int newSize) {
+            if (array == null) {
+                throw new ArgumentNullException(nameof(array));
+            }
+            if (newSize < 0) {
+                throw new ArgumentOutOfRangeException(nameof(newSize), "New size must be non-negative.");
+            }
+            if (array.Length == newSize) {
+                return array;
+            }
+            if (array.Length > newSize) {
+                throw new ArgumentException($"Array length is greater {newSize}.");
+            }
+            var newArray = new T[newSize];
+            Array.Copy(array, newArray, array.Length);
+            return newArray;
+        }
+
     }
 }
