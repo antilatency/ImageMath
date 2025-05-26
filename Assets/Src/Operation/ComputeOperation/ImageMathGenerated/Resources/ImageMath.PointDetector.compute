@@ -1,14 +1,24 @@
 #pragma kernel Main
-@GetParameters
+int ImageMath_I0;
+#define MaxSegmentsInRow ImageMath_I0
+Texture2D<float4> ImageMath_T0;
+#define Texture ImageMath_T0
+SamplerState samplerImageMath_T0;
+#define samplerTexture samplerImageMath_T0
 
-@GetBufferElementTypeDeclaration
+struct segment {
+	uint start_length;
+	float s;
+	float sx;
+	float sxx;
+};
 
-RWStructuredBuffer<@GetBufferElementTypeName> Result;
+RWStructuredBuffer<segment> Result;
 
 [numthreads(8, 8, 1)]
 void Main(uint3 id : SV_DispatchThreadID, uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
 {
-    @GetMainKernelBody
+    #include "D:\ImageMath\Assets\Src\Operation\ComputeOperation\PointDetector.MainKernelBody.cginc"
 
 
     //InterlockedMax(Result[0], value.r); // Atomic operation to find max
