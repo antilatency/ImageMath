@@ -76,7 +76,23 @@ public class BasicTests : MonoBehaviour {
         MaxValue = reductionInput.Maximum(ReductorDownScalePerIteration);
         MinValue = reductionInput.Minimum(ReductorDownScalePerIteration);
 
-        
+        var textureCompareInput = TextureView.GetByName("TextureCompareInput").ResizeRenderTexture(128,128);
+        new UVFill(){
+        }.AssignTo(textureCompareInput);
+        new GradientFill {
+            PointA = new Vector2(0.5f, 0.5f),
+            PointB = new Vector2(1, 1),
+            ColorA = new Vector4(0, 0, 0, 1),
+            ColorB = new Vector4(0, 0, 1, 1),
+            ChannelMask = ChannelMask.B
+        }.AssignTo(textureCompareInput);
+
+        var textureCompareResult = TextureView.GetByName("TextureCompareResult").ResizeRenderTexture(128, 128);
+        new TextureCompare(textureCompareInput, TextureCompare.CompareOperation.Equal, 0.0f)
+        .AssignTo(textureCompareResult);
+
+        textureCompareResult.ClearAlpha();
+
         TransparencyInfillTest();
 
     }

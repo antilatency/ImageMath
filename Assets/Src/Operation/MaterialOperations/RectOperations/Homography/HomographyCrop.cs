@@ -1,0 +1,35 @@
+﻿using UnityEngine;
+#nullable enable
+namespace ImageMath {
+    public record HomographyCrop : TextureOperation {
+
+
+        public Matrix4x4 HomographyMatrix { get; private set; } = Matrix4x4.identity;
+
+        public HomographyCrop(Texture texture, Vector2[] srcCorners, Vector2[]? destCorners = null) : base(texture) {            
+            if (srcCorners.Length != 4) {
+                throw new System.Exception("Source corners must have exactly 4 points.");
+            }
+
+            if (destCorners == null) {
+                destCorners = new Vector2[] {
+                    new Vector2(0,0),
+                    new Vector2(1,0),
+                    new Vector2(1,1),
+                    new Vector2(0,1)
+                };
+            }
+            else if (destCorners.Length != 4) {
+                throw new System.Exception("Destination corners must have exactly 4 points.");
+            }
+
+            HomographyMatrix = Homography.Calculate(destCorners, srcCorners, Accord.Math.Matrix.Solve);
+
+        }
+
+
+    }
+
+
+    
+}

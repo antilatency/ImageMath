@@ -21,7 +21,7 @@ namespace ImageMath{
             foreach (var field in fields){
                 UnityEngine.Debug.LogWarning($"Field {field.Name} in {type.Name} is not supported. Only properties are supported.");
             }*/
-            var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly);
+            var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly);
             foreach (var property in properties){
                 if (property.CanRead){
                     var parameter = Parameter.Create(property);

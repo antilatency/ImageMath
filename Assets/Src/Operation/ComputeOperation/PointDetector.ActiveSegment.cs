@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -34,9 +35,10 @@ namespace ImageMath {
             }
         }
 
-
-        public struct RawPoint {
+        [System.Serializable]
+        public class RawPoint {
             public int PixelCount;
+            public double S;
             public double SX;
             public double SY;
             public double SXX;
@@ -47,6 +49,7 @@ namespace ImageMath {
             public static RawPoint operator +(RawPoint a, RawPoint b) {
                 return new RawPoint {
                     PixelCount = a.PixelCount + b.PixelCount,
+                    S = a.S + b.S,
                     SX = a.SX + b.SX,
                     SY = a.SY + b.SY,
                     SXX = a.SXX + b.SXX,
@@ -54,16 +57,12 @@ namespace ImageMath {
                     SYY = a.SYY + b.SYY
                 };
             }
-/*
-float ConvertToGlobalWeightedSquareSum(float sx2_local, float sx_local, float sum, float start)
-{
-    return sx2_local + 2f * start * sx_local + start * start * sum;
-}
-*/
+
             public void AddSegment(Segment segment, int y) {
                 double globalSx = segment.sx + segment.start * (double)segment.s;
                 double globalSxx = segment.sxx + 2 * segment.start * (double)segment.sx + segment.start * segment.start * (double)segment.s;
                 PixelCount += segment.length;
+                S += segment.s;
                 SX += globalSx;
                 SY += y * segment.s;
                 SXX += globalSxx;
@@ -71,58 +70,60 @@ float ConvertToGlobalWeightedSquareSum(float sx2_local, float sx_local, float su
                 SYY += y * y * segment.s;
             }                
 
-            public static RawPoint operator +(RawPoint a, Segment b) {
-                return new RawPoint {
-                    PixelCount = a.PixelCount + b.length,
-                    SX = a.SX + b.sx,
-                };
-            }
-
-            public Vector2 Center => new Vector2((float)(SX / PixelCount), (float)(SY / PixelCount));
+            public Vector2 Center => new Vector2((float)(SX / S), (float)(SY / S));
+            
             public (Vector3 axisX, Vector3 axisY) GetEllipseAxes() {
-                if (PixelCount == 0) {
+                if (S == 0) {
                     return (Vector3.right, Vector3.up);
                 }
 
-                double meanX = SX / PixelCount;
-                double meanY = SY / PixelCount;
+                double meanX = SX / S;
+                double meanY = SY / S;
 
-                // Compute covariance matrix elements
-                double covXX = SXX / PixelCount - meanX * meanX;
-                double covXY = SXY / PixelCount - meanX * meanY;
-                double covYY = SYY / PixelCount - meanY * meanY;
+                double covXX = SXX / S - meanX * meanX;
+                double covXY = SXY / S - meanX * meanY;
+                double covYY = SYY / S - meanY * meanY;
 
-                // Symmetric 2x2 matrix: | a  b |
-                //                       | b  c |
-                double a = covXX, b = covXY, c = covYY;
 
-                // Compute eigenvalues of the 2x2 matrix
-                double trace = a + c;
-                double det = a * c - b * b;
-                double delta = System.Math.Sqrt(trace * trace - 4 * det);
 
-                double lambda1 = 0.5 * (trace + delta); // major
-                double lambda2 = 0.5 * (trace - delta); // minor
+                // Eigenvalue decomposition of 2x2 symmetric matrix
+                double trace = covXX + covYY;
+                double det = covXX * covYY - covXY * covXY;
+                double sqrtTerm = Math.Sqrt(Math.Max(0, trace * trace / 4 - det));
 
-                // Compute eigenvectors
-                Vector2 axis1, axis2;
+                double lambda1 = trace / 2 + sqrtTerm;
+                double lambda2 = trace / 2 - sqrtTerm;
 
-                if (System.Math.Abs(b) > 1e-5) {
-                    axis1 = new Vector2((float)(lambda1 - c), (float)b);
-                    axis2 = new Vector2((float)(lambda2 - c), (float)b);
+
+                double dir1x,dir1y, dir2x, dir2y;
+                if (Math.Abs(covXY) > 1e-10) {
+                    // Calculate the direction vectors based on the eigenvalues and covariances
+                    dir1x = (float)(lambda1 - covYY);
+                    dir1y = (float)covXY;
+                    dir2x = (float)(lambda2 - covYY);
+                    dir2y = (float)covXY;
+                    // Normalize the direction vectors
+                    double length1 = Math.Sqrt(dir1x * dir1x + dir1y * dir1y);
+                    double length2 = Math.Sqrt(dir2x * dir2x + dir2y * dir2y);
+                    dir1x /= length1;
+                    dir1y /= length1;
+                    dir2x /= length2;
+                    dir2y /= length2;
+                } else {
+                    // If covXY is zero, the covariance matrix is diagonal
+                    dir1x = covXX >= covYY ? 1 : 0;
+                    dir1y = covXX >= covYY ? 0 : 1;
+                    dir2x = -dir1y; // orthogonal
+                    dir2y = dir1x; // orthogonal
                 }
-                else {
-                    axis1 = new Vector2(1, 0);
-                    axis2 = new Vector2(0, 1);
-                }
 
-                axis1 = axis1.normalized;
-                axis2 = axis2.normalized;
+                float len1 = (float)Math.Sqrt(Math.Max(0, lambda1));
+                float len2 = (float)Math.Sqrt(Math.Max(0, lambda2));
 
-                return (
-                    new Vector3(axis1.x, axis1.y, (float)System.Math.Sqrt(lambda1)),
-                    new Vector3(axis2.x, axis2.y, (float)System.Math.Sqrt(lambda2))
-                );
+                Vector3 axisX = new Vector3((float)dir1x, (float)dir1y, 2*len1);
+                Vector3 axisY = new Vector3((float)dir2x, (float)dir2y, 2*len2);
+
+                return (axisX, axisY);
             }
 
         }
@@ -131,8 +132,11 @@ float ConvertToGlobalWeightedSquareSum(float sx2_local, float sx_local, float su
 
     public static class PointDetectorSegmentExtensions {
         public static bool IntersectsWith(this PointDetector.ActiveSegment activeSegment, PointDetector.Segment segment) {
-            return !(activeSegment.Start > segment.start + segment.length
-            || activeSegment.Start + activeSegment.Length < segment.start);
+            if (activeSegment.Start + activeSegment.Length <= segment.start)
+                return false;
+            if (activeSegment.Start >= segment.start + segment.length)
+                return false;
+            return true;
         }
 
         public static void RemoveIndex(this IList<PointDetector.ActiveSegment> segments, int index) {

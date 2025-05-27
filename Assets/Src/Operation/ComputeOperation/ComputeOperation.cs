@@ -73,7 +73,7 @@ namespace ImageMath {
         public static string GetBufferElementTypeName() => "float4";
 #endif
 
-        protected virtual int Stride => Marshal.SizeOf(typeof(float)) * 4;
+        protected virtual int GetStride() => Marshal.SizeOf(typeof(float)) * 4;
         protected abstract Vector2Int GetDispatchSize();
         
 

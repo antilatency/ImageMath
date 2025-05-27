@@ -39,18 +39,28 @@ namespace ImageMath {
 
         public override ComputeBufferParameters GetComputeBufferParameters() {
             var bufferSize = Texture.height * MaxSegmentsInRow;
-            return new ComputeBufferParameters(bufferSize, Stride, ComputeBufferType.Default, ComputeBufferMode.Immutable);
+            return new ComputeBufferParameters(bufferSize, GetStride(), ComputeBufferType.Default, ComputeBufferMode.Immutable);
         }
-        public Segment[] Execute() {
 
-
+        public Segment[] GetSegments() {
+            
             var segments = Execute<Segment>();
+
+            return segments;
+        }
+
+        
+            
+
+
+        public List<RawPoint> GetPoints(Segment[] segments, out bool maxSegmantsInRowExceeded) {
+
 
             List<RawPoint> points = new();
 
             List<ActiveSegment> activeSegments = new(MaxSegmentsInRow);
             List<ActiveSegment> newActiveSegments = new(MaxSegmentsInRow);
-
+            maxSegmantsInRowExceeded = false;
 
             for (int y = 0; y < Texture.height; y++) {
 
@@ -58,6 +68,9 @@ namespace ImageMath {
                     var segmentIndex = y + x * Texture.height;
                     var segment = segments[segmentIndex];
                     if (segment.length == 0) {
+                        if (segment.start == ushort.MaxValue) {
+                            maxSegmantsInRowExceeded = true;
+                        }                            
                         break;
                     }
                     int pointIndex = -1;
@@ -88,12 +101,12 @@ namespace ImageMath {
                             }
                         }
                     }
-                    
+
                     if (pointIndex < 0) {
                         pointIndex = points.Count;
                         var newPoint = new RawPoint();
                         newPoint.AddSegment(segment, y);
-                        points.Add(newPoint);                        
+                        points.Add(newPoint);
                     }
                     else {
                         points[pointIndex].AddSegment(segment, y);
@@ -113,7 +126,7 @@ namespace ImageMath {
 
 
 
-            return segments;//.Select(x => x.ToVector4()).ToArray();
+            return points;//.Select(x => x.ToVector4()).ToArray();
         }
 
 #if UNITY_EDITOR
@@ -134,13 +147,13 @@ namespace ImageMath {
 
         [System.Serializable]
         public struct Segment {
-            public short length;
-            public short start;
+            public ushort length;
+            public ushort start;
             
             public float s;
             public float sx;
             public float sxx;
-            public Segment(short start, short length, float s, float sx, float sxx) {
+            public Segment(ushort start, ushort length, float s, float sx, float sxx) {
                 this.start = start;
                 this.length = length;
                 this.s = s;
@@ -149,7 +162,8 @@ namespace ImageMath {
             }
         }
 
-        protected override int Stride => Marshal.SizeOf(typeof(Segment));
+
+        protected override int GetStride() => Marshal.SizeOf(typeof(Segment));
 
     }
 }
