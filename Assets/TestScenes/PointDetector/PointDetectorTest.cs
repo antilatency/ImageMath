@@ -5,8 +5,9 @@ using System.Linq;
 
 using ImageMath;
 using ImageMath.Views;
-
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 using UnityEngine;
 #nullable enable
@@ -52,7 +53,7 @@ public class PointDetectorTest : MonoBehaviour {
         }
 
         //set pixel scale
-
+        
         Handles.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f / texture.height, 1f / texture.height, 1f / texture.height));
         Gizmos.matrix = Handles.matrix;
 

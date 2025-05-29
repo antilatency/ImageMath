@@ -22,14 +22,14 @@ public class BasicTests : MonoBehaviour {
 
     void Update() {
         var inputTexture = TextureView.GetByName("Input").ResizeRenderTexture(512, 512);
-        new UVFill(){
+        new UVFill() {
         }.AssignTo(inputTexture);
 
         new EllipseFill(new Vector4(1, 0, 0, 0.5f), Vector4.zero)
-        .Tile(2,new Vector2Int(2,2))
+        .Tile(2, new Vector2Int(2, 2))
         .AlphaBlendTo(inputTexture);
 
-        new EllipseFill(new Vector4(0.5f, 0.5f, 0, 1), Vector4.one){
+        new EllipseFill(new Vector4(0.5f, 0.5f, 0, 1), Vector4.one) {
             ChannelMask = ChannelMask.RGB,
             Radius = new Vector2(0.25f, 0.25f),
         }.MinTo(inputTexture);
@@ -44,7 +44,7 @@ public class BasicTests : MonoBehaviour {
         var pointA = lineTextureView.transform.GetChild(0).localPosition;
         var pointB = lineTextureView.transform.GetChild(1).localPosition;
         var linesTexture = lineTextureView.ResizeRenderTexture(512, 512);
-        new LineFill(){
+        new LineFill() {
             Color = new Vector4(1, 1, 1, 1),
             PointA = pointA,
             PointB = pointB,
@@ -55,10 +55,10 @@ public class BasicTests : MonoBehaviour {
 
 
 
-        var reductionInput = TextureView.GetByName("ReductionInput").ResizeRenderTexture(8192,8192);
-        new UVFill(){
+        var reductionInput = TextureView.GetByName("ReductionInput").ResizeRenderTexture(8192, 8192);
+        new UVFill() {
         }.AssignTo(reductionInput);
-        new ColorFill(new Vector4(0,0,0.25f,0)).AddTo(reductionInput);
+        new ColorFill(new Vector4(0, 0, 0.25f, 0)).AddTo(reductionInput);
 
         /*var pixels = new Vector4[TestTexture2D.width * TestTexture2D.height];
 
@@ -76,8 +76,8 @@ public class BasicTests : MonoBehaviour {
         MaxValue = reductionInput.Maximum(ReductorDownScalePerIteration);
         MinValue = reductionInput.Minimum(ReductorDownScalePerIteration);
 
-        var textureCompareInput = TextureView.GetByName("TextureCompareInput").ResizeRenderTexture(128,128);
-        new UVFill(){
+        var textureCompareInput = TextureView.GetByName("TextureCompareInput").ResizeRenderTexture(128, 128);
+        new UVFill() {
         }.AssignTo(textureCompareInput);
         new GradientFill {
             PointA = new Vector2(0.5f, 0.5f),
@@ -94,6 +94,20 @@ public class BasicTests : MonoBehaviour {
         textureCompareResult.ClearAlpha();
 
         TransparencyInfillTest();
+
+
+
+        //shrink grow test
+        /*var shrinkGrowInput = TextureView.GetByName("ShrinkGrowInput").Texture;
+        if (shrinkGrowInput != null) {
+
+            var shrinkGrowResult = TextureView.GetByName("ShrinkGrowResult").ResizeRenderTexture(512, 512);
+            new ShrinkGrow(shrinkGrowInput, 0.5f, 0.5f, 0.5f, 0.5f) {
+                ChannelMask = ChannelMask.RGB,
+            }.AssignTo(shrinkGrowResult);
+        }*/
+
+
 
     }
     [Range(0, 1)]

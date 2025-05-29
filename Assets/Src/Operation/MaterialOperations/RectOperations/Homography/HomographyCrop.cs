@@ -1,12 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+
+using UnityEngine;
 #nullable enable
 namespace ImageMath {
-    public record HomographyCrop : TextureOperation {
+
+    [FilePath]
+    public partial record HomographyCrop : TextureOperation {
 
 
         public Matrix4x4 HomographyMatrix { get; private set; } = Matrix4x4.identity;
 
-        public HomographyCrop(Texture texture, Vector2[] srcCorners, Vector2[]? destCorners = null) : base(texture) {            
+        public HomographyCrop(Homography.SolverDelegate solverDelegate, Texture texture, Vector2[] srcCorners, Vector2[]? destCorners = null) : base(texture) {
             if (srcCorners.Length != 4) {
                 throw new System.Exception("Source corners must have exactly 4 points.");
             }
@@ -23,9 +27,13 @@ namespace ImageMath {
                 throw new System.Exception("Destination corners must have exactly 4 points.");
             }
 
-            HomographyMatrix = Homography.Calculate(destCorners, srcCorners, Accord.Math.Matrix.Solve);
+            HomographyMatrix = Homography.Calculate(destCorners, srcCorners, solverDelegate);
 
         }
+
+#if UNITY_EDITOR        
+        public static string GetFragmentShaderBody() => LoadCode("HomographyCrop.FragmentShaderBody.cginc");
+#endif
 
 
     }

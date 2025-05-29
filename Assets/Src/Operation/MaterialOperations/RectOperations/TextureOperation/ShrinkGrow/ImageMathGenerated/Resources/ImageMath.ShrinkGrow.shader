@@ -1,4 +1,4 @@
-Shader "ImageMath/TransparencyInfill"{
+Shader "ImageMath/ShrinkGrow"{
     Properties {}
     SubShader {
         Cull Off ZWrite Off ZTest Always
@@ -50,22 +50,7 @@ Shader "ImageMath/TransparencyInfill"{
         }
         
         float4 frag(VSO input) : SV_Target {
-            uint2 textureSize = 0;
-            uint levels = 0;
-            Texture.GetDimensions(0, textureSize.x, textureSize.y, levels);
-            float4 color = Texture.SampleLevel(samplerTexture, input.uv, levels-1);
-            color /= color.a;
-            for (int i = levels-2; i >= 0; i--){
-                float4 nextColor = Texture.SampleLevel(samplerTexture, input.uv, i);
-                color.a = nextColor.a;
-                if (nextColor.a < Epsilon) continue;
-            
-                float a = pow(nextColor.a,Power);
-                float aCorrection = pow(nextColor.a,Power-1);
-                float4 newColor = nextColor*aCorrection + color * (1.0 - a);
-                color.rgb = newColor.rgb;
-            }
-            return color;
+            #include "D:\ImageMath\Assets\Src\Operation\MaterialOperations\RectOperations\TextureOperation\ShrinkGrow\ShrinkGrow.FragmentShaderBody.cginc"
         }
 
         ENDCG

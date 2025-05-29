@@ -1,4 +1,4 @@
-Shader "ImageMath/TransparencyInfill"{
+Shader "ImageMath/HomographyCrop"{
     Properties {}
     SubShader {
         Cull Off ZWrite Off ZTest Always
@@ -28,8 +28,8 @@ Shader "ImageMath/TransparencyInfill"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        float ImageMath_F0;
-        #define Power ImageMath_F0
+        float4x4 ImageMath_M0;
+        #define HomographyMatrix ImageMath_M0
         Texture2D<float4> ImageMath_T0;
         #define Texture ImageMath_T0
         SamplerState samplerImageMath_T0;
@@ -50,22 +50,10 @@ Shader "ImageMath/TransparencyInfill"{
         }
         
         float4 frag(VSO input) : SV_Target {
-            uint2 textureSize = 0;
-            uint levels = 0;
-            Texture.GetDimensions(0, textureSize.x, textureSize.y, levels);
-            float4 color = Texture.SampleLevel(samplerTexture, input.uv, levels-1);
-            color /= color.a;
-            for (int i = levels-2; i >= 0; i--){
-                float4 nextColor = Texture.SampleLevel(samplerTexture, input.uv, i);
-                color.a = nextColor.a;
-                if (nextColor.a < Epsilon) continue;
-            
-                float a = pow(nextColor.a,Power);
-                float aCorrection = pow(nextColor.a,Power-1);
-                float4 newColor = nextColor*aCorrection + color * (1.0 - a);
-                color.rgb = newColor.rgb;
-            }
-            return color;
+            float3 uv_ = mul((float3x3)HomographyMatrix, float3(input.uv,1));
+            float2 uv = uv_.xy / uv_.z;
+            float4 result = Texture.Sample(samplerTexture, input.uv);
+            return result;
         }
 
         ENDCG

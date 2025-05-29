@@ -2,9 +2,9 @@
 using UnityEngine;
 
 public static class Homography {
+    public delegate double[] SolverDelegate(double[,] A, double[] B);
 
-
-    public static Matrix4x4 Calculate (Vector2[] srcPoints, Vector2[] dstPoints, Func<double[,], double[], double[]> solver) {
+    public static Matrix4x4 Calculate(Vector2[] srcPoints, Vector2[] dstPoints, SolverDelegate solverDelegate) {
         // Check if the number of points is correct
         if (srcPoints.Length != 4 || dstPoints.Length != 4) {
             throw new ArgumentException("Four source and destination points are required for homography calculation.");
@@ -30,7 +30,7 @@ public static class Homography {
             B[i * 2 + 1] = -dstPoints[i][1];
         }
 
-        var solution = solver(A, B);// Accord.Math.Matrix.Solve(A, B);
+        var solution = solverDelegate(A, B);// Accord.Math.Matrix.Solve(A, B);
 
         var homographyMatrix = Matrix4x4.identity;
         homographyMatrix[0, 0] = (float)solution[0];
