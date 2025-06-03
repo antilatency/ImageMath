@@ -20,22 +20,49 @@ public class PointDetectorTest : MonoBehaviour {
 
     public void Update() {
 
-        
+
         var input = TextureView.GetByName("Input");
         if (input == null || input.Texture == null) {
             Debug.LogError("Input texture is null");
-            return;
+        }
+        else {
+
+            for (int i = 0; i < 1; i++) {
+
+                var detector = new PointDetector(input.Texture, MaxSegmentsInRow);
+                Segments = detector.GetSegments();
+
+                Points = detector.GetPointsUVSpace(Segments, out var maxSegmentsInRowExceeded).ToArray();
+                if (maxSegmentsInRowExceeded) {
+                    Debug.LogError("Max segments in row exceeded: " + MaxSegmentsInRow);
+                }
+
+            }
+
         }
 
-        for (int i = 0; i < 1; i++) {
+        var inputH = TextureView.GetByName("InputH");
+        if (inputH == null || inputH.Texture == null) {
+            Debug.LogError("InputH texture is null");
+        } else {
+            var detector = new PointDetector(inputH.Texture, 4) { 
+                Selector = new Vector4(1, 0, 0, 0)
+            };
+            var pointsH = detector.GetPointsUVSpace(out var maxSegmentsInRowExceededH);
+            if (maxSegmentsInRowExceededH) {
+                Debug.LogError("Max segments in row exceeded: " + 4);
+            }   
+            var corners = pointsH.Select(a => a.Center).ToArray();
 
-            var detector = new PointDetector(input.Texture, MaxSegmentsInRow);
-            Segments = detector.GetSegments();
+            Vector2 centroid = Vector2.zero;
+            foreach (var pt in corners)
+                centroid += pt;
+            centroid /= corners.Length;
 
-            Points = detector.GetPoints(Segments, out var maxSegmentsInRowExceeded).ToArray();
-            if (maxSegmentsInRowExceeded) {
-                Debug.LogError("Max segments in row exceeded: " + MaxSegmentsInRow);
-            }
+            corners = corners.OrderBy(p => Mathf.Atan2(p.y - centroid.y, p.x - centroid.x)).ToArray();
+
+            var homographyCropResult = TextureView.GetByName("HomographyCropResult").ResizeRenderTexture(256,256);
+            new HomographyCrop((a, b) => Accord.Math.Matrix.Solve(a, b), inputH.Texture, corners).AssignTo(homographyCropResult);          
 
         }
 
@@ -53,7 +80,7 @@ public class PointDetectorTest : MonoBehaviour {
         }
 
         //set pixel scale
-        
+
         Handles.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f / texture.height, 1f / texture.height, 1f / texture.height));
         Gizmos.matrix = Handles.matrix;
 
@@ -67,10 +94,14 @@ public class PointDetectorTest : MonoBehaviour {
             }
         }
 
+
+        Handles.matrix = TextureView.GetByName("Input").transform.localToWorldMatrix;
+        Gizmos.matrix = Handles.matrix;
+
         Handles.color = Color.green;
         Gizmos.color = Handles.color;
         foreach (var point in Points) {
-            var center = point.Center + Vector2.one * 0.5f;
+            var center = point.Center;// + Vector2.one * 0.5f;
             var ellipse = point.GetEllipseAxes();
             Gizmos.DrawSphere(center, 0.1f * Mathf.Max(ellipse.axisX.z, ellipse.axisY.z));
             //draw ellipse
@@ -82,6 +113,10 @@ public class PointDetectorTest : MonoBehaviour {
             }).ToArray();
             Handles.DrawPolyLine(points);
         }
+        
+
+
+
     }   
 
 }

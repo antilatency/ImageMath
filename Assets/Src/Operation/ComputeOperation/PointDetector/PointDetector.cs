@@ -11,6 +11,7 @@ namespace ImageMath {
 
     [FilePath]
     public partial record PointDetector : ComputeOperation {
+        public Vector4 Selector { get; set; } = new Vector4(1, 1, 1, 0);
         public int MaxSegmentsInRow { get; set; } = 32;
         public Texture Texture { get; set; }
 
@@ -49,8 +50,25 @@ namespace ImageMath {
             return segments;
         }
 
-        
-            
+        public List<RawPoint> GetPointsUVSpace(out bool maxSegmantsInRowExceeded) {
+            var segments = GetSegments();
+            return GetPointsUVSpace(segments, out maxSegmantsInRowExceeded);
+        }
+
+        public List<RawPoint> GetPointsUVSpace(Segment[] segments, out bool maxSegmantsInRowExceeded) {
+            var points = GetPoints(segments, out maxSegmantsInRowExceeded);
+            for (int i = 0; i < points.Count; i++) {
+                var point = points[i];
+
+                point.SX /= Texture.width;
+                point.SY /= Texture.height;
+                point.SXX /= Texture.width * Texture.width;
+                point.SXY /= Texture.width * Texture.height;
+                point.SYY /= Texture.height * Texture.height;
+                points[i] = point;
+            }
+            return points;
+        }    
 
 
         public List<RawPoint> GetPoints(Segment[] segments, out bool maxSegmantsInRowExceeded) {
@@ -91,7 +109,12 @@ namespace ImageMath {
                                     }
                                     points[minPointIndex] += points[maxPointIndex];
                                     points.RemoveAt(maxPointIndex);
-                                    activeSegments.RemoveIndex(maxPointIndex);
+                                    activeSegments.RemoveIndex(maxPointIndex, minPointIndex);
+                                    newActiveSegments.RemoveIndex(maxPointIndex, minPointIndex);
+                                    /*if (newActiveSegments.Any(x => x.PointIndex >= points.Count)) {
+                                        Debug.LogError($"Active segment point index is out of bounds: {activeSegments.First(x => x.PointIndex >= points.Count).PointIndex} >= {points.Count}");
+                                    }*/
+
                                     pointIndex = minPointIndex;
                                 }
 
@@ -109,6 +132,10 @@ namespace ImageMath {
                         points.Add(newPoint);
                     }
                     else {
+                        if (pointIndex >= points.Count) {
+                            Debug.LogError($"Point index {pointIndex} is out of bounds for points list of size {points.Count}");
+                            continue;
+                        }
                         points[pointIndex].AddSegment(segment, y);
                     }
 
@@ -132,7 +159,7 @@ namespace ImageMath {
 #if UNITY_EDITOR
 
 
-        public static string GetMainKernelBody() => Include("PointDetector.MainKernelBody.cginc");
+        public static string GetMainKernelBody() => LoadCode("PointDetector.MainKernelBody.cginc");
 
         public static new string GetBufferElementTypeDeclaration() => new Scopes.C.Scopeꓼ($"struct {GetBufferElementTypeName()}") {
             "uint start_length;",

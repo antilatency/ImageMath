@@ -38,25 +38,25 @@ public class KeyColorAdjustmentTest2 : MonoBehaviour {
 	public Material DisplayMaterial;
 
 
-	public Texture2D ChromasAndColorsTexture;
+	public Texture2D ChromasTexture;
 
 	//first color is adjusted key color
-	public void UpdateColorsTexture(Vector4[] chromasAndColors) {
-		var textureWidth = chromasAndColors.Length / 2;
-		if (!ChromasAndColorsTexture || ChromasAndColorsTexture.width != textureWidth) {
-			if (ChromasAndColorsTexture) { 
-				DestroyImmediate(ChromasAndColorsTexture);
+	public void UpdateColorsTexture(Vector2[] chromas) {
+		var textureWidth = chromas.Length;
+		if (!ChromasTexture || ChromasTexture.width != textureWidth) {
+			if (ChromasTexture) { 
+				DestroyImmediate(ChromasTexture);
 			}
-			ChromasAndColorsTexture = new Texture2D(textureWidth, 2, GraphicsFormat.R32G32B32A32_SFloat, TextureCreationFlags.None);
-			ChromasAndColorsTexture.filterMode = FilterMode.Point;
-			ChromasAndColorsTexture.wrapMode = TextureWrapMode.Clamp;
+			ChromasTexture = new Texture2D(textureWidth, 1, GraphicsFormat.R32G32_SFloat, TextureCreationFlags.None);
+			ChromasTexture.filterMode = FilterMode.Point;
+			ChromasTexture.wrapMode = TextureWrapMode.Clamp;
 		}
 		if (DisplayMaterial == null) {
 			return;
 		}
-		ChromasAndColorsTexture.SetPixelData(chromasAndColors,0);
-		ChromasAndColorsTexture.Apply();
-		DisplayMaterial.SetTexture("_ChromasAndColorsTexture", ChromasAndColorsTexture);
+		ChromasTexture.SetPixelData(chromas,0);
+		ChromasTexture.Apply();
+		DisplayMaterial.SetTexture("_ChromasTexture", ChromasTexture);
 	}
 
 	float Curve(float x, float resultForZero) {
@@ -172,22 +172,19 @@ public class KeyColorAdjustmentTest2 : MonoBehaviour {
 
 
 		var colorsOffset = 2 + KeyColors.Length;
-		var chromasAndColors = new Vector4[2 * colorsOffset];
-		chromasAndColors[0] = adjustedChroma;
-		chromasAndColors[colorsOffset] = AdjustedColor.ToVector4();
-
-		chromasAndColors[1] = averageChroma;
-		chromasAndColors[colorsOffset + 1] = averageColor.ToVector4();
+		var chromasTexturePixels = new Vector2[colorsOffset];
+		
+		chromasTexturePixels[0] = adjustedChroma;
+		chromasTexturePixels[1] = averageChroma;
 		for (int i = 0; i < KeyColors.Length; i++) {
 			var keyColor = KeyColors[i];
 			var chroma = chromas[i];
 			//Vector2 relativeChroma = ToRelativeChroma(chroma);
 
-			chromasAndColors[2 + i] = new Vector4(chroma.x, chroma.y, 0f, 0f);
-			chromasAndColors[colorsOffset + 2 + i] = keyColor.ToVector4();
+			chromasTexturePixels[2+i] = new Vector2(chroma.x, chroma.y);
 		}
 
-		UpdateColorsTexture(chromasAndColors);
+		UpdateColorsTexture(chromasTexturePixels);
 
 	}
 #endif

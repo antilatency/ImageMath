@@ -153,7 +153,7 @@ Transform:
   m_Children:
   - {fileID: 1049825768}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -35.464, y: 29.621, z: 45.318}
 --- !u!1 &315759828
 GameObject:
@@ -194,9 +194,10 @@ MonoBehaviour:
   - {r: 0.29027408, g: 0.5283019, b: 0.251691, a: 1}
   - {r: 0.24991101, g: 0.509434, b: 0.18503025, a: 1}
   - {r: 0.2242791, g: 0.4528302, b: 0.2242791, a: 1}
-  AdjustedColor: {r: 0.29709244, g: 0.5451906, b: 0.22799522, a: 1}
+  - {r: 0.31772876, g: 0.5660378, b: 0.31772876, a: 1}
+  AdjustedColor: {r: 0.3012197, g: 0.54936004, b: 0.24594192, a: 1}
   DisplayMaterial: {fileID: 2100000, guid: 532a83fb92e80d44ba427d92f77e2c4d, type: 2}
-  ChromasAndColorsTexture: {fileID: 1867832418}
+  ChromasTexture: {fileID: 1564460849}
 --- !u!4 &315759830
 Transform:
   m_ObjectHideFlags: 0
@@ -210,7 +211,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1049825767
 GameObject:
@@ -237,14 +238,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1049825767}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.4436213, y: -0.43872738, z: -0.44445184, w: 0.64279157}
   m_LocalPosition: {x: 0.5, y: 0.5, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 206010197}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -106.199, y: 142.538, z: -220.755}
 --- !u!23 &1049825769
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -295,56 +296,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1049825767}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1150916011
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1150916013}
-  - component: {fileID: 1150916014}
-  m_Layer: 0
-  m_Name: KeyColorAdjustmentTest
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1150916013
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1150916011}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1150916014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1150916011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9157e500b1552c74eb0dce1316286c26, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  KeyColor: {r: 0.18403672, g: 0.6886792, b: 0.126691, a: 1}
-  AdjustedColor: {r: 0.2756093, g: 0.67623687, b: 0.23008348, a: 1}
-  ChromaAdjustment: -0.333
-  BrightnessAdjustment: 0.242
-  SaturatedColor: {r: 0, g: 1, b: 1, a: 0.80062795}
-  _Chroma: {x: -0.29782152, y: 0.17194735, z: 0.507298, w: 1}
 --- !u!1 &1290785082
 GameObject:
   m_ObjectHideFlags: 0
@@ -426,9 +377,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!28 &1867832418
+--- !u!28 &1564460849
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -442,11 +393,11 @@ Texture2D:
   m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
   serializedVersion: 2
-  m_Width: 6
-  m_Height: 2
-  m_CompleteImageSize: 192
+  m_Width: 7
+  m_Height: 1
+  m_CompleteImageSize: 56
   m_MipsStripped: 0
-  m_TextureFormat: 20
+  m_TextureFormat: 19
   m_MipCount: 1
   m_IsReadable: 1
   m_IsPreProcessed: 0
@@ -468,8 +419,8 @@ Texture2D:
   m_LightmapFormat: 0
   m_ColorSpace: 0
   m_PlatformBlob: 
-  image data: 192
-  _typelessdata: 3dec933e2ba9b63e00000000000000003dec933e2ba9b63e00000000000000000993c03e57f9e83e00000000000000001a6f843eada8b63e0000000000000000c633983e622ca13e000000000000000015f6643e42d6993e0000000000000000801c983e9c910b3f9477693e0000803f801c983e9c910b3f9377693e0000803f240ad93eb1b0303f8180803e0000803fce9e943ecb3e073fa5dd803e0000803face87f3e446a023f92783d3e0000803f6ca9653e5cd9e73e6ca9653e0000803f
+  image data: 56
+  _typelessdata: 7e4f8f3ec323bb3e7e4f8f3ec323bb3ef80fbf3e58f9e83e77bb843eaea8b63ef633983e622ca13e8696663e43d6993ea2857a3e210ecd3e
   m_StreamData:
     serializedVersion: 2
     offset: 0

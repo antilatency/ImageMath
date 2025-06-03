@@ -7,7 +7,7 @@ Result[id.y] = (segment)0;
 segment currentSegment = (segment)0;
 int start = 0;
 for (uint i = 0; i < textureSize.x + 1; i++){
-    float value = Texture.Load(int3(i,id.y,0)).r * (i<textureSize.x);
+    float value = dot(Texture.Load(int3(i,id.y,0)), Selector) * (i<textureSize.x);
     bool newInPoint = value.r > 0;
 
     
@@ -24,7 +24,7 @@ for (uint i = 0; i < textureSize.x + 1; i++){
         currentSegment.start_length = i << 16;
     }
     if (newInPoint){ 
-        int x = i - start;
+        float x = (i - start) + 0.5f;
         currentSegment.start_length += 1;
         currentSegment.s += value;
         currentSegment.sx += x * value;

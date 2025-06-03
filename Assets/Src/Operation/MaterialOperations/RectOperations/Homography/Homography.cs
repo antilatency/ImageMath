@@ -2,6 +2,8 @@
 using UnityEngine;
 
 public static class Homography {
+
+    // Example Accord.Math.Matrix.Solve(A, B);
     public delegate double[] SolverDelegate(double[,] A, double[] B);
 
     public static Matrix4x4 Calculate(Vector2[] srcPoints, Vector2[] dstPoints, SolverDelegate solverDelegate) {

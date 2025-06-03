@@ -2,7 +2,7 @@ Shader "Hidden/KeyColorAdjustmentTest2"
 {
     Properties
     {
-        _ChromasAndColorsTexture ("Chromas and Colors Texture", 2D) = "white" {}
+        _ChromasTexture ("Chromas Texture", 2D) = "white" {}
         _GlobalAxisX("Global Axis X", Vector) = (1, 0, 0)
         _GlobalAxisY("Global Axis Y", Vector) = (0, 1, 0)
     }
@@ -43,7 +43,7 @@ Shader "Hidden/KeyColorAdjustmentTest2"
             float3 _GlobalAxisY;
             float4 _ChromaRect;
 
-            Texture2D<float4> _ChromasAndColorsTexture;
+            Texture2D<float4> _ChromasTexture;
             
             float4 DrawCircle(float2 center, float radius, float thickness, float4 color, float4 inputColor, float2 uv){
                 float dist = distance(uv, center);
@@ -67,11 +67,11 @@ Shader "Hidden/KeyColorAdjustmentTest2"
             }
 
             float2 GetChroma(int index){
-                return _ChromasAndColorsTexture.Load(int3(index, 0, 0)).xy;
+                return _ChromasTexture.Load(int3(index, 0, 0)).xy;
             }
 
             float2 GetChromaLocal(int index){
-                return (_ChromasAndColorsTexture.Load(int3(index, 0, 0)).xy - _ChromaRect.xy) / _ChromaRect.zw;
+                return (_ChromasTexture.Load(int3(index, 0, 0)).xy - _ChromaRect.xy) / _ChromaRect.zw;
             }
 
 
@@ -92,7 +92,7 @@ Shader "Hidden/KeyColorAdjustmentTest2"
                     float2 uv = input.uv;
                     uv.x = 2*(uv.x - 0.5);   
                     uint2 ChromasAndColorsTextureSize;
-                    _ChromasAndColorsTexture.GetDimensions(ChromasAndColorsTextureSize.x, ChromasAndColorsTextureSize.y);
+                    _ChromasTexture.GetDimensions(ChromasAndColorsTextureSize.x, ChromasAndColorsTextureSize.y);
 
                     //use ddx(i.uv) and ddy(i.uv) to get uv to pixels scale
                     float scale = ddx(uv.x);
@@ -126,6 +126,7 @@ Shader "Hidden/KeyColorAdjustmentTest2"
                 }
 
                 color = DrawVerticalLine(0.5, 2*ddx(input.uv.x), float4(0, 0, 0, 1), color, input.uv);
+                //toSRGB
                 return color;
 
             }

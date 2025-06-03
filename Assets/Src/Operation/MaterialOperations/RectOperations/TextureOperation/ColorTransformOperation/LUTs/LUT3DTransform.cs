@@ -12,7 +12,7 @@ namespace ImageMath {
         public LUT3DTransform(Texture texture, LUT3D lut3D) : base(texture) {
             _lut3d = lut3D;
         }
-        public static string GetColorTransform() => Include("LUT3DTransform.ColorTransform.cginc");
+        public static string GetColorTransform() => LoadCode("LUT3DTransform.ColorTransform.cginc");
     }
 
 }

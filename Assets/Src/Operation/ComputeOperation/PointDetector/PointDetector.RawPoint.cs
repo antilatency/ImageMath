@@ -1,40 +1,10 @@
 #nullable enable
 using System;
-using System.Collections.Generic;
 
 using UnityEngine;
 
 namespace ImageMath {
     public partial record PointDetector {
-
-        /*struct RawSegment {
-            public float Start;
-            public float Length;
-            public float Sum;
-            public float WeightedSum;
-            public Vector4 ToVector4() {
-                return new Vector4(Start, Length, Sum, WeightedSum);
-            }
-            public Segment ToGlobalSegment() {
-                var globalWeightedSum = WeightedSum + Start * (double)Sum;
-                return new Segment((int)Start, (int)Length, Sum, globalWeightedSum);
-            }
-        }*/
-
-
-
-
-        public class ActiveSegment {
-            public int Start;
-            public int Length;
-            public int PointIndex;
-            public ActiveSegment(int start, int length, int pointIndex) {
-                Start = start;
-                Length = length;
-                PointIndex = pointIndex;
-            }
-        }
-
         [System.Serializable]
         public class RawPoint {
             public int PixelCount;
@@ -59,15 +29,16 @@ namespace ImageMath {
             }
 
             public void AddSegment(Segment segment, int y) {
+                double yd = y + 0.5;
                 double globalSx = segment.sx + segment.start * (double)segment.s;
                 double globalSxx = segment.sxx + 2 * segment.start * (double)segment.sx + segment.start * segment.start * (double)segment.s;
                 PixelCount += segment.length;
                 S += segment.s;
                 SX += globalSx;
-                SY += y * segment.s;
+                SY += yd * segment.s;
                 SXX += globalSxx;
-                SXY += globalSx * y;
-                SYY += y * y * segment.s;
+                SXY += globalSx * yd;
+                SYY += yd * yd * segment.s;
             }                
 
             public Vector2 Center => new Vector2((float)(SX / S), (float)(SY / S));
@@ -127,26 +98,5 @@ namespace ImageMath {
             }
 
         }
-    }
-
-
-    public static class PointDetectorSegmentExtensions {
-        public static bool IntersectsWith(this PointDetector.ActiveSegment activeSegment, PointDetector.Segment segment) {
-            if (activeSegment.Start + activeSegment.Length <= segment.start)
-                return false;
-            if (activeSegment.Start >= segment.start + segment.length)
-                return false;
-            return true;
-        }
-
-        public static void RemoveIndex(this IList<PointDetector.ActiveSegment> segments, int index) {
-            foreach (var segment in segments) {
-                if (segment.PointIndex >= index) {
-                    segment.PointIndex--;
-                }
-            }
-        }
-              
-    
     }
 }

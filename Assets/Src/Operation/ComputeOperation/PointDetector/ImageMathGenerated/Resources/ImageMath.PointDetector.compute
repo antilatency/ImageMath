@@ -1,0 +1,84 @@
+#pragma kernel Main
+float4 ImageMath_V0;
+#define Selector ImageMath_V0
+int ImageMath_I0;
+#define MaxSegmentsInRow ImageMath_I0
+Texture2D<float4> ImageMath_T0;
+#define Texture ImageMath_T0
+SamplerState samplerImageMath_T0;
+#define samplerTexture samplerImageMath_T0
+
+struct segment {
+	uint start_length;
+	float s;
+	float sx;
+	float sxx;
+};
+
+RWStructuredBuffer<segment> Result;
+
+[numthreads(8, 8, 1)]
+void Main(uint3 id : SV_DispatchThreadID, uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+    uint2 textureSize;
+    Texture.GetDimensions(textureSize.x, textureSize.y);
+    bool inPoint = false;
+    int pointIndex = 0;
+    Result[id.y] = (segment)0;
+    segment currentSegment = (segment)0;
+    int start = 0;
+    for (uint i = 0; i < textureSize.x + 1; i++){
+        float value = dot(Texture.Load(int3(i,id.y,0)), Selector) * (i<textureSize.x);
+        bool newInPoint = value.r > 0;
+    
+        //Point start
+        if (newInPoint && !inPoint){
+            currentSegment = (segment)0;
+            if (MaxSegmentsInRow==pointIndex){//last segment written
+                currentSegment.start_length = 0xffff << 16;
+                Result[id.y + textureSize.y*(pointIndex-1)] = currentSegment;
+                return;
+            }
+            start = i;
+            currentSegment.start_length = i << 16;
+        }
+        if (newInPoint){
+            float x = (i - start) + 0.5f;
+            currentSegment.start_length += 1;
+            currentSegment.s += value;
+            currentSegment.sx += x * value;
+            currentSegment.sxx += x * x * value;
+        }
+        //Result[id.y + textureSize.y*pointIndex] = currentSegment;
+        //Point end
+        if (!newInPoint && inPoint){
+            Result[id.y + textureSize.y*pointIndex] = currentSegment;
+            pointIndex++;
+        }
+        inPoint = newInPoint;
+    }
+    Result[id.y + textureSize.y*pointIndex] = (segment)0;
+
+
+    //InterlockedMax(Result[0], value.r); // Atomic operation to find max
+
+    /*// Flatten groupThreadID to index
+    uint index = groupThreadID.y * 8 + groupThreadID.x;
+    sharedMax[index] = value;
+    GroupMemoryBarrierWithGroupSync();
+
+    // Parallel reduction (in-place, assumes 64 threads)
+    for (uint stride = 32; stride > 0; stride >>= 1)
+    {
+        if (index < stride)
+            sharedMax[index] = max(sharedMax[index], sharedMax[index + stride]);
+
+        GroupMemoryBarrierWithGroupSync();
+    }
+
+    // Write result from thread 0 of each group
+    if (index == 0)
+    {
+        Result[groupID.y * DispatchSize.x + groupID.x] = sharedMax[0];
+    }*/
+}
