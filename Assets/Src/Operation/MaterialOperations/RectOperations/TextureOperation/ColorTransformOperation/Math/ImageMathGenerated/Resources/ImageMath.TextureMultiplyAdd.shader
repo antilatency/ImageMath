@@ -1,4 +1,4 @@
-Shader "ImageMath/TextureMultipliedByMatrix"{
+Shader "ImageMath/TextureMultiplyAdd"{
     Properties {}
     SubShader {
         Cull Off ZWrite Off ZTest Always
@@ -30,6 +30,8 @@ Shader "ImageMath/TextureMultipliedByMatrix"{
 
         float4x4 ImageMath_M0;
         #define Multiplier ImageMath_M0
+        float4 ImageMath_V2;
+        #define Increment ImageMath_V2
         Texture2D<float4> ImageMath_T0;
         #define Texture ImageMath_T0
         SamplerState samplerImageMath_T0;
@@ -51,7 +53,7 @@ Shader "ImageMath/TextureMultipliedByMatrix"{
         
         float4 frag(VSO input) : SV_Target {
             float4 inputColor = Texture.Sample(samplerTexture, input.uv);
-            return mul(Multiplier, inputColor);
+            return mul(Multiplier, inputColor) + Increment;
         }
 
         ENDCG

@@ -56,7 +56,7 @@ namespace ImageMath {
         }
 
         public List<RawPoint> GetPointsUVSpace(Segment[] segments, out bool maxSegmantsInRowExceeded) {
-            var points = GetPoints(segments, out maxSegmantsInRowExceeded);
+            var points = GetPointsPixelSpace(segments, out maxSegmantsInRowExceeded);
             for (int i = 0; i < points.Count; i++) {
                 var point = points[i];
 
@@ -68,10 +68,14 @@ namespace ImageMath {
                 points[i] = point;
             }
             return points;
-        }    
+        }
 
-
-        public List<RawPoint> GetPoints(Segment[] segments, out bool maxSegmantsInRowExceeded) {
+        public List<RawPoint> GetPointsPixelSpace(out bool maxSegmantsInRowExceeded) { 
+            var segments = GetSegments();
+            return GetPointsPixelSpace(segments, out maxSegmantsInRowExceeded);
+        }
+        
+        public List<RawPoint> GetPointsPixelSpace(Segment[] segments, out bool maxSegmantsInRowExceeded) {
 
 
             List<RawPoint> points = new();
@@ -88,7 +92,7 @@ namespace ImageMath {
                     if (segment.length == 0) {
                         if (segment.start == ushort.MaxValue) {
                             maxSegmantsInRowExceeded = true;
-                        }                            
+                        }
                         break;
                     }
                     int pointIndex = -1;
