@@ -16,12 +16,7 @@ namespace ImageMath {
             }
 
             if (destCorners == null) {
-                destCorners = new Vector2[] {
-                    new Vector2(0,0),
-                    new Vector2(1,0),
-                    new Vector2(1,1),
-                    new Vector2(0,1)
-                };
+                destCorners = Homography.DefaultDestinationCorners;
             }
             else if (destCorners.Length != 4) {
                 throw new System.Exception("Destination corners must have exactly 4 points.");

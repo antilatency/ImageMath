@@ -54,15 +54,10 @@ public class PointDetectorTest : MonoBehaviour {
             }   
             var corners = pointsH.Select(a => a.Center).ToArray();
 
-            Vector2 centroid = Vector2.zero;
-            foreach (var pt in corners)
-                centroid += pt;
-            centroid /= corners.Length;
-
-            corners = corners.OrderBy(p => Mathf.Atan2(p.y - centroid.y, p.x - centroid.x)).ToArray();
+            var sortedCorners = Homography.SortCorners(corners);
 
             var homographyCropResult = TextureView.GetByName("HomographyCropResult").ResizeRenderTexture(256,256);
-            new HomographyCrop((a, b) => Accord.Math.Matrix.Solve(a, b), inputH.Texture, corners)
+            new HomographyCrop((a, b) => Accord.Math.Matrix.Solve(a, b), inputH.Texture, sortedCorners)
             .Scale(Vector2.one * 2f, Vector2.one * 0.5f)
             .AssignTo(homographyCropResult);          
 
