@@ -1,10 +1,10 @@
 using UnityEngine;
 namespace ImageMath{
     [FilePath]
-    public partial record UnpackLog : ColorTransformOperation{
-        public Vector3 WhiteLevel {get; set;} = new Vector3(1, 1, 1);
-        public Vector3 BlackLevel {get; set;} = new Vector3(0, 0, 0);
-        public Vector3 ExponentScale {get; set;} = new Vector3(1, 1, 1);
+    public partial record UnpackLog : ColorTransformOperation {
+        public Vector3 WhiteLevel { get; set; } = new Vector3(1, 1, 1);
+        public Vector3 BlackLevel { get; set; } = new Vector3(0, 0, 0);
+        public Vector3 ExponentScale { get; set; } = new Vector3(1, 1, 1);
 
         public UnpackLog(Texture texture) : base(texture) { }
         public UnpackLog() : base() { }
@@ -20,6 +20,23 @@ float3 divider = pow(2, exponentScale) - 1;
 x /= divider;
 
 return float4(x.r, x.g, x.b, inputColor.a);";
+        }
+
+        public Vector3 Convert(Vector3 inputColor) {
+            Vector3 range = WhiteLevel - BlackLevel;
+            Vector3 x = inputColor - BlackLevel;
+            x.x /= range.x;
+            x.y /= range.y;
+            x.z /= range.z;
+            Vector3 exponentScale = new Vector3(ExponentScale.x * range.x, ExponentScale.y * range.y, ExponentScale.z * range.z);
+            x.x = Mathf.Pow(2, x.x * exponentScale.x) - 1;
+            x.y = Mathf.Pow(2, x.y * exponentScale.y) - 1;
+            x.z = Mathf.Pow(2, x.z * exponentScale.z) - 1;
+            Vector3 divider = new Vector3(Mathf.Pow(2, exponentScale.x) - 1, Mathf.Pow(2, exponentScale.y) - 1, Mathf.Pow(2, exponentScale.z) - 1);
+            x.x /= divider.x;
+            x.y /= divider.y;
+            x.z /= divider.z;
+            return x;
         }
     }
 }
