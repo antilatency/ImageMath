@@ -22,9 +22,9 @@ x /= divider;
 return float4(x.r, x.g, x.b, inputColor.a);";
         }
 
-        public Vector3 Convert(Vector3 inputColor) {
+        public override Vector4 Convert(Vector4 inputColor) {
             Vector3 range = WhiteLevel - BlackLevel;
-            Vector3 x = inputColor - BlackLevel;
+            Vector3 x = (Vector3)inputColor - BlackLevel;
             x.x /= range.x;
             x.y /= range.y;
             x.z /= range.z;
@@ -36,7 +36,7 @@ return float4(x.r, x.g, x.b, inputColor.a);";
             x.x /= divider.x;
             x.y /= divider.y;
             x.z /= divider.z;
-            return x;
+            return new Vector4(x.x, x.y, x.z, inputColor.w);
         }
     }
 }
