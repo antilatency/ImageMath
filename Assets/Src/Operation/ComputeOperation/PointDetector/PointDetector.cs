@@ -12,6 +12,7 @@ namespace ImageMath {
     [FilePath]
     public partial record PointDetector : ComputeOperation {
         public Vector4 Selector { get; set; } = new Vector4(1, 1, 1, 0);
+        public float Threshold { get; set; } = 0f;
         public int MaxSegmentsInRow { get; set; } = 32;
         public Texture Texture { get; set; }
 

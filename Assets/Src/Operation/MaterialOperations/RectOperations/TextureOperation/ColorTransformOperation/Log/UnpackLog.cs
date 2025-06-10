@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace ImageMath{
+namespace ImageMath {
     [FilePath]
     public partial record UnpackLog : ColorTransformOperation {
         public Vector3 WhiteLevel { get; set; } = new Vector3(1, 1, 1);
@@ -23,7 +23,7 @@ return float4(x.r, x.g, x.b, inputColor.a);";
         }
 
         public override Vector4 Convert(Vector4 inputColor) {
-            Vector3 range = WhiteLevel - BlackLevel;
+            /*Vector3 range = WhiteLevel - BlackLevel;
             Vector3 x = (Vector3)inputColor - BlackLevel;
             x.x /= range.x;
             x.y /= range.y;
@@ -35,7 +35,16 @@ return float4(x.r, x.g, x.b, inputColor.a);";
             Vector3 divider = new Vector3(Mathf.Pow(2, exponentScale.x) - 1, Mathf.Pow(2, exponentScale.y) - 1, Mathf.Pow(2, exponentScale.z) - 1);
             x.x /= divider.x;
             x.y /= divider.y;
-            x.z /= divider.z;
+            x.z /= divider.z;*/
+            Vector3 x = new();
+            for (int i = 0; i < 3; i++) {
+                float range = WhiteLevel[i] - BlackLevel[i];
+                x[i] = (inputColor[i] - BlackLevel[i]) / range;
+                float exponentScale = ExponentScale[i] * range;
+                x[i] = Mathf.Pow(2, x[i] * exponentScale) - 1;
+                float divider = Mathf.Pow(2, exponentScale) - 1;
+                x[i] /= divider;
+            }
             return new Vector4(x.x, x.y, x.z, inputColor.w);
         }
     }

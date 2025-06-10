@@ -7,9 +7,10 @@ Result[id.y] = (segment)0;
 segment currentSegment = (segment)0;
 int start = 0;
 for (uint i = 0; i < textureSize.x + 1; i++){
-    float value = dot(Texture.Load(int3(i,id.y,0)), Selector) * (i<textureSize.x);
-    bool newInPoint = value.r > 0;
+    float value = dot(Texture.Load(int3(i,id.y,0)), Selector) - Threshold;
+    value *= (i<textureSize.x);
 
+    bool newInPoint = value > 0;
     
     //Point start
     if (newInPoint && !inPoint){
