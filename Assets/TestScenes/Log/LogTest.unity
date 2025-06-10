@@ -1024,12 +1024,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c35307937551e48409cf9ef003fc7574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ExponentScale: 9.74
-  BlackLevel: 0.1
-  WhiteLevel: 0.8
+  ExponentScale: 8.89
+  BlackLevel: 0.25
+  WhiteLevel: 0.75
   TestValue: {x: 0.2, y: 0.4, z: 0.6}
-  Packed: {x: 0.5667692, y: 0.6662346, z: 0.72520876}
-  Unpacked: {x: 0.19999997, y: 0.40000007, z: 0.59999996}
+  Packed: {x: 0.5161766, y: 0.61210966, z: 0.6719944}
+  Unpacked: {x: 0.20000002, y: 0.40000007, z: 0.60000014}
 --- !u!43 &1884430548
 Mesh:
   m_ObjectHideFlags: 0

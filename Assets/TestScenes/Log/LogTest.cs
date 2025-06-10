@@ -24,9 +24,9 @@ public class LogTest : MonoBehaviour{
 
 		var packOperation = new PackLog {
 			Texture = input,
-			ExponentScale = ExponentScale * Vector3.one,
-			BlackLevel = BlackLevel * Vector3.one,
-			WhiteLevel = WhiteLevel * Vector3.one,
+			ExponentScale = ExponentScale,
+			BlackLevel = BlackLevel,
+			WhiteLevel = WhiteLevel,
 		};
 
 		
@@ -36,9 +36,9 @@ public class LogTest : MonoBehaviour{
 
 		var unpackOperation = new UnpackLog {
 			Texture = log,
-			ExponentScale = ExponentScale * Vector3.one,
-			BlackLevel = BlackLevel * Vector3.one,
-			WhiteLevel = WhiteLevel * Vector3.one,
+			ExponentScale = ExponentScale,
+			BlackLevel = BlackLevel,
+			WhiteLevel = WhiteLevel,
 		};
 
 		var unpacked = TextureView.GetByName("Unpacked").ResizeRenderTexture(256, 256);

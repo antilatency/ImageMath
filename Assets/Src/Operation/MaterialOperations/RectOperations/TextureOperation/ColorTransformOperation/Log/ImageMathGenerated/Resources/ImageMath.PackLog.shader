@@ -28,12 +28,12 @@ Shader "ImageMath/PackLog"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        float3 ImageMath_V2;
-        #define WhiteLevel ImageMath_V2
-        float3 ImageMath_V3;
-        #define BlackLevel ImageMath_V3
-        float3 ImageMath_V4;
-        #define ExponentScale ImageMath_V4
+        float ImageMath_F0;
+        #define BlackLevel ImageMath_F0
+        float ImageMath_F1;
+        #define InverseExponentScale ImageMath_F1
+        float ImageMath_F2;
+        #define Multiplier ImageMath_F2
         Texture2D<float4> ImageMath_T0;
         #define Texture ImageMath_T0
         SamplerState samplerImageMath_T0;
@@ -55,13 +55,9 @@ Shader "ImageMath/PackLog"{
         
         float4 frag(VSO input) : SV_Target {
             float4 inputColor = Texture.Sample(samplerTexture, input.uv);
-            float3 range = WhiteLevel - BlackLevel;
-            float3 exponentScale = ExponentScale * range;
-            float3 divider = pow(2, exponentScale) - 1;
-            float3 x = inputColor.rgb * divider;
-            x = log2(x + 1) / exponentScale;
-            x = x * range + BlackLevel;
-            return float4(x.r, x.g, x.b, inputColor.a);
+            float4 x = inputColor;
+            x.rgb = log2(x.rgb * Multiplier + 1) * InverseExponentScale + BlackLevel;
+            return x;
         }
 
         ENDCG

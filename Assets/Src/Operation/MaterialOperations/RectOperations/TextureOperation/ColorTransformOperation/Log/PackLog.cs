@@ -3,39 +3,41 @@ using UnityEngine;
 namespace ImageMath {
     [FilePath]
     public partial record PackLog : ColorTransformOperation {
-        public Vector3 WhiteLevel { get; set; } = new Vector3(1, 1, 1);
-        public Vector3 BlackLevel { get; set; } = new Vector3(0, 0, 0);
-        public Vector3 ExponentScale { get; set; } = new Vector3(1, 1, 1);
+        public float WhiteLevel = 1f;
+        public float BlackLevel { get; set; } = 0;
+        public float ExponentScale = 9.0f;
+        public float InverseExponentScale => 1 / ExponentScale;
+
+        public float Multiplier => Mathf.Pow(2, ExponentScale * (WhiteLevel - BlackLevel)) - 1;
 
         public PackLog(Texture texture) : base(texture) { }
         public PackLog() : base() { }
 
         public static string GetColorTransform() {
             return @"
-float3 range = WhiteLevel - BlackLevel;
-float3 exponentScale = ExponentScale * range;
-
-float3 divider = pow(2, exponentScale) - 1;
-float3 x = inputColor.rgb * divider;
-x = log2(x + 1) / exponentScale;
-
-x = x * range + BlackLevel;
-
-return float4(x.r, x.g, x.b, inputColor.a);";
+float4 x = inputColor;
+x.rgb = log2(x.rgb * Multiplier + 1) * InverseExponentScale + BlackLevel;
+return x;";
         }
 
-        public override Vector4 Convert(Vector4 inputColor) {
+        static float ConvertInternal(float x, float b, float ies, float mult) {
+            x = Mathf.Log(x * mult + 1, 2) * ies + b;
+            return x;
+        }
 
-            Vector3 x = new();
-            for (int i = 0; i < 3; i++) {
-                float range = WhiteLevel[i] - BlackLevel[i];
-                float exponentScale = ExponentScale[i] * range;
-                float divider = Mathf.Pow(2, exponentScale) - 1;
-                x[i] = inputColor[i] * divider;
-                x[i] = Mathf.Log(x[i] + 1, 2) / exponentScale * range + BlackLevel[i];
-            }
+        public override float Convert(float x) {
+            x = ConvertInternal(x, BlackLevel, InverseExponentScale, Multiplier);
+            return x;
+        }
 
-            return new Vector4(x.x, x.y, x.z, inputColor.w);
+        public override Vector4 Convert(Vector4 x) {
+            float b = BlackLevel;
+            float ies = InverseExponentScale;
+            float mult = Multiplier;
+            x.x = ConvertInternal(x.x, b, ies, mult);
+            x.y = ConvertInternal(x.y, b, ies, mult);
+            x.z = ConvertInternal(x.z, b, ies, mult);
+            return x;
         }
 
         public override ColorTransformOperation CreateInverse(Texture? texture = null) {

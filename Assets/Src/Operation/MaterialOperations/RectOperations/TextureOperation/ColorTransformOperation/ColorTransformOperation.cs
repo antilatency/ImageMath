@@ -11,11 +11,15 @@ float4 inputColor = Texture.Sample(samplerTexture, input.uv);
 @GetColorTransform";
         }
 
-        public virtual Vector4 Convert(Vector4 inputColor) {
-            throw new System.NotImplementedException($"{GetType().Name} does not implement Convert method.");
+        public virtual float Convert(float x) {
+            throw new System.NotImplementedException($"{GetType().Name} does not implement Convert method for float.");
         }
-        public Vector3 Convert(Vector3 inputColor) {
-            return (Vector3)Convert(new Vector4(inputColor.x, inputColor.y, inputColor.z, 1.0f));
+
+        public virtual Vector4 Convert(Vector4 x) {
+            throw new System.NotImplementedException($"{GetType().Name} does not implement Convert method for Vector4.");
+        }
+        public Vector3 Convert(Vector3 x) {
+            return (Vector3)Convert(new Vector4(x.x, x.y, x.z, 1.0f));
         }
 
         public virtual ColorTransformOperation CreateInverse(Texture? texture = null) {
