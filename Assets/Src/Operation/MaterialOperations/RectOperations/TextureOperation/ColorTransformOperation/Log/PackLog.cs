@@ -38,7 +38,7 @@ return float4(x.r, x.g, x.b, inputColor.a);";
             return new Vector4(x.x, x.y, x.z, inputColor.w);
         }
 
-        public override ColorTransformOperation CreateInversed(Texture? texture = null) {
+        public override ColorTransformOperation CreateInverse(Texture? texture = null) {
             return new UnpackLog {
                 Texture = texture,
                 WhiteLevel = WhiteLevel,

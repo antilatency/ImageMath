@@ -48,7 +48,7 @@ return mul(Multiplier, inputColor) + Increment;";
             return Multiplier * inputColor + Increment;
         }
 
-        public override ColorTransformOperation CreateInversed(Texture? texture = null) {
+        public override ColorTransformOperation CreateInverse(Texture? texture = null) {
             var inverseMultiplier = Multiplier.inverse;
             var inverseIncrement = -(inverseMultiplier * Increment);
             return new TextureMultiplyAdd { 

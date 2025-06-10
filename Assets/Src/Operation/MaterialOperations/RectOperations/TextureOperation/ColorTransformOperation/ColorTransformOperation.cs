@@ -18,7 +18,7 @@ float4 inputColor = Texture.Sample(samplerTexture, input.uv);
             return (Vector3)Convert(new Vector4(inputColor.x, inputColor.y, inputColor.z, 1.0f));
         }
 
-        public virtual ColorTransformOperation CreateInversed(Texture? texture = null) {
+        public virtual ColorTransformOperation CreateInverse(Texture? texture = null) {
             throw new System.NotImplementedException($"{GetType().Name} does not implement CreateInversed method.");
         }
     }
