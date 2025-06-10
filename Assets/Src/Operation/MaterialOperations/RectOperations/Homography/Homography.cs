@@ -73,7 +73,7 @@ namespace ImageMath {
             var assignments = costsMatrix.FindAssignments();
             Vector2[] sortedCorners = new Vector2[4];
             for (int i = 0; i < 4; i++) {
-                sortedCorners[i] = corners[assignments[i]];
+                sortedCorners[assignments[i]] = corners[i];
             }
 
             return sortedCorners;
