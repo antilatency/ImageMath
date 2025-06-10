@@ -43,20 +43,15 @@ namespace ImageMath {
         public static Disposable<T> ToDisposable<T>(this T value, Action<T> disposeAction) {
             return new Disposable<T>(value, disposeAction);
         }
-        public static Disposable<Texture> ToDisposable(this Texture texture) {
-            return new Disposable<Texture>(texture, t => {
-                if (t != null) {
-                    UnityEngine.Object.Destroy(t);
+
+        public static Disposable<T> ToDisposable<T>(this T value) where T : UnityEngine.Object {
+            return new Disposable<T>(value, obj => {
+                if (obj != null) {
+                    UnityEngine.Object.Destroy(obj);
                 }
             });
         }
-        public static Disposable<RenderTexture> ToDisposable(this RenderTexture renderTexture) {
-            return new Disposable<RenderTexture>(renderTexture, rt => {
-                if (rt != null) {
-                    UnityEngine.Object.Destroy(rt);
-                }
-            });
-        }
+
     }
 }
 
