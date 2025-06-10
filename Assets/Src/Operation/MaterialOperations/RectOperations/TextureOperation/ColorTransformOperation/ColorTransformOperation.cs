@@ -1,4 +1,5 @@
 using UnityEngine;
+#nullable enable
 namespace ImageMath{
     [FilePath]
     public abstract partial record ColorTransformOperation : TextureOperation {
@@ -15,6 +16,10 @@ float4 inputColor = Texture.Sample(samplerTexture, input.uv);
         }
         public Vector3 Convert(Vector3 inputColor) {
             return (Vector3)Convert(new Vector4(inputColor.x, inputColor.y, inputColor.z, 1.0f));
+        }
+
+        public virtual ColorTransformOperation CreateInversed(Texture? texture = null) {
+            throw new System.NotImplementedException($"{GetType().Name} does not implement CreateInversed method.");
         }
     }
 }

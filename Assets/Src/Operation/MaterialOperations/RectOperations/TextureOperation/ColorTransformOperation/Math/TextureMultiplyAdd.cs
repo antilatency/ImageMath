@@ -1,15 +1,16 @@
 using UnityEngine;
+#nullable enable
 namespace ImageMath{
-    [FilePath]
-    public partial record TextureMultiplyAdd : ColorTransformOperation{
-        public Matrix4x4 Multiplier {get; set;} = Matrix4x4.identity;
-        public Vector4 Increment {get; set;} = Vector4.zero;
+    [FilePath]    
+    public partial record TextureMultiplyAdd : ColorTransformOperation {
+        public Matrix4x4 Multiplier { get; set; } = Matrix4x4.identity;
+        public Vector4 Increment { get; set; } = Vector4.zero;
 
         public TextureMultiplyAdd(Texture texture, Matrix4x4 multiplier, Vector4 increment) : base(texture) {
             Multiplier = multiplier;
             Increment = increment;
         }
-        
+
         public TextureMultiplyAdd(Texture texture, Matrix4x4 multiplier) : this(texture, multiplier, Vector4.zero) { }
 
         static Matrix4x4 MakeScaleMatrix(Vector4 multiplier) {
@@ -31,10 +32,10 @@ namespace ImageMath{
             float rgbMultiplier, float rgbIncrement = 0,
             float alphaMultiplier = 1, float alphaIncrement = 0)
             : this(texture,
-            new Vector4(rgbMultiplier, rgbMultiplier, rgbMultiplier, alphaMultiplier), 
+            new Vector4(rgbMultiplier, rgbMultiplier, rgbMultiplier, alphaMultiplier),
             new Vector4(rgbIncrement, rgbIncrement, rgbIncrement, alphaIncrement)
         ) { }
-   
+
 
         public TextureMultiplyAdd(Texture texture) : base(texture) { }
         public TextureMultiplyAdd() : base() { }
@@ -42,6 +43,22 @@ namespace ImageMath{
             return @"
 return mul(Multiplier, inputColor) + Increment;";
         }
+
+        public override Vector4 Convert(Vector4 inputColor) {
+            return Multiplier * inputColor + Increment;
+        }
+
+        public override ColorTransformOperation CreateInversed(Texture? texture = null) {
+            var inverseMultiplier = Multiplier.inverse;
+            var inverseIncrement = -(inverseMultiplier * Increment);
+            return new TextureMultiplyAdd { 
+                Texture = texture,
+                Multiplier = inverseMultiplier,
+                Increment = inverseIncrement
+            };
+        }
+
+
     }
 
 

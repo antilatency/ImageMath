@@ -1,4 +1,5 @@
 using UnityEngine;
+#nullable enable
 namespace ImageMath {
     [FilePath]
     public partial record UnpackLog : ColorTransformOperation {
@@ -46,6 +47,15 @@ return float4(x.r, x.g, x.b, inputColor.a);";
                 x[i] /= divider;
             }
             return new Vector4(x.x, x.y, x.z, inputColor.w);
+        }
+
+        public override ColorTransformOperation CreateInversed(Texture? texture = null) {
+            return new PackLog {
+                Texture = texture,
+                WhiteLevel = WhiteLevel,
+                BlackLevel = BlackLevel,
+                ExponentScale = ExponentScale
+            };
         }
     }
 }
