@@ -47,7 +47,7 @@ namespace ImageMath {
         public static Disposable<T> ToDisposable<T>(this T value) where T : UnityEngine.Object {
             return new Disposable<T>(value, obj => {
                 if (obj != null) {
-                    UnityEngine.Object.Destroy(obj);
+                    UnityEngine.Object.DestroyImmediate(obj);
                 }
             });
         }
