@@ -91,7 +91,7 @@ public class BasicTests : MonoBehaviour {
         new TextureCompare(textureCompareInput, TextureCompare.CompareOperation.Equal, 0.0f)
         .AssignTo(textureCompareResult);
 
-        textureCompareResult.ClearAlpha();
+        //textureCompareResult.ClearAlpha();
 
         TransparencyInfillTest();
 

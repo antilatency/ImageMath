@@ -13,8 +13,15 @@ namespace ImageMath.Views{
     [ExecuteAlways]
     public class TextureView : MonoBehaviour {
 
+        public enum AlphaBlendingOptions {
+            Opaque,
+            AlphaBlending,
+            PremultipliedAlpha
+        }
+
         private Texture? CreatedTexture = null;
         public Texture? Texture  = null;
+        public AlphaBlendingOptions AlphaBlending = AlphaBlendingOptions.Opaque;
 
         public enum ResizeModeOptions {
             None,
@@ -27,8 +34,30 @@ namespace ImageMath.Views{
         public Material? Material = null;
         public static Material? DefaultUIMaterial = null;
         public static Mesh? DefaultMesh = null;
-        
 
+        void UpdateAlphaBlending(Material material) {
+            /*
+            if (AlphaBlending == AlphaBlendingOptions.Opaque) {
+                material.SetInt("_SrcBlend", (int)BlendMode.One);
+                material.SetInt("_DstBlend", (int)BlendMode.Zero);
+            }*/
+            switch (AlphaBlending) {
+                case AlphaBlendingOptions.Opaque:
+                    material.SetInt("_SrcBlend", (int)BlendMode.One);
+                    material.SetInt("_DstBlend", (int)BlendMode.Zero);
+                    break;
+
+                case AlphaBlendingOptions.AlphaBlending:
+                    material.SetInt("_SrcBlend", (int)BlendMode.SrcAlpha);
+                    material.SetInt("_DstBlend", (int)BlendMode.OneMinusSrcAlpha);
+                    break;
+
+                case AlphaBlendingOptions.PremultipliedAlpha:
+                    material.SetInt("_SrcBlend", (int)BlendMode.One);
+                    material.SetInt("_DstBlend", (int)BlendMode.OneMinusSrcAlpha);
+                    break;
+            }
+        } 
 
         void UpdateMeshRenderer(){
             
@@ -96,6 +125,7 @@ namespace ImageMath.Views{
                     Material = new Material(Shader.Find("ImageMath/Views/TextureView"));
                 }
             }
+            UpdateAlphaBlending(Material!);
             return Material!;
         }
 

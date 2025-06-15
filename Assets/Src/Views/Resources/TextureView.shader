@@ -1,12 +1,14 @@
 Shader "ImageMath/Views/TextureView" {
     Properties{
         _MainTex("Texture", 2D) = "white" {}
+        _SrcBlend("Src Blend", Float) = 5 // SrcAlpha
+        _DstBlend("Dst Blend", Float) = 10 // OneMinusSrcAlpha
     }
 
     SubShader{
 
         Cull Back
-        Blend SrcAlpha OneMinusSrcAlpha
+        Blend [_SrcBlend] [_DstBlend]
 
 
         Pass {
