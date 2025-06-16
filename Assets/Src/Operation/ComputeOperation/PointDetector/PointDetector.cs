@@ -7,8 +7,6 @@ using UnityEngine;
 
 namespace ImageMath {
 
-
-
     [FilePath]
     public partial record PointDetector : ComputeOperation {
         public Vector4 Selector { get; set; } = new Vector4(1, 1, 1, 0);
@@ -21,7 +19,7 @@ namespace ImageMath {
             Texture = texture;
         }
 
-        protected override Vector2Int GetDispatchSize() {
+        protected override Vector3Int GetDispatchSize() {
             if (Texture == null) {
                 throw new System.Exception("Texture is null");
             }
@@ -31,9 +29,8 @@ namespace ImageMath {
             var computeShader = ComputeShader;
             computeShader.GetKernelThreadGroupSizes(0, out var threadGroupSizeX, out var threadGroupSizeY, out var threadGroupSizeZ);
 
-            int groupsX = 1; //Mathf.CeilToInt(width / (float)threadGroupSizeX);
             int groupsY = Mathf.CeilToInt(height / (float)threadGroupSizeY);
-            return new Vector2Int(groupsX, groupsY);
+            return new Vector3Int(1, groupsY, 1);
         }
 
 
@@ -46,7 +43,7 @@ namespace ImageMath {
 
         public Segment[] GetSegments() {
             
-            var segments = Execute<Segment>();
+            var segments = ExecuteInternal<Segment>();
 
             return segments;
         }

@@ -74,23 +74,29 @@ namespace ImageMath {
 #endif
 
         protected virtual int GetStride() => Marshal.SizeOf(typeof(float)) * 4;
-        protected abstract Vector2Int GetDispatchSize();
-        
+        protected abstract Vector3Int GetDispatchSize();
 
+        protected virtual T[] ExecuteInternal<T>(ComputeBuffer? result = null) { 
+            if (result == null) {
+                return ExecuteInternalTempBuffer<T>();
+            }
+            return ExecuteUsingExternalBuffer<T>(result);
+        }
 
-        protected virtual T[] Execute<T>(){
+        protected virtual T[] ExecuteInternalTempBuffer<T>(){
             using (var buffer = GetTempComputeBuffer())
             {
-                return Execute<T>(buffer.Value);                
+                return ExecuteInternal<T>(buffer.Value);                
             }
         }
 
-        protected virtual T[] Execute<T>(ComputeBuffer result){
+
+        protected virtual T[] ExecuteUsingExternalBuffer<T>(ComputeBuffer result) {
             var computeShader = ComputeShader;
             ApplyShaderParameters();
             computeShader.SetBuffer(0, "Result", result);
             var dispatchSize = GetDispatchSize();
-            computeShader.Dispatch(0, dispatchSize.x, dispatchSize.y, 1);
+            computeShader.Dispatch(0, dispatchSize.x, dispatchSize.y, dispatchSize.z);
             var resultArray = new T[result.count];
             result.GetData(resultArray);
             return resultArray;

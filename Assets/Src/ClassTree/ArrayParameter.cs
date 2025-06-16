@@ -23,7 +23,7 @@ namespace ImageMath{
             var info = StructParameter.SupportedTypes[_elementType];
             var array = new float[5];
             
-            var result = $"Shader.{info.setGlobalMethodName}Array(\"{GetShaderVariableName()}\", ExpandArray({_propertyInfo.Name},{_size}));";
+            var result = $"{info.setMethodName}Array(\"{GetShaderVariableName()}\", ExpandArray({_propertyInfo.Name},{_size}));";
             if (_isDynamicArray) {
                 result = $"{result}\nShader.SetGlobalInt(\"{GetShaderVariableName()}_Size\", {_propertyInfo.Name}.Length);";
             } else {
