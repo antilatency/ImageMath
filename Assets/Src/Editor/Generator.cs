@@ -59,7 +59,7 @@ namespace ImageMath{
         public static void Generate(){
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            ClassDescription opeationClass = new ClassDescription(typeof(Operation), null);
+            ClassDescription operationClass = new ClassDescription(typeof(Operation), null);
 
             //DeleteGeneratedFiles();
             var generatedDirectories = GetGeneratedDirectories();
@@ -70,13 +70,13 @@ namespace ImageMath{
                     //Debug.Log($"Assembly: {assembly.FullName}");
                     foreach (var type in types){
                         if (type.IsClass && type.IsSubclassOf(typeof(Operation))){
-                            opeationClass.FindOrCreate(type);                       
+                            operationClass.FindOrCreate(type);                       
                         }
                     }
                 }
 
                 var flattened = new List<ClassDescription>();
-                opeationClass.FlattenChildren(flattened);
+                operationClass.FlattenChildren(flattened);
                 foreach (var classDescription in flattened){
                     var type = classDescription.Type;
                     var filePath = GetFilePath(type);
@@ -154,7 +154,8 @@ namespace ImageMath{
         public static void GenerateCsPartial(ClassDescription classDescription, List<string> filesToDelete) {
             var applyShaderParametersGroup = new Scope("protected override void ApplyShaderParameters()"){
                 "base.ApplyShaderParameters();",
-                classDescription.Parameters.SelectMany(p =>  p.GetShaderParameterAssignmentCode().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)).Select(l => l.TrimEnd())
+                classDescription.Parameters.SelectMany(p =>  p.GetShaderParameterAssignmentCode().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)).Select(l => l.TrimEnd()),
+                classDescription.MulticompileOptionsList.Select(m => m.GetShaderParameterAssignmentCode().TrimEnd())
             };
 
 
@@ -276,6 +277,20 @@ namespace ImageMath{
             WriteAllText(generatedFilePath, NormalizeLineEndings(template));
             filesToDelete.Remove(generatedFilePath);
         }
+        
+        public static string GetMulticompileOptions(ClassDescription classDescription) {
+            var current = classDescription;
+            var stringBuilder = new System.Text.StringBuilder();
+            while (current != null) {
+                var multicompileOptionsList = current.MulticompileOptionsList;
+                foreach (var multicompileOptions in multicompileOptionsList) {
+                    stringBuilder.AppendLine($"#pragma multi_compile_local {multicompileOptions.GetNameList()}");
+                }
+
+                current = current.Parent;
+            }
+            return stringBuilder.ToString();
+        }
 
         public static string GetParameters(ClassDescription classDescription) {
             var current = classDescription;
@@ -286,7 +301,7 @@ namespace ImageMath{
                     var hlslDeclaration = parameter.GetHLSLDeclaration();
                     stringBuilder.AppendLine(hlslDeclaration);
                 }
-                
+
                 current = current.Parent;
             }
             return stringBuilder.ToString();

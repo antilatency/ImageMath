@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+
 using System.Linq;
 #nullable enable
 namespace ImageMath{
@@ -11,36 +11,29 @@ namespace ImageMath{
         public List<ClassDescription> Children { get; set; } = new List<ClassDescription>();
         public ClassDescription? Parent { get; private set; } = null;
 
-        public Dictionary<string,int> ParametersIndices { get; set; } = new Dictionary<string,int>();
+        //public Dictionary<string,int> ParametersIndices { get; set; } = new Dictionary<string,int>();
 
         public List<Parameter> Parameters = new();
+        public List<MulticompileOptions> MulticompileOptionsList = new();
 
-        public ClassDescription(Type type, ClassDescription? parent){
+        public ClassDescription(Type type, ClassDescription? parent) {
             Type = type;
-            /*var fields = type.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly);
-            foreach (var field in fields){
-                UnityEngine.Debug.LogWarning($"Field {field.Name} in {type.Name} is not supported. Only properties are supported.");
-            }*/
-            var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly);
-            foreach (var property in properties){
-                if (property.CanRead){
-                    var parameter = Parameter.Create(property);
-                    if (parameter != null){
-                        Parameters.Add(parameter);
-                    } 
-                }
-            }
+            Parent = parent;
 
-            if (parent != null){
-                Parent = parent;
-                ParametersIndices = new Dictionary<string,int>(parent.ParametersIndices);
-                foreach (var parameter in Parameters){
-                    var prefix = parameter.GetPrefix();
-                    var index = ParametersIndices.GetValueOrDefault(prefix, 0);
-                    ParametersIndices[prefix] = index+1;
-                    parameter.Index = index;
+            var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly);
+            foreach (var property in properties) {
+                if (property.CanRead && !property.IsMulticompileOptions()) {
+                    var parameter = Parameter.Create(property);
+                    if (parameter != null) {
+                        Parameters.Add(parameter);
+                    }
                 }
             }
+            MulticompileOptionsList = properties
+                .Where(p => p.IsMulticompileOptions())
+                .Select(p => new MulticompileOptions(p))
+                .ToList();
+
         }
 
         private static IEnumerable<Type> HierarchyTo(Type type, Type last){

@@ -26,19 +26,19 @@ namespace ImageMath {
 
     public abstract record Operation {
 
-        public static string GetShaderFileName(ClassDescription classDescription) => classDescription.Type.FullName+".shader"; 
+        public static string GetShaderFileName(ClassDescription classDescription) => classDescription.Type.FullName + ".shader";
 
         protected virtual void ApplyShaderParameters() {
         }
 
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
 
         protected static string LoadCode(string? name = null, [System.Runtime.CompilerServices.CallerFilePath] string filePath = "") {
             if (string.IsNullOrEmpty(name)) {
                 name = System.IO.Path.GetFileNameWithoutExtension(filePath);
             }
-            if (!Path.HasExtension(name)){
+            if (!Path.HasExtension(name)) {
                 name += ".cginc";
             }
             string path = Path.Combine(Path.GetDirectoryName(filePath)!, name);
@@ -49,14 +49,14 @@ namespace ImageMath {
             if (string.IsNullOrEmpty(name)) {
                 name = System.IO.Path.GetFileNameWithoutExtension(filePath);
             }
-            if (!Path.HasExtension(name)){
+            if (!Path.HasExtension(name)) {
                 name += ".cginc";
             }
             string path = Path.Combine(Path.GetDirectoryName(filePath)!, name);
             return $"#include \"{path}\"";
         }
 
-        
+
 
         /*public static void CollectIncludes(List<string> includes) {
 
@@ -74,9 +74,9 @@ namespace ImageMath {
                 }
             }
             return stringBuilder.ToString();
-        }      
+        }
 
-        public static string GetConstants(){
+        public static string GetConstants() {
             var result = new StringBuilder();
             result.AppendLine("#define Pi 3.1415926535897932384626433832795");
             result.AppendLine("#define SquareRootOf2 1.4142135623730950488016887242097");
@@ -84,7 +84,7 @@ namespace ImageMath {
             return result.ToString();
         }
 
-        #endif
+#endif
 
         protected static T[] ExpandArray<T>(T[] array, int newSize) {
             if (array == null) {
@@ -104,5 +104,34 @@ namespace ImageMath {
             return newArray;
         }
 
+
+        public abstract void SetFloat(string name, float value);
+        public abstract void SetFloatArray(string name, float[] values);
+
+        public abstract void SetInt(string name, int value);
+
+        public abstract void SetVector(string name, UnityEngine.Vector4 value);
+        public abstract void SetVectorArray(string name, UnityEngine.Vector4[] values);
+
+        public abstract void SetMatrix(string name, UnityEngine.Matrix4x4 value);
+        public abstract void SetMatrixArray(string name, UnityEngine.Matrix4x4[] values);
+
+        public abstract void SetTexture(string name, UnityEngine.Texture value);
+
+        public abstract void EnableKeyword(string name);
+        public abstract void DisableKeyword(string name);
+        
+        public void SetEnumKeyword<T>(string name, T value) where T : Enum {
+            var values = Enum.GetValues(typeof(T));
+            foreach (var enumValue in values) {
+                var enumName = $"{name}_{enumValue}";
+                if (enumValue.Equals(value)) {
+                    EnableKeyword(enumName);
+                }
+                else {
+                    DisableKeyword(enumName);
+                }
+            }
+        }
     }
 }

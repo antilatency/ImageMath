@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace ImageMath{
     public class TextureParameter : Parameter {
-        public override string GetPrefix() => "T";
+        //public override string GetPrefix() => "T";
         public override string GetShaderParameterAssignmentCode() {
-            return $"Shader.SetGlobalTexture(\"{GetShaderVariableName()}\", {_propertyInfo.Name});";
+            return $"SetTexture(\"{GetShaderVariableName()}\", {_propertyInfo.Name});";
         }
 
         string GetHLSLTextureType() {
@@ -22,8 +22,8 @@ namespace ImageMath{
                 
         public override string GetHLSLDeclaration() {
             return
-                $"{GetHLSLTextureType()} {GetShaderVariableName()};\n{GetDefine()}"
-                + $"\nSamplerState sampler{GetShaderVariableName()};\n#define sampler{_propertyInfo.Name} sampler{GetShaderVariableName()}";
+                $"{GetHLSLTextureType()} {GetShaderVariableName()};"
+                + $"\nSamplerState sampler{GetShaderVariableName()};";
         }
         
         private TextureParameter(PropertyInfo propertyInfo) : base(propertyInfo) {}

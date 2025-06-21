@@ -5,6 +5,8 @@ Shader "ImageMath/Denoiser"{
         ColorMask[ImageMath_ChannelMask]
 
         CGINCLUDE
+
+
         
         #include "UnityCG.cginc"
 
@@ -28,14 +30,10 @@ Shader "ImageMath/Denoiser"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        Texture2D<float4> ImageMath_T0;
-        #define Texture ImageMath_T0
-        SamplerState samplerImageMath_T0;
-        #define samplerTexture samplerImageMath_T0
-        float ImageMath_F0;
-        #define Power ImageMath_F0
-        int ImageMath_I0;
-        #define Size ImageMath_I0
+        Texture2D<float4> Texture;
+        SamplerState samplerTexture;
+        float Power;
+        int Size;
 
         VSO vert(VSI input) {
             VSO result;

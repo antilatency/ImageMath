@@ -5,6 +5,8 @@ Shader "@GetShaderName"{
         ColorMask[ImageMath_ChannelMask]
 
         CGINCLUDE
+
+        @GetMulticompileOptions
         
         #include "UnityCG.cginc"
 

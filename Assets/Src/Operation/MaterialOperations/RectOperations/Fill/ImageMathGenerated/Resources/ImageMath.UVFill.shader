@@ -5,6 +5,8 @@ Shader "ImageMath/UVFill"{
         ColorMask[ImageMath_ChannelMask]
 
         CGINCLUDE
+
+
         
         #include "UnityCG.cginc"
 
@@ -28,10 +30,8 @@ Shader "ImageMath/UVFill"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        float2 ImageMath_V0;
-        #define Position ImageMath_V0
-        float2 ImageMath_V1;
-        #define Size ImageMath_V1
+        float2 Position;
+        float2 Size;
 
         VSO vert(VSI input) {
             VSO result;

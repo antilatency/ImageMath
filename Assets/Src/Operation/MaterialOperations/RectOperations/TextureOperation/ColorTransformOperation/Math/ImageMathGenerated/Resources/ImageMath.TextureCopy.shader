@@ -5,6 +5,8 @@ Shader "ImageMath/TextureCopy"{
         ColorMask[ImageMath_ChannelMask]
 
         CGINCLUDE
+
+
         
         #include "UnityCG.cginc"
 
@@ -28,14 +30,10 @@ Shader "ImageMath/TextureCopy"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        Texture2D<float4> ImageMath_T0;
-        #define Texture ImageMath_T0
-        SamplerState samplerImageMath_T0;
-        #define samplerTexture samplerImageMath_T0
-        float2 ImageMath_V0;
-        #define Position ImageMath_V0
-        float2 ImageMath_V1;
-        #define Size ImageMath_V1
+        Texture2D<float4> Texture;
+        SamplerState samplerTexture;
+        float2 Position;
+        float2 Size;
 
         VSO vert(VSI input) {
             VSO result;

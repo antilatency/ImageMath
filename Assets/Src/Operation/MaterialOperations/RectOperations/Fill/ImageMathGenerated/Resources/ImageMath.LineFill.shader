@@ -5,6 +5,8 @@ Shader "ImageMath/LineFill"{
         ColorMask[ImageMath_ChannelMask]
 
         CGINCLUDE
+
+
         
         #include "UnityCG.cginc"
 
@@ -28,20 +30,13 @@ Shader "ImageMath/LineFill"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        float4 ImageMath_V2;
-        #define Color ImageMath_V2
-        float ImageMath_F0;
-        #define LineWidth ImageMath_F0
-        float ImageMath_F1;
-        #define LineSoftness ImageMath_F1
-        float2 ImageMath_V3;
-        #define PointA ImageMath_V3
-        float2 ImageMath_V4;
-        #define PointB ImageMath_V4
-        float2 ImageMath_V0;
-        #define Position ImageMath_V0
-        float2 ImageMath_V1;
-        #define Size ImageMath_V1
+        float4 Color;
+        float LineWidth;
+        float LineSoftness;
+        float2 PointA;
+        float2 PointB;
+        float2 Position;
+        float2 Size;
 
         VSO vert(VSI input) {
             VSO result;

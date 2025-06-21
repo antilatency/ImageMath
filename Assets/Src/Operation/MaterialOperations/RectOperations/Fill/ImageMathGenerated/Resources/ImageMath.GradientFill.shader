@@ -5,6 +5,8 @@ Shader "ImageMath/GradientFill"{
         ColorMask[ImageMath_ChannelMask]
 
         CGINCLUDE
+
+
         
         #include "UnityCG.cginc"
 
@@ -28,18 +30,12 @@ Shader "ImageMath/GradientFill"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        float4 ImageMath_V2;
-        #define ColorA ImageMath_V2
-        float4 ImageMath_V3;
-        #define ColorB ImageMath_V3
-        float2 ImageMath_V4;
-        #define PointA ImageMath_V4
-        float2 ImageMath_V5;
-        #define PointB ImageMath_V5
-        float2 ImageMath_V0;
-        #define Position ImageMath_V0
-        float2 ImageMath_V1;
-        #define Size ImageMath_V1
+        float4 ColorA;
+        float4 ColorB;
+        float2 PointA;
+        float2 PointB;
+        float2 Position;
+        float2 Size;
 
         VSO vert(VSI input) {
             VSO result;

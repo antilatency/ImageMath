@@ -17,12 +17,12 @@ namespace ImageMath{
     public class StructParameter : Parameter {
 
         public static readonly Dictionary<Type, (string prefix, string hlslType, string hlslTypeSize, string setMethodName)> SupportedTypes = new(){
-            {typeof(float), ("F", "float", "", "Shader.SetGlobalFloat")},
-            {typeof(int), ("I", "int", "", "Shader.SetGlobalInt")},
-            {typeof(Matrix4x4), ("M", "float", "4x4", "Shader.SetGlobalMatrix")},
-            {typeof(Vector2), ("V", "float", "2", "Shader.SetGlobalVector")},
-            {typeof(Vector3), ("V", "float", "3", "Shader.SetGlobalVector")},
-            {typeof(Vector4), ("V", "float", "4", "Shader.SetGlobalVector")},
+            {typeof(float), ("F", "float", "", "SetFloat")},
+            {typeof(int), ("I", "int", "", "SetInt")},
+            {typeof(Matrix4x4), ("M", "float", "4x4", "SetMatrix")},
+            {typeof(Vector2), ("V", "float", "2", "SetVector")},
+            {typeof(Vector3), ("V", "float", "3", "SetVector")},
+            {typeof(Vector4), ("V", "float", "4", "SetVector")},
 
             {typeof(Vector2Int), ("V", "float", "2", "ShaderSetGlobalUtils.SetGlobalVectorInt")},
             {typeof(Vector3Int), ("V", "float", "3", "ShaderSetGlobalUtils.SetGlobalVectorInt")},
@@ -30,7 +30,7 @@ namespace ImageMath{
 
 
 
-        public override string GetPrefix() => SupportedTypes[_propertyInfo.PropertyType].prefix;
+        //public override string GetPrefix() => SupportedTypes[_propertyInfo.PropertyType].prefix;
 
 
         public override string GetShaderParameterAssignmentCode() {
@@ -39,7 +39,7 @@ namespace ImageMath{
 
         public override string GetHLSLDeclaration() {
             var info = SupportedTypes[_propertyInfo.PropertyType];
-            return $"{info.hlslType}{info.hlslTypeSize} {GetShaderVariableName()};\n{GetDefine()}";
+            return $"{info.hlslType}{info.hlslTypeSize} {GetShaderVariableName()};";
         }
 
         private StructParameter(PropertyInfo propertyInfo) : base(propertyInfo) { }

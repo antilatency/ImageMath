@@ -8,10 +8,10 @@ using UnityEngine.Rendering;
 
 namespace ImageMath {
     [FilePath]
-    public abstract partial record MaterialOperation : Operation{
+    public abstract partial record MaterialOperation : Operation {
         protected static Dictionary<Type, Material> Materials = new();
         private Material? _material;
-        protected Material Material{
+        protected Material Material {
             get {
                 if (_material == null) {
                     _material = FindMaterial();
@@ -19,7 +19,7 @@ namespace ImageMath {
                 return _material;
             }
         }
-        
+
         private Material FindMaterial() {
             if (Materials == null)
                 Materials = new();
@@ -33,8 +33,8 @@ namespace ImageMath {
                 }
                 material = new Material(shader);
                 Materials[GetType()] = material;
-            }            
-            
+            }
+
             return material;
         }
 
@@ -45,8 +45,8 @@ namespace ImageMath {
 
 
         public string GetShaderName() => GetShaderName(GetType());
-        #if UNITY_EDITOR
-        public static string GetShaderName(Type type) => type.FullName.Replace('.','/');
+#if UNITY_EDITOR
+        public static string GetShaderName(Type type) => type.FullName.Replace('.', '/');
         public static string GetShaderName(ClassDescription classDescription) => GetShaderName(classDescription.Type);
 
 
@@ -54,7 +54,7 @@ namespace ImageMath {
         public static string GetVertexShader(ClassDescription classDescription) => LoadCode("MaterialOperation.VertexShader.cginc");
         public static string GetFragmentShader(ClassDescription classDescription) => LoadCode("MaterialOperation.FragmentShader.cginc");
 
-        #endif
+#endif
 
         protected void ApplyRenderTargetSize(RenderTexture renderTexture) {
             Shader.SetGlobalVector("ImageMath_RenderTargetSize", new Vector4(renderTexture.width, renderTexture.height, 1.0f / renderTexture.width, 1.0f / renderTexture.height));
@@ -66,10 +66,11 @@ namespace ImageMath {
             ApplyRenderTargetSize(renderTexture);
             ApplyShaderParameters();
 
-            if (mipLevel ==0){
+            if (mipLevel == 0) {
                 Graphics.Blit(null, renderTexture, Material, pass);
-            } else {
-                RenderTargetIdentifier renderTargetIdentifier = new RenderTargetIdentifier(renderTexture,mipLevel);
+            }
+            else {
+                RenderTargetIdentifier renderTargetIdentifier = new RenderTargetIdentifier(renderTexture, mipLevel);
                 using var commandBuffer = new CommandBuffer();
                 commandBuffer.Blit(null, renderTargetIdentifier, Material, pass);
                 Graphics.ExecuteCommandBuffer(commandBuffer);
@@ -102,5 +103,20 @@ namespace ImageMath {
         }
 
 
+        public override void SetFloat(string name, float value) => Material.SetFloat(name, value);
+        public override void SetFloatArray(string name, float[] values) => Material.SetFloatArray(name, values);
+
+        public override void SetInt(string name, int value) => Material.SetInt(name, value);
+
+        public override void SetVector(string name, Vector4 value) => Material.SetVector(name, value);
+        public override void SetVectorArray(string name, Vector4[] values) => Material.SetVectorArray(name, values);
+
+        public override void SetMatrix(string name, Matrix4x4 value) => Material.SetMatrix(name, value);
+        public override void SetMatrixArray(string name, Matrix4x4[] values) => Material.SetMatrixArray(name, values);
+
+        public override void SetTexture(string name, Texture value) => Material.SetTexture(name, value);
+
+        public override void EnableKeyword(string name) => Material.EnableKeyword(name);
+        public override void DisableKeyword(string name) => Material.DisableKeyword(name);
     }
 }

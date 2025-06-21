@@ -5,6 +5,8 @@ Shader "ImageMath/PackLog"{
         ColorMask[ImageMath_ChannelMask]
 
         CGINCLUDE
+
+
         
         #include "UnityCG.cginc"
 
@@ -28,20 +30,13 @@ Shader "ImageMath/PackLog"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        float ImageMath_F0;
-        #define BlackLevel ImageMath_F0
-        float ImageMath_F1;
-        #define InverseExponentScale ImageMath_F1
-        float ImageMath_F2;
-        #define Multiplier ImageMath_F2
-        Texture2D<float4> ImageMath_T0;
-        #define Texture ImageMath_T0
-        SamplerState samplerImageMath_T0;
-        #define samplerTexture samplerImageMath_T0
-        float2 ImageMath_V0;
-        #define Position ImageMath_V0
-        float2 ImageMath_V1;
-        #define Size ImageMath_V1
+        float BlackLevel;
+        float InverseExponentScale;
+        float Multiplier;
+        Texture2D<float4> Texture;
+        SamplerState samplerTexture;
+        float2 Position;
+        float2 Size;
 
         VSO vert(VSI input) {
             VSO result;

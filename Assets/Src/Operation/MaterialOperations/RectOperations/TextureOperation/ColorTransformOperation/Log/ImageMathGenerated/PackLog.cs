@@ -4,9 +4,9 @@ namespace ImageMath {
 	public partial record PackLog {
 		protected override void ApplyShaderParameters() {
 			base.ApplyShaderParameters();
-			Shader.SetGlobalFloat("ImageMath_F0", BlackLevel);
-			Shader.SetGlobalFloat("ImageMath_F1", InverseExponentScale);
-			Shader.SetGlobalFloat("ImageMath_F2", Multiplier);
+			SetFloat("BlackLevel", BlackLevel);
+			SetFloat("InverseExponentScale", InverseExponentScale);
+			SetFloat("Multiplier", Multiplier);
 		}
 	}
 }

@@ -5,6 +5,8 @@ Shader "ImageMath/ConvexHullSelect"{
         ColorMask[ImageMath_ChannelMask]
 
         CGINCLUDE
+
+
         
         #include "UnityCG.cginc"
 
@@ -28,18 +30,12 @@ Shader "ImageMath/ConvexHullSelect"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        float4 ImageMath_A64V0[64];
-        #define Planes ImageMath_A64V0
-        int ImageMath_A64V0_Size;
-        #define Planes_Size ImageMath_A64V0_Size
-        Texture2D<float4> ImageMath_T0;
-        #define Texture ImageMath_T0
-        SamplerState samplerImageMath_T0;
-        #define samplerTexture samplerImageMath_T0
-        float2 ImageMath_V0;
-        #define Position ImageMath_V0
-        float2 ImageMath_V1;
-        #define Size ImageMath_V1
+        float4 Planes[64];
+        int Planes_Size;
+        Texture2D<float4> Texture;
+        SamplerState samplerTexture;
+        float2 Position;
+        float2 Size;
 
         VSO vert(VSI input) {
             VSO result;

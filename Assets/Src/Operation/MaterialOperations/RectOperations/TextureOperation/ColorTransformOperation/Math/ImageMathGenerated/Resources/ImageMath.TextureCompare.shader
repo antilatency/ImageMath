@@ -5,6 +5,8 @@ Shader "ImageMath/TextureCompare"{
         ColorMask[ImageMath_ChannelMask]
 
         CGINCLUDE
+
+
         
         #include "UnityCG.cginc"
 
@@ -28,22 +30,14 @@ Shader "ImageMath/TextureCompare"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        float4 ImageMath_V2;
-        #define Reference ImageMath_V2
-        int ImageMath_I0;
-        #define EqualOperation ImageMath_I0
-        float ImageMath_F0;
-        #define PreMultiplier ImageMath_F0
-        int ImageMath_I1;
-        #define PostInverse ImageMath_I1
-        Texture2D<float4> ImageMath_T0;
-        #define Texture ImageMath_T0
-        SamplerState samplerImageMath_T0;
-        #define samplerTexture samplerImageMath_T0
-        float2 ImageMath_V0;
-        #define Position ImageMath_V0
-        float2 ImageMath_V1;
-        #define Size ImageMath_V1
+        float4 Reference;
+        int EqualOperation;
+        float PreMultiplier;
+        int PostInverse;
+        Texture2D<float4> Texture;
+        SamplerState samplerTexture;
+        float2 Position;
+        float2 Size;
 
         VSO vert(VSI input) {
             VSO result;

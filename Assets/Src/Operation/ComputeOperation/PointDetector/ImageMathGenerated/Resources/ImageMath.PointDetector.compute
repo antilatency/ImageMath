@@ -1,14 +1,9 @@
 #pragma kernel Main
-float4 ImageMath_V0;
-#define Selector ImageMath_V0
-float ImageMath_F0;
-#define Threshold ImageMath_F0
-int ImageMath_I0;
-#define MaxSegmentsInRow ImageMath_I0
-Texture2D<float4> ImageMath_T0;
-#define Texture ImageMath_T0
-SamplerState samplerImageMath_T0;
-#define samplerTexture samplerImageMath_T0
+float4 Selector;
+float Threshold;
+int MaxSegmentsInRow;
+Texture2D<float4> Texture;
+SamplerState samplerTexture;
 
 struct segment {
 	uint start_length;

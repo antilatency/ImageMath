@@ -5,6 +5,8 @@ Shader "ImageMath/LUT3DTransform"{
         ColorMask[ImageMath_ChannelMask]
 
         CGINCLUDE
+
+
         
         #include "UnityCG.cginc"
 
@@ -28,22 +30,14 @@ Shader "ImageMath/LUT3DTransform"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        Texture3D<float4> ImageMath_T1;
-        #define LUT ImageMath_T1
-        SamplerState samplerImageMath_T1;
-        #define samplerLUT samplerImageMath_T1
-        float3 ImageMath_V2;
-        #define DomainMin ImageMath_V2
-        float3 ImageMath_V3;
-        #define DomainMax ImageMath_V3
-        Texture2D<float4> ImageMath_T0;
-        #define Texture ImageMath_T0
-        SamplerState samplerImageMath_T0;
-        #define samplerTexture samplerImageMath_T0
-        float2 ImageMath_V0;
-        #define Position ImageMath_V0
-        float2 ImageMath_V1;
-        #define Size ImageMath_V1
+        Texture3D<float4> LUT;
+        SamplerState samplerLUT;
+        float3 DomainMin;
+        float3 DomainMax;
+        Texture2D<float4> Texture;
+        SamplerState samplerTexture;
+        float2 Position;
+        float2 Size;
 
         VSO vert(VSI input) {
             VSO result;

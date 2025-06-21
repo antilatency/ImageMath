@@ -4,10 +4,10 @@ namespace ImageMath {
 	public partial record EllipseFill {
 		protected override void ApplyShaderParameters() {
 			base.ApplyShaderParameters();
-			Shader.SetGlobalVector("ImageMath_V2", InnerColor);
-			Shader.SetGlobalVector("ImageMath_V3", OuterColor);
-			Shader.SetGlobalVector("ImageMath_V4", Center);
-			Shader.SetGlobalVector("ImageMath_V5", Radius);
+			SetVector("InnerColor", InnerColor);
+			SetVector("OuterColor", OuterColor);
+			SetVector("Center", Center);
+			SetVector("Radius", Radius);
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace ImageMath{
             return info.prefix;
         }
 
-        public override string GetPrefix() => $"A{_size}{GetElementTypePrefix()}";
+        //public override string GetPrefix() => $"A{_size}{GetElementTypePrefix()}";
         public override string GetShaderParameterAssignmentCode() {
             var info = StructParameter.SupportedTypes[_elementType];
             var array = new float[5];
@@ -37,9 +37,9 @@ namespace ImageMath{
         }
 
         public override string GetHLSLDeclaration() {
-            var result = $"float4 {GetShaderVariableName()}[{_size}];\n{GetDefine()}";
+            var result = $"float4 {GetShaderVariableName()}[{_size}];";
             if (_isDynamicArray) {
-                result = $"{result}\nint {GetShaderVariableName()}_Size;\n#define {_propertyInfo.Name}_Size {GetShaderVariableName()}_Size";
+                result = $"{result}\nint {GetShaderVariableName()}_Size;";
             } else {
                 result = $"{result}\n#define {_propertyInfo.Name}_Size {_size}";
             }
