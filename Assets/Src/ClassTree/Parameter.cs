@@ -34,7 +34,7 @@ namespace ImageMath{
 
         public string GetShaderParameterAssignmentCode() {
             if (_propertyInfo.PropertyType.IsEnum) {
-                return $"SetEnumKeyword(\"{_propertyInfo.Name}\", Color);";
+                return $"SetEnumKeyword(\"{_propertyInfo.Name}\", {_propertyInfo.Name});";
             }
             if (_propertyInfo.PropertyType == typeof(bool)) {
                 return $"if ({_propertyInfo.Name}) EnableKeyword(\"{_propertyInfo.Name}\"); else DisableKeyword(\"{_propertyInfo.Name}\");";

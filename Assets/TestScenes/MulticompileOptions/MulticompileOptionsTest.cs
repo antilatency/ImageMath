@@ -17,7 +17,7 @@ public enum ColorEnum {
 public class MulticompileOptionsTest : MonoBehaviour{
 	public ColorEnum Color = ColorEnum.Red;
 	public bool DrawCircle = true;
-    void Update() {
+	void Update() {
 
 		var renderTarget = TextureView.GetByName("Main").ResizeRenderTexture(512, 512);
 		new MulticompileOptionsTestOperation {
@@ -26,6 +26,7 @@ public class MulticompileOptionsTest : MonoBehaviour{
 		}.AssignTo(renderTarget);
 
 		Debug.Log(Color.ToString());
+
     }
 	
 #if UNITY_EDITOR

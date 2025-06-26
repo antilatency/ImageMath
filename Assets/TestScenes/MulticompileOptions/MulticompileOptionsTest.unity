@@ -331,7 +331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90da8537b9504594491ff49bb7cd982a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Color: 1
+  Color: 0
   DrawCircle: 1
 --- !u!21 &880568885
 Material:
