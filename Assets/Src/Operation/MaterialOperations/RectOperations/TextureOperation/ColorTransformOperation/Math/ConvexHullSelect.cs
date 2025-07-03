@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+
 using UnityEngine;
 namespace ImageMath{
     [FilePath]
@@ -10,10 +13,10 @@ namespace ImageMath{
             return new Vector4(plane.normal.x, plane.normal.y, plane.normal.z, plane.distance);
         }
 
-        public ConvexHullSelect(Texture texture, Plane[] planes) : base(texture) {
+        public ConvexHullSelect(Texture texture, IList<Plane> planes) : base(texture) {
 
-            Planes = new Vector4[planes.Length];
-            for (int i = 0; i < planes.Length; i++) {
+            Planes = new Vector4[planes.Count];
+            for (int i = 0; i < planes.Count; i++) {
                 Planes[i] = PlaneToVector4(planes[i]);
             }
         }
