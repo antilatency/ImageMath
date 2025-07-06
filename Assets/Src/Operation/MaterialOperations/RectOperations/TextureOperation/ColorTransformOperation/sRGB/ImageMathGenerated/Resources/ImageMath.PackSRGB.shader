@@ -54,14 +54,14 @@ Shader "ImageMath/PackSRGB"{
 
         ENDCG
 
-        Pass {
+        Pass {//0 AssignTo
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag            
             ENDCG
         }
 
-        Pass{
+        Pass{//1 AddTo
             Blend One One
             CGPROGRAM
             #pragma vertex vert
@@ -69,7 +69,7 @@ Shader "ImageMath/PackSRGB"{
             ENDCG
         }
 
-        Pass{
+        Pass{//2 MultiplyTo
             Blend DstColor Zero
             CGPROGRAM
             #pragma vertex vert
@@ -77,7 +77,7 @@ Shader "ImageMath/PackSRGB"{
             ENDCG
         }
 
-        Pass{
+        Pass{//3 AlphaBlendTo
             Blend SrcAlpha OneMinusSrcAlpha
             CGPROGRAM
             #pragma vertex vert
@@ -85,7 +85,15 @@ Shader "ImageMath/PackSRGB"{
             ENDCG
         }
 
-        Pass{
+        Pass{//4 PremultipliedAlphaBlendTo
+            Blend One OneMinusSrcAlpha
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag            
+            ENDCG
+        }
+
+        Pass{//5 
             Blend One One
             BlendOp Max
             CGPROGRAM
@@ -94,7 +102,7 @@ Shader "ImageMath/PackSRGB"{
             ENDCG
         }
 
-        Pass{
+        Pass{//6
             Blend One One
             BlendOp Min
             CGPROGRAM
