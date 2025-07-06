@@ -94,12 +94,16 @@ namespace ImageMath {
             RenderTo(renderTexture, 3, mipLevel);
         }
 
-        public void MaxTo(RenderTexture renderTexture, int mipLevel = 0) {
+        public void PremultipliedAlphaBlendTo(RenderTexture renderTexture, int mipLevel = 0) {
             RenderTo(renderTexture, 4, mipLevel);
         }
 
-        public void MinTo(RenderTexture renderTexture, int mipLevel = 0) {
+        public void MaxTo(RenderTexture renderTexture, int mipLevel = 0) {
             RenderTo(renderTexture, 5, mipLevel);
+        }
+
+        public void MinTo(RenderTexture renderTexture, int mipLevel = 0) {
+            RenderTo(renderTexture, 6, mipLevel);
         }
 
 
