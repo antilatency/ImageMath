@@ -1,13 +1,22 @@
 using System;
 using System.Linq;
 using System.Reflection;
+
+using UnityEngine;
 #nullable enable
 namespace ImageMath{
 
 
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class MulticompileOptionsAttribute : Attribute { }
+    public class MulticompileOptionsAttribute : Attribute {
+        public int Min { get; set; }
+        public int Max { get; set; }
+        public MulticompileOptionsAttribute(int min = 0, int max = 0) {
+            Min = min;
+            Max = max;
+        }
+    }
 
     public static class MulticompileOptionsExtensions {
         public static bool IsMulticompileOptions(this PropertyInfo propertyInfo) {
@@ -28,9 +37,23 @@ namespace ImageMath{
             }
             if (_propertyInfo.PropertyType == typeof(bool)) {
                 return $"_ {_propertyInfo.Name}";
+            }            
+            if (_propertyInfo.PropertyType == typeof(int)) {
+                var attribute = _propertyInfo.GetCustomAttribute<MulticompileOptionsAttribute>()!;
+                if (attribute.Min < 0 || attribute.Max <= attribute.Min) {
+                    string error = $"For integer properties, MulticompileOptionsAttribute must have valid Min and Max values. Property: {_propertyInfo.DeclaringType.FullName}.{_propertyInfo.Name}";
+                    Debug.LogError(error);
+                    return $"//Error: {error}";
+                }
+                return string.Join(" ", Enumerable.Range(attribute.Min, attribute.Max - attribute.Min + 1).Select(i => $"{_propertyInfo.Name}_{i}"));
             }
-            throw new InvalidOperationException($"Unsupported type for multicompile options: {_propertyInfo.PropertyType}");
-        }
+
+            {
+                var error = $"Unsupported type for multicompile options: {_propertyInfo.PropertyType} {_propertyInfo.Name}";
+                Debug.LogError(error);
+                return $"//Error: {error}";
+            }
+       }
 
         public string GetShaderParameterAssignmentCode() {
             if (_propertyInfo.PropertyType.IsEnum) {
@@ -39,7 +62,20 @@ namespace ImageMath{
             if (_propertyInfo.PropertyType == typeof(bool)) {
                 return $"if ({_propertyInfo.Name}) EnableKeyword(\"{_propertyInfo.Name}\"); else DisableKeyword(\"{_propertyInfo.Name}\");";
             }
-            throw new InvalidOperationException($"Unsupported type for multicompile options: {_propertyInfo.PropertyType}");
+            if (_propertyInfo.PropertyType == typeof(int)) { 
+                var attribute = _propertyInfo.GetCustomAttribute<MulticompileOptionsAttribute>()!;
+                if (attribute.Max <= attribute.Min) {
+                    string error = $"For integer properties, MulticompileOptionsAttribute must have valid Min and Max values. Property: {_propertyInfo.DeclaringType.FullName}.{_propertyInfo.Name}";
+                    Debug.LogError(error);
+                    return $"//Error: {error}";
+                }
+                return $"SetEnumKeyword(\"{_propertyInfo.Name}\", {_propertyInfo.Name}, {attribute.Min}, {attribute.Max});";
+            }
+            { 
+                var error = $"Unsupported type for multicompile options: {_propertyInfo.PropertyType} {_propertyInfo.Name}";
+                Debug.LogError(error);
+                return $"//Error: {error}";
+            }
         }
     }
 

@@ -84,6 +84,7 @@ namespace ImageMath {
         protected virtual T[] ExecuteUsingExternalBuffer<T>(ComputeBuffer result) {
             var computeShader = ComputeShader;
             ApplyShaderParameters();
+            ApplyCustomShaderParameters();
             computeShader.SetBuffer(0, "Result", result);
             var dispatchSize = GetDispatchSize();
             computeShader.Dispatch(0, dispatchSize.x, dispatchSize.y, dispatchSize.z);

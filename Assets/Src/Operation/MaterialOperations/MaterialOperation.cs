@@ -64,7 +64,9 @@ namespace ImageMath {
             var previousRT = RenderTexture.active;
             ApplyChannelMask();
             ApplyRenderTargetSize(renderTexture);
+            
             ApplyShaderParameters();
+            ApplyCustomShaderParameters();
 
             if (mipLevel == 0) {
                 Graphics.Blit(null, renderTexture, Material, pass);

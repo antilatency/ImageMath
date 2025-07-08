@@ -31,6 +31,8 @@ namespace ImageMath {
         protected virtual void ApplyShaderParameters() {
         }
 
+        protected virtual void ApplyCustomShaderParameters() {
+        }
 
 #if UNITY_EDITOR
 
@@ -103,6 +105,24 @@ namespace ImageMath {
             Array.Copy(array, newArray, array.Length);
             return newArray;
         }
+        
+        public static T[] ExpandArray<T>(IList<T> list, int newSize) {
+            if (list == null) {
+                throw new ArgumentNullException(nameof(list));
+            }
+            if (newSize < 0) {
+                throw new ArgumentOutOfRangeException(nameof(newSize), "New size must be non-negative.");
+            }
+            if (list.Count == newSize) {
+                return list.ToArray();
+            }
+            if (list.Count > newSize) {
+                throw new ArgumentException($"List count is greater than {newSize}.");
+            }
+            var newArray = new T[newSize];
+            list.CopyTo(newArray, 0);
+            return newArray;
+        }
 
 
         public abstract void SetFloat(string name, float value);
@@ -120,18 +140,30 @@ namespace ImageMath {
 
         public abstract void EnableKeyword(string name);
         public abstract void DisableKeyword(string name);
-        
+
         public void SetEnumKeyword<T>(string name, T value) where T : Enum {
             var values = Enum.GetValues(typeof(T));
             foreach (var enumValue in values) {
                 var enumName = $"{name}_{enumValue}";
                 if (enumValue.Equals(value)) {
                     EnableKeyword(enumName);
-                }
-                else {
+                } else {
                     DisableKeyword(enumName);
                 }
             }
         }
+
+        public void SetEnumKeyword(string name, int value, int min, int max) {
+            for (int i = min; i <= max; i++) {
+                var enumName = $"{name}_{i}";
+                if (i == value) {
+                    EnableKeyword(enumName);
+                } else {
+                    DisableKeyword(enumName);
+                }
+            }
+
+        }
+
     }
 }
