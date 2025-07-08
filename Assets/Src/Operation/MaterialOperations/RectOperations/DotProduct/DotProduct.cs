@@ -14,6 +14,12 @@ namespace ImageMath {
         [MulticompileOptions(1,MaxTextures)]
         public int Count => Textures?.Count ?? 0;
 
+        public DotProduct(params (Texture texture, Vector4 weight)[] pairs)
+            : this(pairs.Select(x => x.texture).ToList(), pairs.Select(x => x.weight).ToList()) { }
+
+        public DotProduct(params (Texture texture, float weight)[] pairs)
+            : this(pairs.Select(x => x.texture).ToList(), pairs.Select(x => new Vector4(x.weight, x.weight, x.weight, x.weight)).ToList()) { }
+
         public DotProduct(IList<Texture> textures, IList<float> weights)
             : this(textures, weights.Select(x => new Vector4(x, x, x, x)).ToList()) { }
             
