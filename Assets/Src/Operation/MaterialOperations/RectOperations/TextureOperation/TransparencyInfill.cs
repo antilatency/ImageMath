@@ -8,13 +8,7 @@ namespace ImageMath{
         
         public TransparencyInfill() : base() { }
 
-        public static string GetFragmentShaderBody() => LoadCode("TransparencyInfill.FragmentShaderBody.cginc");
-        
-        /*{
-            return @"
-float4 inputColor = Texture.Sample(samplerTexture, input.uv);
-@GetColorTransform";
-        }*/
+        public static string GetFragmentShaderBody() => LoadCode($"{nameof(TransparencyInfill)}.FragmentShaderBody.cginc");
     }
 
 

@@ -9,11 +9,12 @@ using UnityEditor;
 
 [ExecuteAlways]
 public class DenoiserTest : MonoBehaviour{
-	[Range(0.0f, 1.0f)]
+	[Range(0, 1f)]
 	public float Power = 1.0f;
 
-	[Range(1, 4)]
-	public int Size = 2;
+	public Denoiser.KernelSize Size = Denoiser.KernelSize._5x5;
+
+	public bool RenderDelta = false;
 
 	void Update() {
 		var input = TextureView.GetByName("Input").Texture;
@@ -23,7 +24,8 @@ public class DenoiserTest : MonoBehaviour{
 		var output = TextureView.GetByName("Output").ResizeRenderTexture(input.width, input.height);
 		new Denoiser(input) {
 			Power = Power,
-			Size = Size
+			Size = Size,
+			RenderDelta = RenderDelta
 		}
 		.AssignTo(output);
 

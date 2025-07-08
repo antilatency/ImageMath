@@ -6,7 +6,8 @@ namespace ImageMath {
 			base.ApplyShaderParameters();
 			SetTexture("Texture", Texture);
 			SetFloat("Power", Power);
-			SetInt("Size", Size);
+			SetEnumKeyword("Size", Size);
+			if (RenderDelta) EnableKeyword("RenderDelta"); else DisableKeyword("RenderDelta");
 		}
 	}
 }

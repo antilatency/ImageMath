@@ -1,40 +1,57 @@
 int2 position = input.position.xy;
-float4 center = Texture.Load(int3(position, 0));
-if (Power == 0) {
-    return center;
-}
 
 uint2 textureSize = 0;
 uint levels = 0;
 Texture.GetDimensions(0, textureSize.x, textureSize.y, levels);
 
 
+float3 pixels[dctN][dctN];
+for (int x = -dctR; x <= dctR; x++) {
+    for (int y = -dctR; y <= dctR; y++) {
+        int2 offset = int2(x, y);
+        int2 p = position + offset;
+        p = clamp(p, 0, textureSize - 1);
+        float4 color = Texture.Load(int3(p, 0));
+        pixels[x + dctR][y + dctR] = color.rgb;
+    }
+}
+float3 center = pixels[dctR][dctR];
 
-float4 sum = 0;
-float4 sumOfSquares = 0;
-int count = 0;
-int size = Size;
-
-for (int x = -size; x <= size; x++) {
-    for (int y = -size; y <= size; y++) {
-        float2 offset = int2(x, y);// * pixelsToUV;
-        float2 p = position + offset;
-
-        if (any(position >= textureSize) || any(position < 0)) continue;
-        count++;
-        float4 color = Texture.Load(int3(p,0));
-        sum += color;
-        sumOfSquares += color * color;
+float3 maxAbsCoefficient = 0;
+for (int u = 0; u < dctN; u+=2) {
+    for (int v = 0; v < dctN; v+=2) {
+        float3 coefficient = CalculateCoefficient(pixels, u, v);
+        maxAbsCoefficient = max(maxAbsCoefficient, abs(coefficient));
     }
 }
 
 
-float4 average = sum / count;
-float4 dispersion = sumOfSquares / count - average * average;
-float4 standardDeviation = sqrt(max(dispersion, 0.0));
-float4 edges = saturate(2*standardDeviation / (Power*Power));
+float3 reconstructed = 0;
+for (int u = 0; u < dctN; u+=2) {
+    for (int v = 0; v < dctN; v+=2) {
+        float3 coefficient = CalculateCoefficient(pixels, u, v);
+        float basis = DCTBasis(dctR,dctR, u, v);
 
-float4 correction = 1-edges;
+        //float nu = 1-u/(N-1);
+        //float nv = 1-v/(N-1);
+        float m = (u+v) / ((dctN-1)+(dctN-1));
 
-float4 result = lerp(center, average, correction);
-return result;
+        //float m = 1;
+        if (u>0 || v>0) {
+            float3 s = sign(coefficient);
+            coefficient *= s;
+            coefficient -= (Power*Power*Power*Power);
+            coefficient = max(coefficient, 0.0);
+            coefficient *= s;
+        }
+
+        reconstructed += coefficient * basis;
+    }
+}
+#ifdef RenderDelta
+return float4(center-reconstructed, 1);
+#else
+return float4(reconstructed, 1);
+#endif
+
+
