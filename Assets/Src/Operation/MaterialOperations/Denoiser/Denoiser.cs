@@ -11,7 +11,7 @@ namespace ImageMath{
         }
 
         public Texture Texture { get; set; } = null;
-        public float Power { get; set; } = 0.15f;
+        public float Level { get; set; } = 0.15f;
 
         [MulticompileOptions]
         public KernelSize Size { get; set; } = KernelSize._3x3;

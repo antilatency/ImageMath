@@ -54,7 +54,7 @@ Shader "ImageMath/Denoiser"{
 
         Texture2D<float4> Texture;
         SamplerState samplerTexture;
-        float Power;
+        float Level;
 
         VSO vert(VSI input) {
             VSO result;

@@ -16,6 +16,12 @@ public class DenoiserTest : MonoBehaviour{
 
 	public bool RenderDelta = false;
 
+	float P4(float x) {
+		float x2 = x * x;
+		float x4 = x2 * x2;
+		return x4;
+	}
+
 	void Update() {
 		var input = TextureView.GetByName("Input").Texture;
 		if (input == null) return;
@@ -23,7 +29,7 @@ public class DenoiserTest : MonoBehaviour{
 
 		var output = TextureView.GetByName("Output").ResizeRenderTexture(input.width, input.height);
 		new Denoiser(input) {
-			Power = Power,
+			Level = P4(Power),
 			Size = Size,
 			RenderDelta = RenderDelta
 		}

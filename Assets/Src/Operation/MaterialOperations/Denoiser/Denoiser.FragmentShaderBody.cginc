@@ -40,7 +40,7 @@ for (int u = 0; u < dctN; u+=2) {
         if (u>0 || v>0) {
             float3 s = sign(coefficient);
             coefficient *= s;
-            coefficient -= (Power*Power*Power*Power);
+            coefficient -= Level;
             coefficient = max(coefficient, 0.0);
             coefficient *= s;
         }
