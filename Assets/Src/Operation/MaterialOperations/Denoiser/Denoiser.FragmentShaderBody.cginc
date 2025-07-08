@@ -49,7 +49,7 @@ for (int u = 0; u < dctN; u+=2) {
     }
 }
 #ifdef RenderDelta
-return float4(center-reconstructed, 1);
+return float4(reconstructed - center, 1);
 #else
 return float4(reconstructed, 1);
 #endif
