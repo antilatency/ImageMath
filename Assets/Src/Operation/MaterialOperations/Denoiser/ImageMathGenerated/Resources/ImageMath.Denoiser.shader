@@ -36,7 +36,23 @@ Shader "ImageMath/Denoiser"{
         #define dctM 0.448799
         static const float dctBases[49] = {1,0.9749279,0.9009688,0.7818314,0.6234897,0.4338836,0.2225209,1,0.7818314,0.2225209,-0.4338838,-0.9009689,-0.9749278,-0.6234896,1,0.4338836,-0.62349,-0.9749278,-0.2225205,0.7818317,0.9009687,1,-1.629207E-07,-1,4.887621E-07,1,-8.146034E-07,-1,1,-0.4338838,-0.6234896,0.974928,-0.2225213,-0.7818313,0.9009693,1,-0.7818317,0.2225215,0.4338832,-0.9009684,0.9749282,-0.6234908,1,-0.974928,0.9009691,-0.7818319,0.6234905,-0.4338848,0.2225223};
         #endif
-        #include "D:\ImageMath\Assets\Src\Operation\MaterialOperations\Denoiser\DiscreteCosineTransform.cginc"
+        float DCTBasis1D(int x, int u) {
+            return dctBases[x * dctN + u];
+        }
+        float DCTBasis(int x, int y, int u, int v) {
+            return DCTBasis1D(x, u) * DCTBasis1D(y, v);
+        }
+        float3 CalculateCoefficient(float3 pixels[dctN][dctN], int u, int v) {
+            float3 sum = 0.0;
+            for (int x = 0; x < dctN; x++) {
+                for (int y = 0; y < dctN; y++) {
+                    sum += pixels[x][y] * DCTBasis(x, y, u, v);
+                }
+            }
+            float au = (u == 0) ? dctIN : 2.0 * dctIN;
+            float av = (v == 0) ? dctIN : 2.0 * dctIN;
+            return sum * au * av;
+        }
 
         struct VSI {
             float4 position : POSITION;
@@ -65,7 +81,52 @@ Shader "ImageMath/Denoiser"{
         }
         
         float4 frag(VSO input) : SV_Target {
-            #include "D:\ImageMath\Assets\Src\Operation\MaterialOperations\Denoiser\Denoiser.FragmentShaderBody.cginc"
+            int2 position = input.position.xy;
+            uint2 textureSize = 0;
+            uint levels = 0;
+            Texture.GetDimensions(0, textureSize.x, textureSize.y, levels);
+            float3 pixels[dctN][dctN];
+            for (int x = -dctR; x <= dctR; x++) {
+                for (int y = -dctR; y <= dctR; y++) {
+                    int2 offset = int2(x, y);
+                    int2 p = position + offset;
+                    p = clamp(p, 0, textureSize - 1);
+                    float4 color = Texture.Load(int3(p, 0));
+                    pixels[x + dctR][y + dctR] = color.rgb;
+                }
+            }
+            float3 center = pixels[dctR][dctR];
+            float3 maxAbsCoefficient = 0;
+            for (int u = 0; u < dctN; u+=2) {
+                for (int v = 0; v < dctN; v+=2) {
+                    float3 coefficient = CalculateCoefficient(pixels, u, v);
+                    maxAbsCoefficient = max(maxAbsCoefficient, abs(coefficient));
+                }
+            }
+            float3 reconstructed = 0;
+            for (int u = 0; u < dctN; u+=2) {
+                for (int v = 0; v < dctN; v+=2) {
+                    float3 coefficient = CalculateCoefficient(pixels, u, v);
+                    float basis = DCTBasis(dctR,dctR, u, v);
+                    //float nu = 1-u/(N-1);
+                    //float nv = 1-v/(N-1);
+                    float m = (u+v) / ((dctN-1)+(dctN-1));
+                    //float m = 1;
+                    if (u>0 || v>0) {
+                        float3 s = sign(coefficient);
+                        coefficient *= s;
+                        coefficient -= Level;
+                        coefficient = max(coefficient, 0.0);
+                        coefficient *= s;
+                    }
+                    reconstructed += coefficient * basis;
+                }
+            }
+            #ifdef RenderDelta
+            return float4(reconstructed - center, 1);
+            #else
+            return float4(reconstructed, 1);
+            #endif
         }
 
         ENDCG

@@ -60,11 +60,11 @@ static const float dctBases[{n * n}] = {{{string.Join(",", bases)}}};";
                 stringBuilder.AppendLine(GetDCTBasesCode(r));
                 stringBuilder.AppendLine("#endif");
             }
-            stringBuilder.AppendLine(Include($"DiscreteCosineTransform.cginc"));
+            stringBuilder.AppendLine(LoadCode($"DiscreteCosineTransform.cginc"));
             return stringBuilder.ToString();
         }
 
-        public static string GetFragmentShaderBody() => Include($"{nameof(Denoiser)}.FragmentShaderBody.cginc");
+        public static string GetFragmentShaderBody() => LoadCode($"{nameof(Denoiser)}.FragmentShaderBody.cginc");
     }
 
 
