@@ -3,14 +3,15 @@ int2 position = input.position.xy;
 uint2 textureSize = 0;
 uint levels = 0;
 Texture.GetDimensions(0, textureSize.x, textureSize.y, levels);
-
+//return float4(position<0,0,1);
 
 float3 pixels[dctN][dctN];
 for (int x = -dctR; x <= dctR; x++) {
     for (int y = -dctR; y <= dctR; y++) {
         int2 offset = int2(x, y);
         int2 p = position + offset;
-        p = clamp(p, 0, textureSize - 1);
+        p = max(p, 0);
+        p = min(p, textureSize - 1);
         float4 color = Texture.Load(int3(p, 0));
         pixels[x + dctR][y + dctR] = color.rgb;
     }
@@ -49,7 +50,7 @@ for (int u = 0; u < dctN; u+=2) {
     }
 }
 #ifdef RenderDelta
-return float4(reconstructed - center, 1);
+return float4((reconstructed - center), 1);
 #else
 return float4(reconstructed, 1);
 #endif
