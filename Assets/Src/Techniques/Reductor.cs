@@ -7,14 +7,14 @@ namespace ImageMath {
 
     public static partial class Static {
 
-        public static Vector4 AverageWeightedByAlpha(this Texture texture, int downSclalePerIteration = 4) {
-            return Reductor<AverageWeightedByAlphaOperation>.Calculate(texture, downSclalePerIteration);
+        public static Vector4 AverageWeightedByAlpha(this Texture texture, int downScalePerIteration = 4) {
+            return Reductor<AverageWeightedByAlphaOperation>.Calculate(texture, downScalePerIteration);
         }
-        public static Vector4 Maximum(this Texture texture, int downSclalePerIteration = 4) {
-            return Reductor<MaxOperation>.Calculate(texture, downSclalePerIteration);
+        public static Vector4 Maximum(this Texture texture, int downScalePerIteration = 4) {
+            return Reductor<MaxOperation>.Calculate(texture, downScalePerIteration);
         }
-        public static Vector4 Minimum(this Texture texture, int downSclalePerIteration = 4) {
-            return Reductor<MinOperation>.Calculate(texture, downSclalePerIteration);
+        public static Vector4 Minimum(this Texture texture, int downScalePerIteration = 4) {
+            return Reductor<MinOperation>.Calculate(texture, downScalePerIteration);
         }
     }
 
@@ -24,8 +24,8 @@ namespace ImageMath {
             return (dividend + divisor - 1) / divisor;
         }
 
-        public static Vector4 Calculate(Texture texture, int downSclalePerIteration = 4) {
-            downSclalePerIteration = Math.Max(2, downSclalePerIteration);
+        public static Vector4 Calculate(Texture texture, int downScalePerIteration = 4) {
+            downScalePerIteration = Math.Max(2, downScalePerIteration);
 
             var width = texture.width;
             var height = texture.height;
@@ -38,8 +38,8 @@ namespace ImageMath {
                 if (width == 1 && height == 1)
                     break;
 
-                width = DivideAndRoundUp(width , downSclalePerIteration);
-                height = DivideAndRoundUp(height , downSclalePerIteration);
+                width = DivideAndRoundUp(width , downScalePerIteration);
+                height = DivideAndRoundUp(height , downScalePerIteration);
 
                 mips.Add(Static.GetTempRenderTexture(width, height));
             }

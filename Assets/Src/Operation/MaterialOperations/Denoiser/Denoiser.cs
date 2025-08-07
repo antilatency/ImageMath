@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 namespace ImageMath{
+
     [FilePath]
     public partial record Denoiser: MaterialOperation {
 
