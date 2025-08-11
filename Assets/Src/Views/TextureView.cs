@@ -187,19 +187,39 @@ namespace ImageMath.Views{
         }
 
 
-        public RenderTexture ResizeRenderTexture(int width, int height = 0, bool useMipMap = false) {
+        public Texture2D ResizeTexture2D(int width, int height = 0, bool useMipMap = false, TextureFormat format = TextureFormat.RGBAFloat) {
+            if (height == 0) height = width;
+            if (Texture) {
+                if (Texture is Texture2D texture2D)
+                    if (texture2D.width == width)
+                        if (texture2D.height == height)
+                            if ((texture2D.mipmapCount > 1) == useMipMap)
+                                if (texture2D.format == format)
+                                    return texture2D;
+                if (CreatedTexture)
+                    DestroyImmediate(CreatedTexture);
+            }
+
+            var createdTexture = new Texture2D(width, height, format, useMipMap, true);
+            CreatedTexture = createdTexture;
+            Texture = CreatedTexture;
+            return createdTexture;
+        }
+
+        public RenderTexture ResizeRenderTexture(int width, int height = 0, bool useMipMap = false, RenderTextureFormat format = RenderTextureFormat.ARGBFloat) {
             if (height == 0) height = width;
             if (Texture) {
                 if (Texture is RenderTexture renderTexture)
                     if (Texture.width == width)
                         if (Texture.height == height)
-                            if ((Texture.mipmapCount>1) == useMipMap)
-                                return renderTexture;
+                            if ((Texture.mipmapCount > 1) == useMipMap)
+                                if (renderTexture.format == format)
+                                    return renderTexture;
                 if (CreatedTexture)
                     DestroyImmediate(CreatedTexture);
             }
 
-            var createdRenderTexture = ImageMath.Static.CreateRenderTexture(width, height,useMipMap);
+            var createdRenderTexture = ImageMath.Static.CreateRenderTexture(width, height, useMipMap, format);
             CreatedTexture = createdRenderTexture;
             Texture = CreatedTexture;
             return createdRenderTexture;

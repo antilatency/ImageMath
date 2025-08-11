@@ -4,6 +4,8 @@ using ImageMath.Views;
 using System.IO;
 
 
+
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -14,18 +16,46 @@ public class FFMpegTest : MonoBehaviour{
 
 
 	public InspectorButton _OpenVideo;
+	public string VideoFilePath;
 
 	[Multiline(20)]
 	public string VideoInfoJson;
 
 	public void OpenVideo() {
 #if UNITY_EDITOR
-		var filePath = EditorUtility.OpenFilePanel("Open Video", "", string.Join(",", FFMPEG.SupportedFormats));
-		if (string.IsNullOrEmpty(filePath)) return;
+		VideoFilePath = EditorUtility.OpenFilePanel("Open Video", "", string.Join(",", FFMPEG.SupportedFormats));
+		if (string.IsNullOrEmpty(VideoFilePath)) return;
 
-		VideoInfoJson = FFProbe.GetJson(filePath);
+		VideoInfoJson = FFProbe.GetJson(VideoFilePath);
 #endif
 	}
+
+	public bool _16bit = false;
+	public InspectorButton _ReadVideo;
+	public void ReadVideo() {
+		int numFramesFact = 0;
+		var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+		using var reader = new FFMPEGImageReader(VideoFilePath,_16bit ? FFMPEGImageReader.OutputFormat.RGBA64 : FFMPEGImageReader.OutputFormat.RGB24, Debug.Log);
+		reader.Run();//
+		var texture = TextureView.GetByName("Frame").ResizeTexture2D(reader.Width, reader.Height, false, reader.TextureFormat);
+		Debug.Log($"Warmup time: {stopwatch.ElapsedMilliseconds}ms");
+		stopwatch.Restart();
+
+		while (!reader.Finished) {
+			if (reader.ReadFrame()) {
+				texture.SetPixelData(reader.FrameBuffer, 0, 0);
+				texture.Apply(false, false);
+				numFramesFact++;
+			}
+		}
+
+		var time = stopwatch.ElapsedMilliseconds;
+		float timeS = time / 1000f;
+		var numFramesPlan = reader.NumberOfFrames;
+		Debug.Log($"Read {numFramesFact} frames in {time}ms, planned {numFramesPlan} frames. {(numFramesFact / timeS)} of {reader.FPS} fps. speed {reader.Duration / timeS}x");
+	}
+
+
 
 	public InspectorButton _SelectYUV_FHD;
 	public string YUVFilePath;
