@@ -3,12 +3,68 @@ using System.Diagnostics;
 using System;
 using System.IO;
 using UnityEngine;
+using System.Linq;
 
 
 #nullable enable
 namespace ImageMath {
 
+    /*public abstract class FFMPEGSelectFilter {
+        public abstract string GetFilter();
+    }
+    
+    public class FFMPEGSelectFilterRanges : FFMPEGSelectFilter {
+        private readonly IList<Range> _ranges;
 
+        public FFMPEGSelectFilterRanges(IList<Range> ranges) {
+            _ranges = ranges ?? throw new ArgumentNullException(nameof(ranges));
+        }
+
+        public override string GetFilter() {
+            if (_ranges.Count == 0) {
+                throw new ArgumentException("Ranges cannot be empty.", nameof(_ranges));
+            }
+
+            var conditions = new List<string>();
+            foreach (var range in _ranges) {
+                int startIndex = range.Start.IsFromEnd ? -range.Start.Value - 1 : range.Start.Value;
+                int endIndex = range.End.IsFromEnd ? -range.End.Value - 1 : range.End.Value;
+                conditions.Add($"between(n\\,{startIndex}\\,{endIndex})");
+            }
+            var selectExpr = string.Join("+", conditions);
+            return $"select='{selectExpr}'";
+        }
+    }
+
+    public class FFMPEGSelectFilterStride : FFMPEGSelectFilter {
+        private readonly int _startFrame;
+        private readonly int _frameStride;
+
+        public FFMPEGSelectFilterStride(int startFrame, int frameStride) {
+            if (startFrame < 0) throw new ArgumentOutOfRangeException(nameof(startFrame), "Start frame must be >= 0.");
+            if (frameStride < 1) throw new ArgumentOutOfRangeException(nameof(frameStride), "Frame stride must be >= 1.");
+
+            _startFrame = startFrame;
+            _frameStride = frameStride;
+        }
+
+        public override string GetFilter() {
+            return $"select='gte(n\\,{_startFrame})*not(mod(n\\,{_frameStride}))'";
+        }
+    }
+
+    public class FFMPEGSelectFilterSingleFrame : FFMPEGSelectFilter {
+        private readonly int _frameIndex;
+
+        public FFMPEGSelectFilterSingleFrame(int frameIndex) {
+            if (frameIndex < 0) throw new ArgumentOutOfRangeException(nameof(frameIndex), "Frame index must be >= 0.");
+            _frameIndex = frameIndex;
+        }
+
+        public override string GetFilter() {
+            return $"select='eq(n\\,{_frameIndex})'";
+        }
+    }*/
 
     public class FFMPEGImageReader : IDisposable {
         string _inputPath;
@@ -16,10 +72,13 @@ namespace ImageMath {
 
         MediaInfo _mediaInfo;
         StreamInfo _videoStreamInfo;
-        
 
-        public int Width => _videoStreamInfo.Width;
-        public int Height => _videoStreamInfo.Height;
+
+        public int InputWidth => _videoStreamInfo.Width;
+        public int InputHeight => _videoStreamInfo.Height;
+
+        public int OutputWidth { get; private set; }
+        public int OutputHeight { get; private set; }
 
         public float FPS => _videoStreamInfo.NumberOfFrames / _videoStreamInfo.Duration;
 
@@ -30,7 +89,7 @@ namespace ImageMath {
         Process? ffmpegProcess;
         IEnumerator<ReadFrameStatus>? readFrameEnumerator;
 
-        public readonly byte[] FrameBuffer;
+        public byte[] FrameBuffer { get; private set; }
 
         public bool Finished { get; private set; } = false;
 
@@ -63,50 +122,49 @@ namespace ImageMath {
             _inputPath = inputPath;
             _logger = logger;
             Format = format;
-            
+
             _mediaInfo = FFProbe.GetMediaInfo(inputPath);
             _videoStreamInfo = _mediaInfo.GetFirstVideoStream();
             if (_videoStreamInfo == null) {
                 throw new InvalidOperationException("No video stream found in the media file.");
             }
 
-            var frameSize = _videoStreamInfo.Width * _videoStreamInfo.Height * _pixelSize;
-            FrameBuffer = new byte[frameSize];
+            OutputWidth = _videoStreamInfo.Width;
+            OutputHeight = _videoStreamInfo.Height;
+
             
+
         }
 
-        string CreateFrameSelectFilter(int startFrame, int frameStride) {
-            return $"select='gte(n\\,{startFrame})*not(mod(n\\,{frameStride}))'";
+        public enum ScaleFlags{
+            Bilinear,   // fast, decent quality
+            Bicubic,    // smoother, medium quality
+            Lanczos,    // best quality, slower
+            Neighbor    // nearest neighbor, pixelated, fastest
         }
 
-        string CreateFrameSelectFilter(IList<Range> frameRanges) {
-            if (frameRanges == null || frameRanges.Count == 0) {
-                throw new ArgumentException("Frame ranges cannot be null or empty.", nameof(frameRanges));
-            }
-
-            var conditions = new List<string>();
-            foreach (var range in frameRanges) {
-                int startIndex = range.Start.IsFromEnd ? _videoStreamInfo.NumberOfFrames - range.Start.Value - 1 : range.Start.Value;
-                int endIndex = range.End.IsFromEnd ? _videoStreamInfo.NumberOfFrames - range.End.Value - 1 : range.End.Value;
-                conditions.Add($"between(n\\,{startIndex}\\,{endIndex})");
-            }
-            var selectExpr = string.Join("+", conditions);
-            return $"select='{selectExpr}'";
+        public void Run(int width = 0, int height = 0, ScaleFlags scaleFlags = ScaleFlags.Bilinear, params string[] filters) {
+            OutputWidth = width <= 0 ? InputWidth : width;
+            OutputHeight = height <= 0 ? InputHeight : height;
+            Run(filters.Append(CreateSizeFilter(OutputWidth, OutputHeight)).ToArray());
         }
 
-        void RunWithFilter(string filter) {
-            // '-vsync 0' makes FFmpeg output only selected frames, no duplicates.
-            var parameters = $"-vf {filter} -vsync passthrough -f rawvideo -pix_fmt {_ffmpegPixelFormat} -";
+        public void Run(params string[] filters) {
+            // '-fps_mode passthrough' makes FFmpeg output only selected frames, no duplicates.
+            var parameters = $"-nostats -hide_banner -vf {string.Join(",", filters.Append("vflip"))} -fps_mode passthrough -f rawvideo -pix_fmt {_ffmpegPixelFormat} -";
 
             RunInternal(parameters);
         }
 
         void RunInternal(string parameters) {
+            var frameSize = OutputWidth * OutputHeight * _pixelSize;
+            FrameBuffer = new byte[frameSize];
+
             var arguments = $"-i \"{_inputPath}\" {parameters}";
             ffmpegProcess = FFMPEG.Run(arguments, _logger);
         }
 
-        public void Run(int startFrame = 0, int frameStride = 1) {
+        /*public void Run(int startFrame = 0, int frameStride = 1) {
             if (startFrame < 0 || frameStride < 1) {
                 throw new ArgumentOutOfRangeException("startFrame must be >= 0 and frameStride must be >= 1.");
             }
@@ -121,9 +179,9 @@ namespace ImageMath {
         public void Run(IList<Range> frameRanges) {
             string filter = "vflip";
             var select = CreateFrameSelectFilter(frameRanges);
-            filter = $"{select},{filter}";            
+            filter = $"{select},{filter}";
             RunWithFilter(filter);
-        }
+        }*/
 
         void ThrowIfCannotRun() {
             if (ffmpegProcess != null) {
@@ -151,8 +209,8 @@ namespace ImageMath {
                 ffmpegProcess = null;
             }
 
-            
-            
+
+
         }
 
         ~FFMPEGImageReader() {
@@ -201,12 +259,12 @@ namespace ImageMath {
             }
             while (stopwatch.ElapsedMilliseconds < milliseconds);
 
-            return false; 
+            return false;
         }
 
 
 
-        enum ReadFrameStatus { 
+        enum ReadFrameStatus {
             InProgress,
             Done,
             EndOfStream
@@ -230,6 +288,35 @@ namespace ImageMath {
         }
 
 
+
+        public string CreateSelectFilter(int startFrame, int frameStride = 0) {
+            if (startFrame <= 0) {//single frame
+                return $"select='eq(n\\,{startFrame})'";
+            }
+            return $"select='gte(n\\,{startFrame})*not(mod(n\\,{frameStride}))'";
+        }
+
+        public string CreateSelectFilter(params Range[] frameRanges) {
+            if (frameRanges == null || frameRanges.Length == 0) {
+                throw new ArgumentException("Frame ranges cannot be null or empty.", nameof(frameRanges));
+            }
+
+            var conditions = new List<string>();
+            foreach (var range in frameRanges) {
+                int startIndex = range.Start.IsFromEnd ? _videoStreamInfo.NumberOfFrames - range.Start.Value - 1 : range.Start.Value;
+                int endIndex = range.End.IsFromEnd ? _videoStreamInfo.NumberOfFrames - range.End.Value - 1 : range.End.Value;
+                conditions.Add($"between(n\\,{startIndex}\\,{endIndex})");
+            }
+            var selectExpr = string.Join("+", conditions);
+            return $"select='{selectExpr}'";
+        }
+
+        private string CreateSizeFilter(int width, int height, ScaleFlags scaleFlags = ScaleFlags.Bilinear) {
+            if (width <= 0 || height <= 0) {
+                throw new ArgumentOutOfRangeException("Width and height must be greater than 0.");
+            }
+            return $"scale={width}:{height}:flags={scaleFlags.ToString().ToLower()}";
+        }
         
 
 

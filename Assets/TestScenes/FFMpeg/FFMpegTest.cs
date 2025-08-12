@@ -36,8 +36,8 @@ public class FFMpegTest : MonoBehaviour{
 		int numFramesFact = 0;
 		var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 		using var reader = new FFMPEGImageReader(VideoFilePath,_16bit ? FFMPEGImageReader.OutputFormat.RGBA64 : FFMPEGImageReader.OutputFormat.RGB24, Debug.Log);
-		reader.Run();//
-		var texture = TextureView.GetByName("Frame").ResizeTexture2D(reader.Width, reader.Height, false, reader.TextureFormat);
+		reader.Run(192, 108, FFMPEGImageReader.ScaleFlags.Lanczos, reader.CreateSelectFilter(0..4));
+		var texture = TextureView.GetByName("Frame").ResizeTexture2D(reader.OutputWidth, reader.OutputHeight, false, reader.TextureFormat);
 		Debug.Log($"Warmup time: {stopwatch.ElapsedMilliseconds}ms");
 		stopwatch.Restart();
 
