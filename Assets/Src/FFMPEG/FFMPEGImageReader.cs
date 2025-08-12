@@ -290,7 +290,7 @@ namespace ImageMath {
 
 
         public string CreateSelectFilter(int startFrame, int frameStride = 0) {
-            if (startFrame <= 0) {//single frame
+            if (frameStride <= 0) {//single frame
                 return $"select='eq(n\\,{startFrame})'";
             }
             return $"select='gte(n\\,{startFrame})*not(mod(n\\,{frameStride}))'";
