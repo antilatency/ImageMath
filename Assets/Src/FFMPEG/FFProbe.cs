@@ -33,7 +33,7 @@ namespace ImageMath {
         public float Duration { get; set; }
 
         [JsonProperty("bit_rate")]
-        public int BitRate { get; set; }
+        public long BitRate { get; set; }
 
         [JsonProperty("nb_frames")]
         public int NumberOfFrames { get; set; }
