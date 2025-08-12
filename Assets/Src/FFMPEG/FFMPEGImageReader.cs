@@ -91,7 +91,7 @@ namespace ImageMath {
 
         public byte[] FrameBuffer { get; private set; }
 
-        public bool Finished { get; private set; } = false;
+        public bool Finished { get; private set; } = true;
 
         public enum OutputFormat {
             RGB24,
@@ -157,6 +157,7 @@ namespace ImageMath {
         }
 
         void RunInternal(string parameters) {
+            Finished = false;
             var frameSize = OutputWidth * OutputHeight * _pixelSize;
             FrameBuffer = new byte[frameSize];
 
