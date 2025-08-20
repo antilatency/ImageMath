@@ -151,8 +151,10 @@ namespace ImageMath {
             Neighbor    // nearest neighbor, pixelated, fastest
         }
 
-        public void Run(RunParameters parameters) {
-
+        public void Run(RunParameters? parameters = null) {
+            if (parameters == null) {
+                parameters = new RunParameters(); // default
+            }
             var arguments = new StringBuilder();
             arguments.Append($"-nostats -hide_banner ");
 
