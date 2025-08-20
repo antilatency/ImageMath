@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using UnityEngine;
 using System.Linq;
+using System.Text;
 
 
 #nullable enable
@@ -131,19 +132,71 @@ namespace ImageMath {
 
             OutputWidth = _videoStreamInfo.Width;
             OutputHeight = _videoStreamInfo.Height;
-
-            
-
         }
 
-        public enum ScaleFlags{
+        public class RunParameters {
+            public float InputSeek { get; set; } = 0;
+            public bool AccurateInputSeek { get; set; } = false;
+            public int OutputWidth { get; set; } = 0;
+            public int OutputHeight { get; set; } = 0;
+            public ScaleFlags ScaleFlags { get; set; } = ScaleFlags.Bilinear;
+            public int NumberOfFrames { get; set; } = 0;
+            public string Select { get; set; } = string.Empty;
+        }
+
+        public enum ScaleFlags {
             Bilinear,   // fast, decent quality
             Bicubic,    // smoother, medium quality
             Lanczos,    // best quality, slower
             Neighbor    // nearest neighbor, pixelated, fastest
         }
 
-        public void Run(int width = 0, int height = 0, ScaleFlags scaleFlags = ScaleFlags.Bilinear, params string[] filters) {
+        public void Run(RunParameters parameters) {
+
+            var arguments = new StringBuilder();
+            arguments.Append($"-nostats -hide_banner ");
+
+            if (parameters.InputSeek > 0) {
+                arguments.Append($"-ss {parameters.InputSeek} ");
+                if (parameters.AccurateInputSeek) {
+                    arguments.Append("-accurate_seek ");
+                }
+                else {
+                    arguments.Append("-noaccurate_seek ");
+                }
+            }
+            arguments.Append($"-i \"{_inputPath}\" ");
+            //arguments.Append("-an -map 0:v"); // disable audio
+
+            var filters = new List<string>();
+            if (!string.IsNullOrEmpty(parameters.Select)) {
+                filters.Add(parameters.Select);
+            }
+            if (parameters.OutputWidth > 0 && parameters.OutputHeight > 0) {
+                filters.Add($"scale={parameters.OutputWidth}:{parameters.OutputHeight}:flags={parameters.ScaleFlags.ToString().ToLower()}");
+                OutputWidth = parameters.OutputWidth;
+                OutputHeight = parameters.OutputHeight;
+            } else {
+                OutputWidth = InputWidth;
+                OutputHeight = InputHeight;
+            }
+            filters.Add("vflip"); // always flip vertically
+
+            if (filters.Count > 0) {
+                arguments.Append($"-vf \"{string.Join(",", filters)}\" ");
+            }            
+
+            if (parameters.NumberOfFrames > 0) {
+                arguments.Append($"-frames:v {parameters.NumberOfFrames} ");
+            }
+            
+
+            arguments.Append($"-fps_mode passthrough -f rawvideo -pix_fmt {_ffmpegPixelFormat} -");
+
+            RunInternal(arguments.ToString());
+        }
+
+        /*public void Run(int width = 0, int height = 0, ScaleFlags scaleFlags = ScaleFlags.Bilinear, params string[] filters) {
             OutputWidth = width <= 0 ? InputWidth : width;
             OutputHeight = height <= 0 ? InputHeight : height;
             Run(filters.Append(CreateSizeFilter(OutputWidth, OutputHeight)).ToArray());
@@ -154,41 +207,15 @@ namespace ImageMath {
             var parameters = $"-nostats -hide_banner -vf {string.Join(",", filters.Append("vflip"))} -fps_mode passthrough -f rawvideo -pix_fmt {_ffmpegPixelFormat} -";
 
             RunInternal(parameters);
-        }
+        }*/
 
-        void RunInternal(string parameters) {
+        void RunInternal(string arguments) {
             Finished = false;
             var frameSize = OutputWidth * OutputHeight * _pixelSize;
             FrameBuffer = new byte[frameSize];
-
-            var arguments = $"-i \"{_inputPath}\" {parameters}";
             ffmpegProcess = FFMPEG.Run(arguments, _logger);
         }
 
-        /*public void Run(int startFrame = 0, int frameStride = 1) {
-            if (startFrame < 0 || frameStride < 1) {
-                throw new ArgumentOutOfRangeException("startFrame must be >= 0 and frameStride must be >= 1.");
-            }
-            string filter = "vflip";
-            if (startFrame > 0 || frameStride > 1) {
-                var select = CreateFrameSelectFilter(startFrame, frameStride);
-                filter = $"{select},{filter}";
-            }
-            RunWithFilter(filter);
-        }
-        public void Run(params Range[] frameRanges) => Run(frameRanges as IList<Range>);
-        public void Run(IList<Range> frameRanges) {
-            string filter = "vflip";
-            var select = CreateFrameSelectFilter(frameRanges);
-            filter = $"{select},{filter}";
-            RunWithFilter(filter);
-        }*/
-
-        void ThrowIfCannotRun() {
-            if (ffmpegProcess != null) {
-                throw new InvalidOperationException("FFMPEG process is already running. Call Dispose() before starting a new run.");
-            }
-        }
 
         public void Terminate(int waitForExitForMilliseconds = 1000) {
             Finished = true;

@@ -31,12 +31,23 @@ public class FFMpegTest : MonoBehaviour{
 	}
 
 	public bool _16bit = false;
+
+	[Range(0,1)]
+	public float Seek;
 	public InspectorButton _ReadVideo;
 	public void ReadVideo() {
 		int numFramesFact = 0;
 		var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 		using var reader = new FFMPEGImageReader(VideoFilePath,_16bit ? FFMPEGImageReader.OutputFormat.RGBA64 : FFMPEGImageReader.OutputFormat.RGB24, Debug.Log);
-		reader.Run(192, 108, FFMPEGImageReader.ScaleFlags.Lanczos, reader.CreateSelectFilter(0..4));
+		//reader.Run(192, 108, FFMPEGImageReader.ScaleFlags.Lanczos, reader.CreateSelectFilter(0..4));
+		reader.Run(new FFMPEGImageReader.RunParameters {
+			InputSeek = Seek*reader.Duration,
+			AccurateInputSeek = false,
+			OutputWidth = reader.InputWidth / 10,
+			OutputHeight = reader.InputHeight / 10,
+			ScaleFlags = FFMPEGImageReader.ScaleFlags.Lanczos,
+			NumberOfFrames = 1
+		});
 		var texture = TextureView.GetByName("Frame").ResizeTexture2D(reader.OutputWidth, reader.OutputHeight, false, reader.TextureFormat);
 		Debug.Log($"Warmup time: {stopwatch.ElapsedMilliseconds}ms");
 		stopwatch.Restart();
