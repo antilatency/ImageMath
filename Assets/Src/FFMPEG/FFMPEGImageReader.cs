@@ -175,7 +175,7 @@ namespace ImageMath {
                 filters.Add(parameters.Select);
             }
             if (parameters.OutputWidth > 0 && parameters.OutputHeight > 0) {
-                filters.Add($"format={_ffmpegPixelFormat.ToString().ToLower()}"); //change format before scaling
+                filters.Add($"format={_ffmpegPixelFormat}"); //change format before scaling
                 filters.Add($"scale={parameters.OutputWidth}:{parameters.OutputHeight}:flags={parameters.ScaleFlags.ToString().ToLower()}");
                 OutputWidth = parameters.OutputWidth;
                 OutputHeight = parameters.OutputHeight;
