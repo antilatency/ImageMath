@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 namespace ImageMath{
@@ -13,13 +14,13 @@ namespace ImageMath{
             return new Vector4(plane.normal.x, plane.normal.y, plane.normal.z, plane.distance);
         }
 
-        public ConvexHullSelect(Texture texture, IList<Plane> planes) : base(texture) {
-
-            Planes = new Vector4[planes.Count];
-            for (int i = 0; i < planes.Count; i++) {
-                Planes[i] = PlaneToVector4(planes[i]);
-            }
+        public ConvexHullSelect(Texture texture, IList<Plane> planes) : this(texture, planes.Select(PlaneToVector4).ToArray()) {
         }
+
+        public ConvexHullSelect(Texture texture, IList<Vector4> planes) : base(texture) {
+            Planes = planes.ToArray();
+        }
+
         public ConvexHullSelect() : base() { }
         public static string GetColorTransform() {
             return @"float3 color = inputColor.rgb;
