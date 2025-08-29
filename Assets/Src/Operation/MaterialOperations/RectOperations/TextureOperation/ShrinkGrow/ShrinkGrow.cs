@@ -8,7 +8,7 @@ namespace ImageMath{
         
         public ShrinkGrow() : base() { }
 
-        public static string GetFragmentShaderBody() => Include($"{nameof(ShrinkGrow)}.FragmentShaderBody.cginc");
+        public static string GetFragmentShaderBody() => IncludeOrEmbed($"{nameof(ShrinkGrow)}.FragmentShaderBody.cginc");
         
         /*{
             return @"

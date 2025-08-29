@@ -15,7 +15,7 @@ namespace ImageMath{
 
         public PixelRegion() : base() { }
 
-        public static string GetFragmentShaderBody() => Include($"{nameof(PixelRegion)}.FragmentShaderBody.cginc");
+        public static string GetFragmentShaderBody() => IncludeOrEmbed($"{nameof(PixelRegion)}.FragmentShaderBody.cginc");
     }
 
 

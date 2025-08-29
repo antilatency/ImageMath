@@ -59,7 +59,7 @@ namespace ImageMath {
         }
 
 #if UNITY_EDITOR
-        public static string GetTemplate() => LoadCode("ComputeOperation.Template.cginc");
+        public static string GetTemplate() => Embed("ComputeOperation.Template.cginc");
         public static string GetBufferElementTypeDeclaration() => "";
         public static string GetBufferElementTypeName() => "float4";
 #endif

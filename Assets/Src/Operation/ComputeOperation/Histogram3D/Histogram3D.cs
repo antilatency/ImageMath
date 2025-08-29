@@ -40,7 +40,7 @@ namespace ImageMath {
             return new Vector3Int(groupsX, groupsY, 1);
         }
 
-        public static string GetMainKernelBody() => Include($"{nameof(Histogram3D)}.MainKernelBody.cginc");
+        public static string GetMainKernelBody() => Embed($"{nameof(Histogram3D)}.MainKernelBody.cginc");
 
         public static new string GetBufferElementTypeName() => "int";
 

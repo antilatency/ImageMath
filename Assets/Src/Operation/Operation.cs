@@ -36,7 +36,7 @@ namespace ImageMath {
 
 #if UNITY_EDITOR
 
-        protected static string LoadCode(string? name = null, [System.Runtime.CompilerServices.CallerFilePath] string filePath = "") {
+        public static string Embed(string? name = null, [System.Runtime.CompilerServices.CallerFilePath] string filePath = "") {
             if (string.IsNullOrEmpty(name)) {
                 name = System.IO.Path.GetFileNameWithoutExtension(filePath);
             }
@@ -47,7 +47,7 @@ namespace ImageMath {
             var content = File.ReadAllText(path);
             return content;
         }
-        protected static string Include(string? name = null, [System.Runtime.CompilerServices.CallerFilePath] string filePath = "") {
+        private static string Include(string? name = null, [System.Runtime.CompilerServices.CallerFilePath] string filePath = "") {
             if (string.IsNullOrEmpty(name)) {
                 name = System.IO.Path.GetFileNameWithoutExtension(filePath);
             }
@@ -58,7 +58,12 @@ namespace ImageMath {
             return $"#include \"{path}\"";
         }
 
-
+        protected static string IncludeOrEmbed(string? name = null, [System.Runtime.CompilerServices.CallerFilePath] string filePath = ""){
+            if (GeneratorSettings.IsDebugMode()) { 
+                return Include(name, filePath);
+            }
+            return Embed(name, filePath);
+        }
 
         /*public static void CollectIncludes(List<string> includes) {
 

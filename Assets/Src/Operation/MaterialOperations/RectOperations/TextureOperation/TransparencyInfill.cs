@@ -10,7 +10,7 @@ namespace ImageMath {
 
         public TransparencyInfill() : base() { }
 
-        public static string GetFragmentShaderBody() => LoadCode($"{nameof(TransparencyInfill)}.FragmentShaderBody.cginc");
+        public static string GetFragmentShaderBody() => Embed($"{nameof(TransparencyInfill)}.FragmentShaderBody.cginc");
     }
 
 

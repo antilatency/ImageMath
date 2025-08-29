@@ -50,9 +50,9 @@ namespace ImageMath {
         public static string GetShaderName(ClassDescription classDescription) => GetShaderName(classDescription.Type);
 
 
-        public static string GetTemplate(ClassDescription classDescription) => LoadCode("MaterialOperation.Template.cginc");
-        public static string GetVertexShader(ClassDescription classDescription) => LoadCode("MaterialOperation.VertexShader.cginc");
-        public static string GetFragmentShader(ClassDescription classDescription) => LoadCode("MaterialOperation.FragmentShader.cginc");
+        public static string GetTemplate(ClassDescription classDescription) => Embed("MaterialOperation.Template.cginc");
+        public static string GetVertexShader(ClassDescription classDescription) => Embed("MaterialOperation.VertexShader.cginc");
+        public static string GetFragmentShader(ClassDescription classDescription) => Embed("MaterialOperation.FragmentShader.cginc");
 
 #endif
 

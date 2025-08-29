@@ -13,5 +13,5 @@ public partial record MulticompileOptionsTestOperation : RectOperation {
     public MulticompileOptionsTestOperation() {
     }
 
-    public static string GetFragmentShaderBody() => Include("MulticompileOptionsTestOperation.FragmentShaderBody.cginc");
+    public static string GetFragmentShaderBody() => IncludeOrEmbed("MulticompileOptionsTestOperation.FragmentShaderBody.cginc");
 }

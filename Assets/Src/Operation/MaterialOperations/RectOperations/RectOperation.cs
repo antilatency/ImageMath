@@ -16,7 +16,7 @@ namespace ImageMath {
         public Vector2 Size {get; set;} = Vector2.one;
 
         #if UNITY_EDITOR
-        public static new string GetVertexShader(ClassDescription classDescription) => LoadCode("RectOperation.VertexShader.cginc");
+        public static new string GetVertexShader(ClassDescription classDescription) => Embed("RectOperation.VertexShader.cginc");
         #endif
 
 

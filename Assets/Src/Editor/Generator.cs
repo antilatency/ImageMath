@@ -55,6 +55,35 @@ namespace ImageMath{
             return generatedFiles;
         }
 
+        public static bool IsDebugMode() {
+            var settings = GeneratorSettings.Get();
+            return settings?.isDebugMode ?? false;
+        }
+
+        [MenuItem("ImageMath/Enable Debug Mode", true)]
+        public static bool EnableDebugModeValidator() {
+            return !IsDebugMode();
+        }
+        [MenuItem("ImageMath/Enable Debug Mode")]
+        public static void EnableDebugMode() {
+            var settings = GeneratorSettings.GetOrCreate();
+            settings.isDebugMode = true;
+            settings.Save();
+            Generate();
+        }
+
+        [MenuItem("ImageMath/Disable Debug Mode", true)]
+        public static bool DisableDebugModeValidator() {
+            return IsDebugMode();
+        }
+        [MenuItem("ImageMath/Disable Debug Mode")]
+        public static void DisableDebugMode() {
+            var settings = GeneratorSettings.GetOrCreate();
+            settings.isDebugMode = false;
+            settings.Save();
+            Generate();
+        }
+
         [MenuItem("ImageMath/Generate %G")]
         public static void Generate(){
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();

@@ -13,6 +13,6 @@ namespace ImageMath{
             LightDirection = Vector3.forward;
             Color = new Vector3(1, 1, 1);
         }
-        public static string GetFragmentShaderBody() => LoadCode("LambertianSphereFill.FragmentShaderBody.cginc");
+        public static string GetFragmentShaderBody() => Embed("LambertianSphereFill.FragmentShaderBody.cginc");
     }
 }

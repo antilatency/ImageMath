@@ -14,6 +14,6 @@ namespace ImageMath{
         }
         public LineFill() :base(){}
 
-        public static string GetFragmentShaderBody() => LoadCode("LineFill.FragmentShaderBody.cginc");
+        public static string GetFragmentShaderBody() => Embed("LineFill.FragmentShaderBody.cginc");
     }
 }

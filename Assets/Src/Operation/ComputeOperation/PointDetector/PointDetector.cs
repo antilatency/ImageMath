@@ -161,7 +161,7 @@ namespace ImageMath {
 #if UNITY_EDITOR
 
 
-        public static string GetMainKernelBody() => LoadCode("PointDetector.MainKernelBody.cginc");
+        public static string GetMainKernelBody() => Embed("PointDetector.MainKernelBody.cginc");
 
         public static new string GetBufferElementTypeDeclaration() => new Scopes.C.Scopeꓼ($"struct {GetBufferElementTypeName()}") {
             "uint start_length;",

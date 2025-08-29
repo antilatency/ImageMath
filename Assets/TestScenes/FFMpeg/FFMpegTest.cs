@@ -85,7 +85,7 @@ public class FFMpegTest : MonoBehaviour{
 	public Texture2D? VTexture;
 
 	void Update() {
-		if (!string.IsNullOrEmpty(YUVFilePath)) {
+		/*if (!string.IsNullOrEmpty(YUVFilePath)) {
 			var data = File.ReadAllBytes(YUVFilePath);
 			if (YTexture == null) {
 				YTexture = new Texture2D(1920, 1080, TextureFormat.R16, false, true);
@@ -97,10 +97,6 @@ public class FFMpegTest : MonoBehaviour{
 				VTexture = new Texture2D(960, 1080, TextureFormat.R16, false, true);
 			}
 
-			/*//test clear data with 0.5
-			for (int i = 0; i < data.Length; i++) {
-				data[i] = 0x80; // 0.5 in R16 format
-			}*/
 
 			YTexture.SetPixelData(data, 0, 0);
 			YTexture.Apply(false, false);
@@ -119,6 +115,7 @@ public class FFMpegTest : MonoBehaviour{
 
 		var resultUnpackedFromSRGB = TextureView.GetByName("UnpackYUVResultFromSRGB").ResizeRenderTexture(1920, 1080);
 		new UnpackSRGB(result).FlipY().AssignTo(resultUnpackedFromSRGB);
+		*/
 			
     }
 	
