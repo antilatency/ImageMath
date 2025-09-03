@@ -3,6 +3,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using UnityEngine.Experimental.Rendering;
+using static ImageMath.Static;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -187,20 +189,21 @@ namespace ImageMath.Views{
         }
 
 
-        public Texture2D ResizeTexture2D(int width, int height = 0, bool useMipMap = false, TextureFormat format = TextureFormat.RGBAFloat) {
+        public Texture2D ResizeTexture2D(int width, int height = 0, bool useMipMap = false, GraphicsFormat graphicsFormat = GraphicsFormat.R32G32B32A32_SFloat) {
             if (height == 0) height = width;
             if (Texture) {
                 if (Texture is Texture2D texture2D)
                     if (texture2D.width == width)
                         if (texture2D.height == height)
                             if ((texture2D.mipmapCount > 1) == useMipMap)
-                                if (texture2D.format == format)
+                                if (texture2D.graphicsFormat == graphicsFormat)
                                     return texture2D;
                 if (CreatedTexture)
                     DestroyImmediate(CreatedTexture);
             }
 
-            var createdTexture = new Texture2D(width, height, format, useMipMap, true);
+            var createdTexture = CreateTexture2D(width, height, graphicsFormat, useMipMap);
+
             CreatedTexture = createdTexture;
             Texture = CreatedTexture;
             return createdTexture;

@@ -48,7 +48,7 @@ public class FFMpegTest : MonoBehaviour{
 			ScaleFlags = FFMPEGImageReader.ScaleFlags.Lanczos,
 			NumberOfFrames = 1
 		});
-		var texture = TextureView.GetByName("Frame").ResizeTexture2D(reader.OutputWidth, reader.OutputHeight, false, reader.TextureFormat);
+		var texture = TextureView.GetByName("Frame").ResizeTexture2D(reader.OutputWidth, reader.OutputHeight, false, reader.GraphicsFormat);
 		Debug.Log($"Warmup time: {stopwatch.ElapsedMilliseconds}ms");
 		stopwatch.Restart();
 

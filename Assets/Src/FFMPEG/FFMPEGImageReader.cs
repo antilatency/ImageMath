@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine;
 using System.Linq;
 using System.Text;
+using UnityEngine.Experimental.Rendering;
 
 
 #nullable enable
@@ -90,7 +91,7 @@ namespace ImageMath {
         Process? ffmpegProcess;
         IEnumerator<ReadFrameStatus>? readFrameEnumerator;
 
-        public byte[] FrameBuffer { get; private set; }
+        public byte[]? FrameBuffer { get; private set; }
 
         public bool Finished { get; private set; } = true;
 
@@ -112,9 +113,9 @@ namespace ImageMath {
             _ => throw new NotSupportedException($"Output format {Format} is not supported.")
         };
 
-        public TextureFormat TextureFormat => Format switch {
-            OutputFormat.RGB24 => TextureFormat.RGB24,
-            OutputFormat.RGBA64 => TextureFormat.RGBA64,
+        public GraphicsFormat GraphicsFormat => Format switch {
+            OutputFormat.RGB24 => GraphicsFormat.R8G8B8_SRGB,
+            OutputFormat.RGBA64 => GraphicsFormat.R16G16B16A16_UNorm,
             _ => throw new NotSupportedException($"Output format {Format} is not supported.")
         };
 

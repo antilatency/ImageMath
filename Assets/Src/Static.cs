@@ -422,15 +422,43 @@ namespace ImageMath {
         }
 
         public static Texture2D CreateTexture2DFloat4(int width, int height) {
-            Texture2D texture = new Texture2D(width, height, GraphicsFormat.R32G32B32A32_SFloat, TextureCreationFlags.None);
+            var texture = CreateTexture2D(width, height, GraphicsFormat.R32G32B32A32_SFloat);
+            texture.anisoLevel = 0;
+            return texture;
+        }
+        
+        public static Texture2D CreateTexture2D(int width, int height, GraphicsFormat graphicsFormat, bool useMipMap = false ) {
+            Texture2D texture;
+            //Texture2D constructor bug avoided
+            var format = graphicsFormat.ToTextureFormat();
+            texture = new Texture2D(width, height, format.textureFormat, useMipMap, !format.sRGB);
             texture.anisoLevel = 0;
             return texture;
         }
 
+        public static bool IsSRGBFormat(this GraphicsFormat graphicsFormat) { 
+            return GraphicsFormatUtility.IsSRGBFormat(graphicsFormat);
+        }
+
+        public static (TextureFormat textureFormat, bool sRGB) ToTextureFormat(this GraphicsFormat graphicsFormat) {
+            switch (graphicsFormat) {
+                case GraphicsFormat.R32G32B32A32_SFloat: return (TextureFormat.RGBAFloat, true);
+                case GraphicsFormat.R16G16B16A16_UNorm: return (TextureFormat.RGBA64, false);
+
+                case GraphicsFormat.R8G8B8A8_UNorm: return (TextureFormat.RGBA32, false);
+                case GraphicsFormat.R8G8B8A8_SRGB: return (TextureFormat.RGBA32, true);
+                case GraphicsFormat.R8G8B8_UNorm: return (TextureFormat.RGB24, false);
+                case GraphicsFormat.R8G8B8_SRGB: return (TextureFormat.RGB24, true);
+                default:
+                    throw new NotImplementedException($"GraphicsFormat {graphicsFormat} is not implemented.");
+            }
+        }
+
+
         public static Texture2D CreateTexture2DFloat4(int width, Color[] pixels, bool apply = true) {
             var height = pixels.Length / width;
             Texture2D texture = CreateTexture2DFloat4(width, height);
-            texture.SetPixelData(pixels,0,0);
+            texture.SetPixelData(pixels, 0, 0);
             if (apply)
                 texture.Apply();
             return texture;
