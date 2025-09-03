@@ -45,7 +45,7 @@ namespace ImageMath {
             public (Vector2 axisX, Vector2 axisY) GetEllipseAxes() { 
                 var (axisX, axisY) = GetEllipseAxesXYL();
                 return (
-                    new Vector2(axisX.x * axisX.z, axisY.y * axisY.z),
+                    new Vector2(axisX.x * axisX.z, axisX.y * axisX.z),
                     new Vector2(axisY.x * axisY.z, axisY.y * axisY.z));
             }
             public (Vector3 axisX, Vector3 axisY) GetEllipseAxesXYL() {
