@@ -99,7 +99,7 @@ public class PointDetectorTest : MonoBehaviour {
         Gizmos.color = Handles.color;
         foreach (var point in Points) {
             var center = point.Center;// + Vector2.one * 0.5f;
-            var ellipse = point.GetEllipseAxes();
+            var ellipse = point.GetEllipseAxesXYL();
             Gizmos.DrawSphere(center, 0.1f * Mathf.Max(ellipse.axisX.z, ellipse.axisY.z));
             //draw ellipse
             var points = Enumerable.Range(0, 361).Select(a => {

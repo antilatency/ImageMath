@@ -42,8 +42,13 @@ namespace ImageMath {
             }                
 
             public Vector2 Center => new Vector2((float)(SX / S), (float)(SY / S));
-            
-            public (Vector3 axisX, Vector3 axisY) GetEllipseAxes() {
+            public (Vector2 axisX, Vector2 axisY) GetEllipseAxes() { 
+                var (axisX, axisY) = GetEllipseAxesXYL();
+                return (
+                    new Vector2(axisX.x * axisX.z, axisY.y * axisY.z),
+                    new Vector2(axisY.x * axisY.z, axisY.y * axisY.z));
+            }
+            public (Vector3 axisX, Vector3 axisY) GetEllipseAxesXYL() {
                 if (S == 0) {
                     return (Vector3.right, Vector3.up);
                 }
