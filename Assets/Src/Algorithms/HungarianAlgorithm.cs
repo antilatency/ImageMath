@@ -2,6 +2,22 @@ using System;
 
 namespace ImageMath {
     public static class HungarianAlgorithm {
+
+/// <summary>
+/// Solves the assignment problem using the Hungarian algorithm.
+/// 
+/// Input:
+///   A square cost matrix [h, w], where:
+///     h = number of workers (rows)
+///     w = number of jobs (columns)
+///     - Each row i represents a "worker".
+///     - Each column j represents a "job".
+///     - costsMatrix[i, j] is the cost of assigning worker i to job j.
+/// Output:
+///   An integer array of length h (number of workers), where:
+///     - result[i] = j means "worker i is assigned to job j".
+///   - If a worker is not assigned to any job, result[i] = -1.
+
         public static int[] FindAssignments(this double[,] costs) {
             if (costs == null)
                 throw new ArgumentNullException(nameof(costs));
