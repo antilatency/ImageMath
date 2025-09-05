@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+
 using UnityEngine;
+#nullable enable
 namespace ImageMath {
     public static class Homography {
 
@@ -13,9 +17,9 @@ namespace ImageMath {
         new Vector2(0, 1)
     };
 
-        public static Matrix4x4 Calculate(Vector2[] srcPoints, Vector2[] dstPoints, SolverDelegate solverDelegate) {
+        public static Matrix4x4 Calculate(IList<Vector2> srcPoints, IList<Vector2> dstPoints, SolverDelegate solverDelegate) {
             // Check if the number of points is correct
-            if (srcPoints.Length != 4 || dstPoints.Length != 4) {
+            if (srcPoints.Count != 4 || dstPoints.Count != 4) {
                 throw new ArgumentException("Four source and destination points are required for homography calculation.");
             }
 
@@ -55,8 +59,8 @@ namespace ImageMath {
             return homographyMatrix;
         }
 
-        public static Vector2[] SortCorners(Vector2[] corners, Vector2[]? dstPositions = null) {
-            if (corners.Length != 4) {
+        public static Vector2[] SortCorners(IList<Vector2> corners, IList<Vector2>? dstPositions = null) {
+            if (corners.Count != 4) {
                 throw new ArgumentException("Four corners are required for sorting.");
             }
             if (dstPositions == null) {
