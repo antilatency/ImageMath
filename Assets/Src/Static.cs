@@ -431,7 +431,12 @@ namespace ImageMath {
             Texture2D texture;
             //Texture2D constructor bug avoided
             var format = graphicsFormat.ToTextureFormat();
-            texture = new Texture2D(width, height, format.textureFormat, useMipMap, !format.sRGB);
+            if (format == null) {
+                texture = new Texture2D(width, height, graphicsFormat, useMipMap? TextureCreationFlags.MipChain : TextureCreationFlags.None);
+            }
+            else {
+                texture = new Texture2D(width, height, format.Value.textureFormat, useMipMap, !format.Value.sRGB);
+            }
             texture.anisoLevel = 0;
             return texture;
         }
@@ -440,7 +445,7 @@ namespace ImageMath {
             return GraphicsFormatUtility.IsSRGBFormat(graphicsFormat);
         }
 
-        public static (TextureFormat textureFormat, bool sRGB) ToTextureFormat(this GraphicsFormat graphicsFormat) {
+        public static (TextureFormat textureFormat, bool sRGB)? ToTextureFormat(this GraphicsFormat graphicsFormat) {
             switch (graphicsFormat) {
                 case GraphicsFormat.R32G32B32A32_SFloat: return (TextureFormat.RGBAFloat, true);
                 case GraphicsFormat.R16G16B16A16_UNorm: return (TextureFormat.RGBA64, false);
@@ -449,7 +454,7 @@ namespace ImageMath {
                 case GraphicsFormat.R8G8B8A8_SRGB: return (TextureFormat.RGBA32, true);
                 case GraphicsFormat.R8G8B8_UNorm: return (TextureFormat.RGB24, false);
                 case GraphicsFormat.R8G8B8_SRGB: return (TextureFormat.RGB24, true);
-                default:
+                default:                    
                     throw new NotImplementedException($"GraphicsFormat {graphicsFormat} is not implemented.");
             }
         }
