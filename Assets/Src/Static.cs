@@ -454,8 +454,8 @@ namespace ImageMath {
                 case GraphicsFormat.R8G8B8A8_SRGB: return (TextureFormat.RGBA32, true);
                 case GraphicsFormat.R8G8B8_UNorm: return (TextureFormat.RGB24, false);
                 case GraphicsFormat.R8G8B8_SRGB: return (TextureFormat.RGB24, true);
-                default:                    
-                    throw new NotImplementedException($"GraphicsFormat {graphicsFormat} is not implemented.");
+                default:
+                    return null;
             }
         }
 
