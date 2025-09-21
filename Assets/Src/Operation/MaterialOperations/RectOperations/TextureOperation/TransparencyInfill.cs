@@ -1,5 +1,3 @@
-using System.Collections;
-
 using UnityEngine;
 namespace ImageMath {
     [FilePath]
@@ -10,8 +8,8 @@ namespace ImageMath {
 
         public TransparencyInfill() : base() { }
 
-        public static string GetFragmentShaderBody() => Embed($"{nameof(TransparencyInfill)}.FragmentShaderBody.cginc");
+#if UNITY_EDITOR
+        public static string GetFragmentShaderBody() => IncludeOrEmbed($"{nameof(TransparencyInfill)}.FragmentShaderBody.cginc");
+#endif
     }
-
-
 }

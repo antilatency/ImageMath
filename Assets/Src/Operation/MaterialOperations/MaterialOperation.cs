@@ -45,15 +45,13 @@ namespace ImageMath {
 
 
         public string GetShaderName() => GetShaderName(GetType());
-#if UNITY_EDITOR
         public static string GetShaderName(Type type) => type.FullName.Replace('.', '/');
         public static string GetShaderName(ClassDescription classDescription) => GetShaderName(classDescription.Type);
 
-
+#if UNITY_EDITOR
         public static string GetTemplate(ClassDescription classDescription) => Embed("MaterialOperation.Template.cginc");
         public static string GetVertexShader(ClassDescription classDescription) => Embed("MaterialOperation.VertexShader.cginc");
         public static string GetFragmentShader(ClassDescription classDescription) => Embed("MaterialOperation.FragmentShader.cginc");
-
 #endif
 
         protected void ApplyRenderTargetSize(RenderTexture renderTexture) {

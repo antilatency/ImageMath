@@ -3,7 +3,7 @@ using UnityEngine.UI;
 namespace ImageMath{
 
     [FilePath]
-    public partial record Denoiser: MaterialOperation {
+    public partial record Denoiser : MaterialOperation {
 
         public enum KernelSize {
             _3x3,
@@ -23,23 +23,25 @@ namespace ImageMath{
         public Denoiser(Texture texture) {
             Texture = texture;
         }
-        
+
         public Denoiser() : base() { }
 
-        public static float[] GetDCTBases(int n) { 
+
+
+
+        private static float[] GetDCTBases(int n) {
             var dct = new DiscreteCosineTransform(n);
             float[] bases = new float[n * n];
             float m = Mathf.PI / n;
             for (int u = 0; u < n; u++) {
                 for (int x = 0; x < n; x++) {
-                    bases[x*n+u] = dct.Basis1D(x, u);
-                }                
+                    bases[x * n + u] = dct.Basis1D(x, u);
+                }
             }
             return bases;
         }
-        
 
-        public static string GetDCTBasesCode(int r) {
+        private static string GetDCTBasesCode(int r) {
             int n = r * 2 + 1;
             var bases = GetDCTBases(n);
             string code = @$"
@@ -48,10 +50,10 @@ namespace ImageMath{
 #define dctIN {1.0f / n}
 #define dctM {Mathf.PI / n}
 static const float dctBases[{n * n}] = {{{string.Join(",", bases)}}};";
-
             return code;
         }
-
+        
+#if UNITY_EDITOR
         public static string GetCustomCode() {
             var stringBuilder = new System.Text.StringBuilder();
 
@@ -66,6 +68,7 @@ static const float dctBases[{n * n}] = {{{string.Join(",", bases)}}};";
         }
 
         public static string GetFragmentShaderBody() => Embed($"{nameof(Denoiser)}.FragmentShaderBody.cginc");
+ #endif       
     }
 
 

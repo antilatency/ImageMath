@@ -13,7 +13,8 @@ namespace ImageMath{
             PointB = pointB;
         }
         public LineFill() :base(){}
-
-        public static string GetFragmentShaderBody() => Embed("LineFill.FragmentShaderBody.cginc");
+#if UNITY_EDITOR
+        public static string GetFragmentShaderBody() => IncludeOrEmbed("LineFill.FragmentShaderBody.cginc");
+#endif
     }
 }

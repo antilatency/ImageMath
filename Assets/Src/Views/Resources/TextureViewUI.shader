@@ -64,6 +64,7 @@ Shader "ImageMath/Views/TextureViewUI" {
 
             struct FragmentInput {
                 float4 vertex   : SV_POSITION;
+                float4 worldPosition : TEXCOORD1;
                 float2 uv       : TEXCOORD0;
             };
 
@@ -75,6 +76,7 @@ Shader "ImageMath/Views/TextureViewUI" {
                 FragmentInput output;
 
                 output.vertex = UnityObjectToClipPos(input.vertex);
+                output.worldPosition = mul(unity_ObjectToWorld, input.vertex);
                 output.uv = input.uv;
 
                 return output;

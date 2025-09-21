@@ -1,13 +1,15 @@
+#if UNITY_EDITOR
+
 using System.IO;
 using UnityEditor;
 #nullable enable
-namespace ImageMath{
-    public static class CgincEditorUtils{
+
+namespace ImageMath {
+    public static class CgincEditorUtils {
         [MenuItem("Assets/Create/Shader/CG Include File")]
-        public static void CreateCgincFile()
-        {
-        string path = GetSelectedPathOrFallback("NewInclude.cginc");
-        string filePath = AssetDatabase.GenerateUniqueAssetPath(path);
+        public static void CreateCgincFile() {
+            string path = GetSelectedPathOrFallback("NewInclude.cginc");
+            string filePath = AssetDatabase.GenerateUniqueAssetPath(path);
 
 
             File.WriteAllText(filePath, "");
@@ -19,19 +21,17 @@ namespace ImageMath{
             EditorGUIUtility.PingObject(asset);
         }
 
-        private static string GetSelectedPathOrFallback(string newFileName)
-        {
+        private static string GetSelectedPathOrFallback(string newFileName) {
             string path = Path.Combine("Assets", newFileName);
             var selection = Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.Assets);
 
-            foreach (var obj in selection)
-            {
+            foreach (var obj in selection) {
                 path = AssetDatabase.GetAssetPath(obj);
 
-                if (!string.IsNullOrEmpty(path)){
-                    if (File.Exists(path)){
+                if (!string.IsNullOrEmpty(path)) {
+                    if (File.Exists(path)) {
                         return Path.ChangeExtension(path, Path.GetExtension(newFileName));
-                    }else{
+                    } else {
                         return Path.Combine(path, newFileName);
                     }
                 }
@@ -41,3 +41,4 @@ namespace ImageMath{
 
     }
 }
+#endif

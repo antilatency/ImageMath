@@ -20,7 +20,7 @@ namespace ImageMath {
     }
 
     public class Disposable<T> : IDisposable {
-        public readonly T Value;
+        public T Value;
         private readonly Action<T> disposeAction;
 
         public Disposable(T value, Action<T> disposeAction) {

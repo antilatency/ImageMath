@@ -30,12 +30,5 @@ namespace Scopes {
                 return RecursivelyNested((IEnumerable<string>)names);
             }
         }
-
-
-        
-
-
-
-
     }
 }

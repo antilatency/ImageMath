@@ -1,10 +1,10 @@
 using UnityEngine;
 namespace ImageMath{
     [FilePath]
-    public partial record PixelRegion: MaterialOperation {
+    public partial record PixelRegion : MaterialOperation {
         public Texture Texture { get; set; } = null;
         public Vector3Int Offset { get; set; } = Vector3Int.zero;
-        
+
         [MulticompileOptions]
         public bool ClampPixelCoordinates { get; set; } = false;
 
@@ -14,8 +14,9 @@ namespace ImageMath{
         }
 
         public PixelRegion() : base() { }
-
+#if UNITY_EDITOR
         public static string GetFragmentShaderBody() => IncludeOrEmbed($"{nameof(PixelRegion)}.FragmentShaderBody.cginc");
+#endif
     }
 
 

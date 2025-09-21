@@ -39,10 +39,10 @@ namespace ImageMath {
             int groupsY = Mathf.CeilToInt(height / (float)threadGroupSizeY);
             return new Vector3Int(groupsX, groupsY, 1);
         }
-
+#if UNITY_EDITOR
         public static string GetMainKernelBody() => Embed($"{nameof(Histogram3D)}.MainKernelBody.cginc");
-
         public static new string GetBufferElementTypeName() => "int";
+#endif
 
         public int[] Execute(ComputeBuffer? computeBuffer = null) {
             Cache.CacheItem<ComputeBuffer>? computeBufferCacheItem = null;

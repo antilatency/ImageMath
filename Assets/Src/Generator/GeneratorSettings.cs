@@ -1,9 +1,12 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 #nullable enable
 namespace ImageMath {
+
     public class GeneratorSettings : ScriptableObject {
         public bool isDebugMode;
+
 
         private const string assetPath = "Assets/ImageMathGeneratorSettings.asset";
 
@@ -11,6 +14,8 @@ namespace ImageMath {
             var settings = AssetDatabase.LoadAssetAtPath<GeneratorSettings>(assetPath);
             return settings;
         }
+
+
 
         [MenuItem("ImageMath/Create Generator Settings")]
         public static GeneratorSettings Create() {
@@ -40,3 +45,4 @@ namespace ImageMath {
         }
     }
 }
+#endif

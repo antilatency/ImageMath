@@ -1,5 +1,5 @@
+#if UNITY_EDITOR
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +9,7 @@ using Scopes.C;
 using UnityEditor;
 using UnityEngine;
 #nullable enable
-namespace ImageMath{
+namespace ImageMath {
 
     internal static class PathExtensions {
         public static bool IsSubPathOf(this string path, string baseDirPath) {
@@ -19,25 +19,25 @@ namespace ImageMath{
             if (string.Equals(normalizedPath, normalizedBaseDirPath, StringComparison.OrdinalIgnoreCase)) {
                 return true;
             }
-            return normalizedPath.StartsWith(normalizedBaseDirPath+Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+            return normalizedPath.StartsWith(normalizedBaseDirPath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
         }
     }
 
     public class Generator {
 
         [MenuItem("ImageMath/Delete Generated Files")]
-        public static void DeleteGeneratedFiles(){
+        public static void DeleteGeneratedFiles() {
             var directoriesToDelete = Directory.EnumerateDirectories(Application.dataPath, ImageMathGeneratedDirectoryName, SearchOption.AllDirectories).ToList();
             directoriesToDelete.ForEach(d => {
-                if (d != null){
+                if (d != null) {
                     Directory.Delete(d, true);
                 }
             });
         }
-        
+
         public static List<string> GetGeneratedDirectories() {
             var directories = Directory
-                .EnumerateDirectories(Application.dataPath, ImageMathGeneratedDirectoryName, SearchOption.AllDirectories)                
+                .EnumerateDirectories(Application.dataPath, ImageMathGeneratedDirectoryName, SearchOption.AllDirectories)
                 .Select(NormalizePath)
                 .ToList();
             return directories;
@@ -85,7 +85,7 @@ namespace ImageMath{
         }
 
         [MenuItem("ImageMath/Generate %G")]
-        public static void Generate(){
+        public static void Generate() {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             ClassDescription operationClass = new ClassDescription(typeof(Operation), null);
@@ -93,51 +93,51 @@ namespace ImageMath{
             //DeleteGeneratedFiles();
             var generatedDirectories = GetGeneratedDirectories();
             var filesToDelete = GetGeneratedFiles();
-            try{
-                foreach (var assembly in assemblies){
+            try {
+                foreach (var assembly in assemblies) {
                     var types = assembly.GetTypes();
                     //Debug.Log($"Assembly: {assembly.FullName}");
-                    foreach (var type in types){
-                        if (type.IsClass && type.IsSubclassOf(typeof(Operation))){
-                            operationClass.FindOrCreate(type);                       
+                    foreach (var type in types) {
+                        if (type.IsClass && type.IsSubclassOf(typeof(Operation))) {
+                            operationClass.FindOrCreate(type);
                         }
                     }
                 }
 
                 var flattened = new List<ClassDescription>();
                 operationClass.FlattenChildren(flattened);
-                foreach (var classDescription in flattened){
+                foreach (var classDescription in flattened) {
                     var type = classDescription.Type;
                     var filePath = GetFilePath(type);
-                    if (filePath == null){
+                    if (filePath == null) {
                         Debug.LogError($"FilePathAttribute not found for {type.Name}");
                         continue;
                     }
                     var isFileInsideAssets = filePath.IsSubPathOf(Application.dataPath);
-                    if (isFileInsideAssets){
+                    if (isFileInsideAssets) {
                         GenerateCsPartial(classDescription, filesToDelete);
-                        if (!type.IsAbstract){
+                        if (!type.IsAbstract) {
                             GenerateShaderForType(classDescription, filesToDelete);
                         }
-                    }               
+                    }
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 Debug.LogError(e.Message);
             }
 
-            foreach (var file in filesToDelete){
-                if (File.Exists(file)){
+            foreach (var file in filesToDelete) {
+                if (File.Exists(file)) {
                     File.Delete(file);
                 }
             }
 
             //Delete empty directories
-            foreach (var directory in generatedDirectories){
+            foreach (var directory in generatedDirectories) {
                 if (Directory.Exists(directory) && !Directory.EnumerateFileSystemEntries(directory).Where(f => !f.EndsWith(".meta")).Any()) {
                     Directory.Delete(directory, true);
                     //delete meta
                     var metaFile = directory + ".meta";
-                    if (File.Exists(metaFile)){
+                    if (File.Exists(metaFile)) {
                         File.Delete(metaFile);
                     }
                 }
@@ -146,9 +146,9 @@ namespace ImageMath{
             AssetDatabase.Refresh();
         }
 
-        public static string? GetFilePath(Type type){
+        public static string? GetFilePath(Type type) {
             var filePathAttribute = type.GetCustomAttribute<FilePathAttribute>();
-            if (filePathAttribute == null){
+            if (filePathAttribute == null) {
                 return null;
             }
             var filePath = NormalizePath(filePathAttribute.FilePath);
@@ -158,14 +158,14 @@ namespace ImageMath{
 
         const string ImageMathGeneratedDirectoryName = "ImageMathGenerated";
 
-        public static string GetPathFromType(Type type, string extension){
+        public static string GetPathFromType(Type type, string extension) {
             var namespaceElements = string.IsNullOrEmpty(type.Namespace)
             ? Enumerable.Empty<string>()
             : type.Namespace.Split('.');
 
             var assetsDirectory = Application.dataPath;
 
-            var pathElements = namespaceElements.Prepend("Resources").Prepend(ImageMathGeneratedDirectoryName).Prepend(assetsDirectory).Append(type.Name+extension).ToArray();
+            var pathElements = namespaceElements.Prepend("Resources").Prepend(ImageMathGeneratedDirectoryName).Prepend(assetsDirectory).Append(type.Name + extension).ToArray();
             string path = Path.Combine(pathElements);
             return path;
         }
@@ -234,37 +234,37 @@ namespace ImageMath{
 
         }
 
-        static void WriteAllText(string path, string content){
+        static void WriteAllText(string path, string content) {
 
             string directory = Path.GetDirectoryName(path)!;
-            if (!Directory.Exists(directory)){
+            if (!Directory.Exists(directory)) {
                 Directory.CreateDirectory(directory);
             }
             File.WriteAllText(path, content);
         }
 
-        public static T CallStaticMethod<T>(ClassDescription classDescription, string methodName){
+        public static T CallStaticMethod<T>(ClassDescription classDescription, string methodName) {
             var hierarchy = classDescription.GetHierarchy().Append(typeof(Generator));
             //var hierrarhyWithGenerator = hierarchy.ToList();
             //hierrarhyWithGenerator.Add(typeof(Generator));
 
             foreach (var type in hierarchy) {
-                try{
+                try {
                     var method = type.GetMethod(methodName
-                        ,BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic
-                        ,null, new Type[]{}, null);
-                    if (method != null){
+                        , BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic
+                        , null, new Type[] { }, null);
+                    if (method != null) {
                         return (T)method.Invoke(null, null);
                     } else {
                         method = type.GetMethod(methodName
-                            ,BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic
-                            ,null, new Type[] { typeof(ClassDescription) }, null);
-                        if (method != null){                        
-                            return (T)method.Invoke(null, new object[]{classDescription});                        
+                            , BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic
+                            , null, new Type[] { typeof(ClassDescription) }, null);
+                        if (method != null) {
+                            return (T)method.Invoke(null, new object[] { classDescription });
                         }
                     }
-                    
-                } catch (Exception e){
+
+                } catch (Exception e) {
                     throw new Exception($"Error calling {methodName} on {type.Name}: {e.Message}");
                 }
             }
@@ -306,7 +306,7 @@ namespace ImageMath{
             WriteAllText(generatedFilePath, NormalizeLineEndings(template));
             filesToDelete.Remove(generatedFilePath);
         }
-        
+
         public static string GetMulticompileOptions(ClassDescription classDescription) {
             var current = classDescription;
             var stringBuilder = new System.Text.StringBuilder();
@@ -340,3 +340,4 @@ namespace ImageMath{
 
     }
 }
+#endif
