@@ -11,6 +11,8 @@ using UnityEditor;
 public class TransparencyInfillTest : MonoBehaviour{
 	[Range(0.0f, 1.0f)]
 	public float Power = 0.5f;
+
+	public Vector3 BackupColor = Vector3.zero;
 	void Update() {
 		/*var descriptor = new RenderTextureDescriptor(128, 128) {
 			autoGenerateMips = false,
@@ -33,7 +35,10 @@ public class TransparencyInfillTest : MonoBehaviour{
 
 		var output = TextureView.GetByName("Output").ResizeRenderTexture(input.width, input.height);
 
-		new TransparencyInfill(input) { Power = Power }.PreciseAssignTo(output);
+		new TransparencyInfill(input) {
+			Power = Power,
+			BackupColor = BackupColor
+		}.PreciseAssignTo(output);
 
     }
 	

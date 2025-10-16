@@ -32,7 +32,10 @@ namespace ImageMath {
             using var temp = GetTempRenderTexture(previousPowerOfTwoWidth, previousPowerOfTwoHeight, true, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
             new TextureCopy(Texture).AssignTo(temp.Value);
             temp.Value.GenerateMips();
-            new TransparencyInfill(temp.Value) { Power = Power }.AssignTo(renderTexture);
+            new TransparencyInfill(temp.Value) {
+                Power = Power,
+                BackupColor = BackupColor
+            }.AssignTo(renderTexture);
             if (preciseLastMip)
                 new TextureCopy(Texture).PremultipliedAlphaBlendTo(renderTexture);
         }
