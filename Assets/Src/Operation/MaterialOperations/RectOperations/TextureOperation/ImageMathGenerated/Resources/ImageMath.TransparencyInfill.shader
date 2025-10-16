@@ -14,7 +14,7 @@ Shader "ImageMath/TransparencyInfill"{
         #define SquareRootOf2 1.4142135623730950488016887242097
         #define Epsilon 10e-6
 
-
+        SamplerState  sampler_Linear_Clamp;
 
         struct VSI {
             float4 position : POSITION;
@@ -31,6 +31,7 @@ Shader "ImageMath/TransparencyInfill"{
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
         float Power;
+        float3 BackupColor;
         Texture2D<float4> Texture;
         SamplerState samplerTexture;
         float2 Position;
@@ -50,10 +51,10 @@ Shader "ImageMath/TransparencyInfill"{
             uint2 textureSize = 0;
             uint levels = 0;
             Texture.GetDimensions(0, textureSize.x, textureSize.y, levels);
-            float4 color = Texture.SampleLevel(samplerTexture, input.uv, levels-1);
+            float4 color = Texture.SampleLevel(sampler_Linear_Clamp, input.uv, levels-1);
             color /= color.a;
             for (int i = levels-2; i >= 0; i--){
-                float4 nextColor = Texture.SampleLevel(samplerTexture, input.uv, i);
+                float4 nextColor = Texture.SampleLevel(sampler_Linear_Clamp, input.uv, i);
                 color.a = nextColor.a;
                 if (nextColor.a < Epsilon) continue;
             

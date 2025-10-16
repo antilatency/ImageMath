@@ -5,6 +5,7 @@ namespace ImageMath {
 		protected override void ApplyShaderParameters() {
 			base.ApplyShaderParameters();
 			SetFloat("Power", Power);
+			SetVector("BackupColor", BackupColor);
 		}
 	}
 }
