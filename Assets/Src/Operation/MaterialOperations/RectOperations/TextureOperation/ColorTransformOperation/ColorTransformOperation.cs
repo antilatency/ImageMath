@@ -1,6 +1,6 @@
 using UnityEngine;
 #nullable enable
-namespace ImageMath{
+namespace ImageMath {
     [FilePath]
     public abstract partial record ColorTransformOperation : TextureOperation {
         public ColorTransformOperation(Texture texture) : base(texture) { }

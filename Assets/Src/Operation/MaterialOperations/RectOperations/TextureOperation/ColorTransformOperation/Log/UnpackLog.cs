@@ -1,6 +1,8 @@
 using UnityEngine;
 #nullable enable
 namespace ImageMath {
+
+
     [FilePath]
     public partial record UnpackLog : ColorTransformOperation {
         public float WhiteLevel = 1f;
@@ -15,15 +17,18 @@ namespace ImageMath {
         public UnpackLog() : base() { }
         public static string GetColorTransform() {
             return @"
-float4 x = inputColor;
-x.rgb = (x.rgb - BlackLevel) * ExponentScale;
-x.rgb = pow(2, x.rgb) - 1;
-x.rgb *= Multiplier;
-return x;";
+float3 x = inputColor.rgb;
+x = x - BlackLevel;
+x *= ExponentScale;
+x = pow(2, x) - 1;
+x *= Multiplier;
+return float4(x, inputColor.a);
+";
         }
 
         static float ConvertInternal(float x, float b, float es, float mult) {
-            x = (x - b) * es;
+            x = x - b;
+            x *= es;
             x = Mathf.Pow(2, x) - 1;
             x *= mult;
             return x;

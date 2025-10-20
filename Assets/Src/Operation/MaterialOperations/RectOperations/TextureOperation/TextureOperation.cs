@@ -1,9 +1,9 @@
 using ImageMath;
 using UnityEngine;
-namespace ImageMath{
+namespace ImageMath {
     [FilePath]
-    public abstract partial record TextureOperation: RectOperation {
-        public Texture Texture {get; set;}
+    public abstract partial record TextureOperation : RectOperation {
+        public Texture Texture { get; set; }
 
         public TextureOperation(Texture texture) {
             Texture = texture;
@@ -12,6 +12,4 @@ namespace ImageMath{
             Texture = null;
         }
     }
-
-
 }

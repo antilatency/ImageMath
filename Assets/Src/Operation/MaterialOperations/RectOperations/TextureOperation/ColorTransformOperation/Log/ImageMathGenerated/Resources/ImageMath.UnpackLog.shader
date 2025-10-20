@@ -50,11 +50,12 @@ Shader "ImageMath/UnpackLog"{
         
         float4 frag(VSO input) : SV_Target {
             float4 inputColor = Texture.Sample(samplerTexture, input.uv);
-            float4 x = inputColor;
-            x.rgb = (x.rgb - BlackLevel) * ExponentScale;
-            x.rgb = pow(2, x.rgb) - 1;
-            x.rgb *= Multiplier;
-            return x;
+            float3 x = inputColor.rgb;
+            x = x - BlackLevel;
+            x *= ExponentScale;
+            x = pow(2, x) - 1;
+            x *= Multiplier;
+            return float4(x, inputColor.a);
         }
 
         ENDCG

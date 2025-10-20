@@ -83,7 +83,8 @@ namespace ImageMath {
 
 
         public static CacheItem<RenderTexture> GetTempRenderTexture(
-        int width, int height = 0, bool useMipMap = false, FilterMode filterMode = FilterMode.Bilinear, RenderTextureFormat format = RenderTextureFormat.ARGBFloat,
+            int width, int height = 0, bool useMipMap = false, FilterMode filterMode = FilterMode.Bilinear
+            , RenderTextureFormat format = RenderTextureFormat.ARGBFloat,
 
         [CallerFilePath] string file = "",
         [CallerLineNumber] int line = 0
@@ -93,7 +94,7 @@ namespace ImageMath {
                 Height = height,
                 Width = width,
                 UseMipMap = useMipMap,
-                Format = format
+                Format = format                
             };
             var item = Cache.Static.GetByDescription<RenderTexture>(description);
             if (item == null) {

@@ -304,7 +304,7 @@ namespace ImageMath {
 
         private IEnumerable<ReadFrameStatus> ReadFrame(Stream stream) {
             int offset = 0;
-            int bytesToRead = FrameBuffer.Length;
+            int bytesToRead = FrameBuffer!.Length;
             while (bytesToRead > 0) {
                 int bytesRead = stream.Read(FrameBuffer, offset, bytesToRead);
                 if (bytesRead == 0) {
