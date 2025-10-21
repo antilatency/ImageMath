@@ -171,7 +171,7 @@ public class LogTest : MonoBehaviour{
 		}.AssignTo(linear);
 
 
-		var unpackOperation = new UnpackBlackmagicDesignFilmGen5(linear);
+		var unpackOperation = TransferFunctions.UnpackBlackmagicDesignFilmGen5(linear);
 
 		var a = GetRow0R((Texture2D)bdfg5);
 		var b = GetLinear(bdfg5.width);
@@ -249,7 +249,7 @@ public class LogTest : MonoBehaviour{
 		}
 		//Handles.color = Color.red;
 		var b = GetLinear(bdfg5.width);
-		var unpackOperation = new UnpackBlackmagicDesignFilmGen5(null);
+		var unpackOperation = TransferFunctions.UnpackBlackmagicDesignFilmGen5();
 		var transformed = Transform(b, unpackOperation);
 		Handles.color = Color.red;
 		DrawFunctionGraph(transformed);
