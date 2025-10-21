@@ -172,6 +172,7 @@ public class LogTest : MonoBehaviour{
 
 
 		var unpackOperation = TransferFunctions.UnpackBlackmagicDesignFilmGen5(linear);
+		var packOperation = TransferFunctions.PackBlackmagicDesignFilmGen5();
 
 		var a = GetRow0R((Texture2D)bdfg5);
 		var b = GetLinear(bdfg5.width);
@@ -225,6 +226,11 @@ public class LogTest : MonoBehaviour{
 		//Packed = packOperation.Convert(TestValue);
 		//Unpacked = unpackOperation.Convert(Packed);
 
+		var roundTrip = TextureView.GetByName("RoundTrip").ResizeRenderTexture(linear.width, linear.height);
+		TransferFunctions.PackBlackmagicDesignFilmGen5(unpacked).AssignTo(roundTrip);
+
+		var roundTripDiff = TextureView.GetByName("RoundTripDiff").ResizeRenderTexture(linear.width, linear.height);
+		new AbsDiffOperation(linear, roundTrip, DiffMultiplier).AssignTo(roundTripDiff);
 
     }
 
