@@ -1,4 +1,4 @@
-﻿namespace ImageMath {
+namespace ImageMath {
     [System.Flags]
     public enum ChannelMask : int {
         A = 1,
