@@ -8,7 +8,7 @@ namespace ImageMath {
         protected override RenderTexture CreateTexture(int size) {
             var dimensions = CalculateDimensions(size);
             return Static.CreateRenderTexture(dimensions.x, dimensions.y);
-        }        
+        }
     }
 
 }

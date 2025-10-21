@@ -14,7 +14,7 @@ namespace ImageMath {
     /*public abstract class FFMPEGSelectFilter {
         public abstract string GetFilter();
     }
-    
+
     public class FFMPEGSelectFilterRanges : FFMPEGSelectFilter {
         private readonly IList<Range> _ranges;
 
@@ -188,12 +188,12 @@ namespace ImageMath {
 
             if (filters.Count > 0) {
                 arguments.Append($"-vf \"{string.Join(",", filters)}\" ");
-            }            
+            }
 
             if (parameters.NumberOfFrames > 0) {
                 arguments.Append($"-frames:v {parameters.NumberOfFrames} ");
             }
-            
+
 
             arguments.Append($"-fps_mode passthrough -f rawvideo -pix_fmt {_ffmpegPixelFormat} -");
 
@@ -349,7 +349,7 @@ namespace ImageMath {
             }
             return $"scale={width}:{height}:flags={scaleFlags.ToString().ToLower()}";
         }
-        
+
 
 
     }

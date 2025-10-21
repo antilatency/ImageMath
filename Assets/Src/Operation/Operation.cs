@@ -59,7 +59,7 @@ namespace ImageMath {
         }
 
         protected static string IncludeOrEmbed(string? name = null, [System.Runtime.CompilerServices.CallerFilePath] string filePath = ""){
-            if (GeneratorSettings.IsDebugMode()) { 
+            if (GeneratorSettings.IsDebugMode()) {
                 return Include(name, filePath);
             }
             return Embed(name, filePath);
@@ -110,7 +110,7 @@ namespace ImageMath {
             Array.Copy(array, newArray, array.Length);
             return newArray;
         }
-        
+
         public static T[] ExpandArray<T>(IList<T> list, int newSize) {
             if (list == null) {
                 throw new ArgumentNullException(nameof(list));

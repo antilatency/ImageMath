@@ -5,7 +5,7 @@ namespace ImageMath {
 
 /// <summary>
 /// Solves the assignment problem using the Hungarian algorithm.
-/// 
+///
 /// Input:
 ///   A square cost matrix [h, w], where:
 ///     h = number of workers (rows)

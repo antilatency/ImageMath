@@ -20,7 +20,7 @@ public class DiscreteCosineTransformTest : MonoBehaviour
 
 	float[,] heights;
 
-    
+
 
 
 
@@ -40,7 +40,7 @@ public class DiscreteCosineTransformTest : MonoBehaviour
 			new Vector3(coefficients[0, 0], coefficients[0, 1], coefficients[0, 2]),
 			new Vector3(coefficients[1, 0], coefficients[1, 1], coefficients[1, 2]),
 			new Vector3(coefficients[2, 0], coefficients[2, 1], coefficients[2, 2])
-		};		
+		};
 		return packed;
 	}
 
@@ -54,7 +54,7 @@ public class DiscreteCosineTransformTest : MonoBehaviour
 		return coefficients;
 	}
 
-	
+
 	public bool CalculateCoefficients = true;
 
 #if UNITY_EDITOR
@@ -68,8 +68,8 @@ public class DiscreteCosineTransformTest : MonoBehaviour
 		} else {
 			c = UnpackFromV3(Coefficients);
 		}
-		 
-		
+
+
 		var r = dct.ReconstructFromCoefficients(c);
 		Reconstruction = PackToV3(r);
 

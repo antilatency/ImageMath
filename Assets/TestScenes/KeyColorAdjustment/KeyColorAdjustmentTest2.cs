@@ -24,7 +24,7 @@ public class KeyColorAdjustmentTest2 : MonoBehaviour {
 
 	[Range(-1, 1)]
 	public float AbsoluteChromaAdjustment = 0;
-	[Range(-1, 1)]	
+	[Range(-1, 1)]
 	public float AbsoluteBrightnessAdjustment = 0;
 
 	public Color[] KeyColors = new Color[] {
@@ -44,7 +44,7 @@ public class KeyColorAdjustmentTest2 : MonoBehaviour {
 	public void UpdateColorsTexture(Vector2[] chromas) {
 		var textureWidth = chromas.Length;
 		if (!ChromasTexture || ChromasTexture.width != textureWidth) {
-			if (ChromasTexture) { 
+			if (ChromasTexture) {
 				DestroyImmediate(ChromasTexture);
 			}
 			ChromasTexture = new Texture2D(textureWidth, 1, GraphicsFormat.R32G32_SFloat, TextureCreationFlags.None);
@@ -122,7 +122,7 @@ public class KeyColorAdjustmentTest2 : MonoBehaviour {
 			Color.white
 		);
 		DisplayMaterial.SetVector("_ChromaRect", new Vector4(rect.xMin, rect.yMin, rect.width, rect.height));
-			
+
 		//unit rectangle
 		Handles.DrawSolidRectangleWithOutline(
 			new Rect(0f, 0f, 1f, 1f),
@@ -173,7 +173,7 @@ public class KeyColorAdjustmentTest2 : MonoBehaviour {
 
 		var colorsOffset = 2 + KeyColors.Length;
 		var chromasTexturePixels = new Vector2[colorsOffset];
-		
+
 		chromasTexturePixels[0] = adjustedChroma;
 		chromasTexturePixels[1] = averageChroma;
 		for (int i = 0; i < KeyColors.Length; i++) {

@@ -19,13 +19,13 @@ namespace ImageMath{
                 return "Texture2D<float4>";
             }
         }
-                
+
         public override string GetHLSLDeclaration() {
             return
                 $"{GetHLSLTextureType()} {GetShaderVariableName()};"
                 + $"\nSamplerState sampler{GetShaderVariableName()};";
         }
-        
+
         private TextureParameter(PropertyInfo propertyInfo) : base(propertyInfo) {}
 
         public new static TextureParameter? Create(PropertyInfo propertyInfo) {
@@ -34,6 +34,6 @@ namespace ImageMath{
                 return new TextureParameter(propertyInfo);
             }
             return null;
-        } 
+        }
     }
 }

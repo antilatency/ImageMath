@@ -4,7 +4,7 @@ using UnityEngine;
 #nullable enable
 namespace ImageMath {
     public abstract class LUT3DBase<T>: IDisposable where T : Texture{
-        public string? Title { get; set; }        
+        public string? Title { get; set; }
         public Vector3 DomainMin { get; set; } = Vector3.zero;
         public Vector3 DomainMax { get; set; } = Vector3.one;
         public T Texture { get; protected set; }
@@ -27,7 +27,7 @@ namespace ImageMath {
                 GameObject.DestroyImmediate(Texture);
             }
         }
-        
+
         public void SetData(Vector4[] cells, bool apply = true) {
             if (Texture == null) {
                 throw new Exception("LUT3DFlat: Texture is null, cannot set pixel data.");
@@ -82,7 +82,7 @@ namespace ImageMath {
 
             Vector4[] data = new Vector4[size * size * size];
             for (int i = 0; i < data.Length; i++) {
-                
+
                 if (line == null) {
                     return null;
                 }
@@ -101,7 +101,7 @@ namespace ImageMath {
 
         public static string ToCubeFileContent(LUT3DBase<T> lut) {
             var result = new System.Text.StringBuilder();
-            
+
             result.AppendLine($"LUT_3D_SIZE {lut.Size}");
             result.AppendLine($"DOMAIN_MIN {lut.DomainMin.x} {lut.DomainMin.y} {lut.DomainMin.z}");
             result.AppendLine($"DOMAIN_MAX {lut.DomainMax.x} {lut.DomainMax.y} {lut.DomainMax.z}");
@@ -112,7 +112,7 @@ namespace ImageMath {
                 var cell = cells[i];
                 result.AppendLine($"{cell.x} {cell.y} {cell.z}");
             }
-            
+
             return result.ToString();
         }
 

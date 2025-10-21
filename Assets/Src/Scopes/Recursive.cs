@@ -26,7 +26,7 @@ namespace Scopes {
             if (Prefix != null) {
                 for (int i = 0; i < Prefix.Length; i++) {
                     builder.Append('\t', indent+i).AppendLine(Prefix[i]);
-                }                
+                }
             }
             _content?.Build(builder, indent + Prefix.Length);
 

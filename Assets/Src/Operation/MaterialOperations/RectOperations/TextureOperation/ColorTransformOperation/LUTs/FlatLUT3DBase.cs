@@ -11,9 +11,9 @@ namespace ImageMath {
             int numPixels = size * size * size;
             int width;
             int height;
-            
+
             if (size* size <= 4096){
-                width = size; 
+                width = size;
                 height = size*size;
             } else {
 
@@ -31,7 +31,7 @@ namespace ImageMath {
             var data = Texture.GetRawTextureData();
             var result = new LUT3D(size, Title, DomainMin, DomainMax);
             result.SetData(data);
-            return result; 
+            return result;
         }
 
 

@@ -10,7 +10,7 @@ namespace ImageMath {
             GreaterOrEqual,
             LessOrEqual
         }
-        
+
         public CompareOperation Operation = CompareOperation.Equal;
 
         public Vector4 Reference { get; set; } = new Vector4(1, 1, 1, 1);
@@ -57,7 +57,7 @@ float4 result;
 if (EqualOperation)
     result = difference == 0;
 else
-    result = difference > 0; 
+    result = difference > 0;
 return {nameof(PostInverse)}?(1-result):result;";
         }
     }

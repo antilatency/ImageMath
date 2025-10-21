@@ -24,12 +24,12 @@ public class PixelRegionTest : MonoBehaviour{
 		pixelRegionTexture.filterMode = FilterMode.Point;
 		new PixelRegion(inputTexture, Offset, MipLevel){ ClampPixelCoordinates = ClampPixelCoordinates }.AssignTo(pixelRegionTexture);
     }
-	
+
 #if UNITY_EDITOR
 	public void OnDrawGizmos() {
 		Handles.matrix = transform.localToWorldMatrix;
-		
-		Handles.matrix = Matrix4x4.identity;		
+
+		Handles.matrix = Matrix4x4.identity;
 	}
 #endif
 }

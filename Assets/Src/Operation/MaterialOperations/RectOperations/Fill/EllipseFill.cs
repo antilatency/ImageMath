@@ -6,7 +6,7 @@ namespace ImageMath{
         public Vector4 OuterColor {get; set;} = Vector4.zero;
         public Vector2 Center {get; set;} = Vector3.one * 0.5f;
         public Vector2 Radius {get; set;} = Vector3.one * 0.5f;
-        
+
         public EllipseFill(Vector4 innerColor, Vector4? outerColor = null, Vector2? center = null, Vector2? radius = null) {
             InnerColor = innerColor;
             OuterColor = outerColor ?? Vector4.zero;
@@ -21,5 +21,5 @@ float2 innerSpace = (input.uv - Center) / Radius;
 float r = length(innerSpace);
 return lerp(InnerColor, OuterColor, r>=1);";
         }
-    }        
+    }
 }

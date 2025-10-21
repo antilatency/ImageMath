@@ -106,7 +106,7 @@ namespace ImageMath {
         public override void SetMatrixArray(string name, Matrix4x4[] values) => ComputeShader.SetMatrixArray(name, values);
 
         public override void SetTexture(string name, Texture value) => ComputeShader.SetTexture(0, name, value);
-        
+
         public override void EnableKeyword(string name) => ComputeShader.EnableKeyword(name);
         public override void DisableKeyword(string name) => ComputeShader.DisableKeyword(name);
     }

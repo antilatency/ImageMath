@@ -61,7 +61,7 @@ namespace ImageMath {
             return ExecuteUsingExternalBuffer<int>(computeBuffer);
         }
 
-        public static float[] Normalize(int[] values) { 
+        public static float[] Normalize(int[] values) {
             if (values == null || values.Length == 0) {
                 return new float[0];
             }
@@ -74,7 +74,7 @@ namespace ImageMath {
                 normalized[i] = values[i] / (float)max;
             }
             return normalized;
-        } 
+        }
 
     }
 }

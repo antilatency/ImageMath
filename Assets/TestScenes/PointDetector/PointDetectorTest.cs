@@ -45,13 +45,13 @@ public class PointDetectorTest : MonoBehaviour {
         if (inputH == null || inputH.Texture == null) {
             Debug.LogError("InputH texture is null");
         } else {
-            var detector = new PointDetector(inputH.Texture, 4) { 
+            var detector = new PointDetector(inputH.Texture, 4) {
                 Selector = new Vector4(1, 0, 0, 0)
             };
             var pointsH = detector.GetPointsUVSpace(out var maxSegmentsInRowExceededH);
             if (maxSegmentsInRowExceededH) {
                 Debug.LogError("Max segments in row exceeded: " + 4);
-            }   
+            }
             var corners = pointsH.Select(a => a.Center).ToArray();
 
             var sortedCorners = Homography.SortCorners(corners);
@@ -59,7 +59,7 @@ public class PointDetectorTest : MonoBehaviour {
             var homographyCropResult = TextureView.GetByName("HomographyCropResult").ResizeRenderTexture(256,256);
             new HomographyCrop((a, b) => Accord.Math.Matrix.Solve(a, b), inputH.Texture, sortedCorners)
             .Scale(Vector2.one * 2f, Vector2.one * 0.5f)
-            .AssignTo(homographyCropResult);          
+            .AssignTo(homographyCropResult);
 
         }
 
@@ -110,10 +110,10 @@ public class PointDetectorTest : MonoBehaviour {
             }).ToArray();
             Handles.DrawPolyLine(points);
         }
-        
 
 
 
-    }   
+
+    }
 
 }

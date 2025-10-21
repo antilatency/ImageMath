@@ -7,7 +7,7 @@ namespace ImageMath{
         public AverageWeightedByAlphaOperation() : base() { }
         public static new string GetInitialization() => "a.rgb = a.rgb * a.a;";
         public static string GetOperation() => "a += float4(b.rgb * b.a, b.a);";
-        
+
         public static new string GetFinalization() => "a.rgb /= (a.a + (a.a==0)); a.a /= maxPixelsPerBlock;";
 
         public static Vector3 DivideByAlpha(Vector4 vector){
@@ -25,6 +25,6 @@ namespace ImageMath{
             return DivideByAlpha(sum);
         }
 
-        
+
     }
 }

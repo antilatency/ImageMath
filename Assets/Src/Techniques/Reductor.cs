@@ -30,7 +30,7 @@ namespace ImageMath {
             var width = texture.width;
             var height = texture.height;
 
-            
+
 
             List<CacheItem<RenderTexture>> mips = new();
 
@@ -52,13 +52,13 @@ namespace ImageMath {
                 operation.Texture = source;
                 operation.AssignTo(dest);
                 source = dest;
-            }            
+            }
 
             var result = source.GetRawTextureData();
             for (int i = 0; i < mips.Count; i++) {
                 mips[i].Dispose();
             }
-            
+
             return result[0];
         }
     }

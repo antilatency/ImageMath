@@ -44,7 +44,7 @@ Shader "Hidden/KeyColorAdjustmentTest2"
             float4 _ChromaRect;
 
             Texture2D<float4> _ChromasTexture;
-            
+
             float4 DrawCircle(float2 center, float radius, float thickness, float4 color, float4 inputColor, float2 uv){
                 float dist = distance(uv, center);
                 float offset = 1- min(1,abs(dist - radius) / thickness);
@@ -87,10 +87,10 @@ Shader "Hidden/KeyColorAdjustmentTest2"
                 static const float4 markerColor = float4(0,0,0, 1);
 
                 float4 color = float4(0, 0, 0, 1);
-                
+
                 if (input.uv.x>0.5){
                     float2 uv = input.uv;
-                    uv.x = 2*(uv.x - 0.5);   
+                    uv.x = 2*(uv.x - 0.5);
                     uint2 ChromasAndColorsTextureSize;
                     _ChromasTexture.GetDimensions(ChromasAndColorsTextureSize.x, ChromasAndColorsTextureSize.y);
 
@@ -99,7 +99,7 @@ Shader "Hidden/KeyColorAdjustmentTest2"
 
                     float2 localUv = uv*_ChromaRect.zw + _ChromaRect.xy;
                     color = float4(localUv.x * _GlobalAxisX + localUv.y * _GlobalAxisY , 1);
-                    
+
                     color = DrawCross(GetChromaLocal(0), 2*scale, adjustedColorMarkerColor, color, uv);
                     color = DrawCircle(GetChromaLocal(0), 0.04, 2*scale, adjustedColorMarkerColor, color, uv);
                     color = DrawCircle(GetChromaLocal(1), 0.03, 2*scale, averageColorMarkerColor, color, uv);
@@ -110,10 +110,10 @@ Shader "Hidden/KeyColorAdjustmentTest2"
                         color = DrawCircle(chroma, 0.01, 2*scale, markerColor, color, uv);
                     }
 
-                    
+
                 } else {
                     float2 uv = input.uv;
-                    uv.x = 2*uv.x; 
+                    uv.x = 2*uv.x;
                     float scale = ddx(uv.x);
 
                     bool inRect = InRect(uv, _ChromaRect);

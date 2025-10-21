@@ -9,7 +9,7 @@ namespace ImageMath {
         protected override Texture2D CreateTexture(int size) {
             var dimensions = CalculateDimensions(size);
             return Static.CreateTexture2DFloat4(dimensions.x, dimensions.y);
-        }   
+        }
 
         public static FlatLUT3D? CreateFromCubeFileContent(string content, bool apply = true) {
             return ParseLUT3D(content,

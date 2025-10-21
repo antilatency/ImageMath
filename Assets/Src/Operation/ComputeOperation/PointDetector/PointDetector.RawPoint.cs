@@ -39,10 +39,10 @@ namespace ImageMath {
                 SXX += globalSxx;
                 SXY += globalSx * yd;
                 SYY += yd * yd * segment.s;
-            }                
+            }
 
             public Vector2 Center => new Vector2((float)(SX / S), (float)(SY / S));
-            public (Vector2 axisX, Vector2 axisY) GetEllipseAxes() { 
+            public (Vector2 axisX, Vector2 axisY) GetEllipseAxes() {
                 var (axisX, axisY) = GetEllipseAxesXYL();
                 return (
                     new Vector2(axisX.x * axisX.z, axisX.y * axisX.z),

@@ -37,7 +37,7 @@ namespace ImageMath{
             }
             if (_propertyInfo.PropertyType == typeof(bool)) {
                 return $"_ {_propertyInfo.Name}";
-            }            
+            }
             if (_propertyInfo.PropertyType == typeof(int)) {
                 var attribute = _propertyInfo.GetCustomAttribute<MulticompileOptionsAttribute>()!;
                 if (attribute.Min < 0 || attribute.Max <= attribute.Min) {
@@ -62,7 +62,7 @@ namespace ImageMath{
             if (_propertyInfo.PropertyType == typeof(bool)) {
                 return $"if ({_propertyInfo.Name}) EnableKeyword(\"{_propertyInfo.Name}\"); else DisableKeyword(\"{_propertyInfo.Name}\");";
             }
-            if (_propertyInfo.PropertyType == typeof(int)) { 
+            if (_propertyInfo.PropertyType == typeof(int)) {
                 var attribute = _propertyInfo.GetCustomAttribute<MulticompileOptionsAttribute>()!;
                 if (attribute.Max <= attribute.Min) {
                     string error = $"For integer properties, MulticompileOptionsAttribute must have valid Min and Max values. Property: {_propertyInfo.DeclaringType.FullName}.{_propertyInfo.Name}";
@@ -71,7 +71,7 @@ namespace ImageMath{
                 }
                 return $"SetEnumKeyword(\"{_propertyInfo.Name}\", {_propertyInfo.Name}, {attribute.Min}, {attribute.Max});";
             }
-            { 
+            {
                 var error = $"Unsupported type for multicompile options: {_propertyInfo.PropertyType} {_propertyInfo.Name}";
                 Debug.LogError(error);
                 return $"//Error: {error}";

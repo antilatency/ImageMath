@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEngine;
 #nullable enable
 namespace ImageMath{
-    
+
     public static class ShaderSetGlobalUtils {
         public static void SetGlobalVectorInt(string name, Vector2Int value) {
             Shader.SetGlobalVector(name, new Vector4(value.x, value.y, 0, 0));

@@ -75,7 +75,7 @@ public class FFMpegTest : MonoBehaviour{
 		var filePath = EditorUtility.OpenFilePanel("Open YUV FHD", "", "yuv");
 		if (string.IsNullOrEmpty(filePath)) return;
 		YUVFilePath = filePath;
-		
+
 
 #endif
 	}
@@ -116,14 +116,14 @@ public class FFMpegTest : MonoBehaviour{
 		var resultUnpackedFromSRGB = TextureView.GetByName("UnpackYUVResultFromSRGB").ResizeRenderTexture(1920, 1080);
 		new UnpackSRGB(result).FlipY().AssignTo(resultUnpackedFromSRGB);
 		*/
-			
+
     }
-	
+
 #if UNITY_EDITOR
 	public void OnDrawGizmos() {
 		Handles.matrix = transform.localToWorldMatrix;
-		
-		Handles.matrix = Matrix4x4.identity;		
+
+		Handles.matrix = Matrix4x4.identity;
 	}
 #endif
 }

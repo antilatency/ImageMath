@@ -33,7 +33,7 @@ namespace ImageMath {
                 Position = -(invSize - Vector2.one) * position
             };
         }
-        
+
         public static T Scale<T>(this T _this, Vector2 scale, Vector2 relativeTo) where T : RectOperation {
             var invSize = new Vector2(1/scale.x, 1/scale.y);
             return _this with {
@@ -44,6 +44,6 @@ namespace ImageMath {
     }
 
 
-    
+
 
 }

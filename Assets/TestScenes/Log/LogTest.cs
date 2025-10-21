@@ -128,7 +128,7 @@ public class LogTest : MonoBehaviour{
 				hessian[p, q] = hess;
 			}
 		}
-		return (gradient, hessian);			
+		return (gradient, hessian);
 	}
 
 	public InspectorButton _Optimize;
@@ -183,7 +183,7 @@ public class LogTest : MonoBehaviour{
 
 
 
-		/*unpackOperation.Solve(points, (a, b) => { 
+		/*unpackOperation.Solve(points, (a, b) => {
 			Accord.Math.Decompositions.CholeskyDecomposition cholesky = new Accord.Math.Decompositions.CholeskyDecomposition(a);
 			var result = cholesky.Solve(b);
 			return result;
@@ -204,14 +204,14 @@ public class LogTest : MonoBehaviour{
 		packOperation.AssignTo(log);
 
 
-		
+
 
 		var unpacked = TextureView.GetByName("Unpacked").ResizeRenderTexture(256, 256);
-		
+
 		unpackOperation.AssignTo(unpacked);*/
 
 		var diff = TextureView.GetByName("Diff").ResizeRenderTexture(linear.width, linear.height);
-		
+
 		new AbsDiffOperation(bdfg5, unpacked, DiffMultiplier).AssignTo(diff);
 
 

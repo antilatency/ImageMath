@@ -21,7 +21,7 @@ namespace ImageMath{
         //public override string GetPrefix() => $"A{_size}{GetElementTypePrefix()}";
         public override string GetShaderParameterAssignmentCode() {
             var info = StructParameter.SupportedTypes[_elementType];
-            
+
             var result = $"{info.setMethodName}Array(\"{GetShaderVariableName()}\", ExpandArray({_propertyInfo.Name},{_size}));";
             if (_isDynamicArray) {
                 result = $"{result}\nShader.SetGlobalInt(\"{GetShaderVariableName()}_Size\", {_propertyInfo.Name}.{_sizeAccessor});";
@@ -32,7 +32,7 @@ namespace ImageMath{
                          $"{result}\n" +
                          "}";*/
             }
-            return result; 
+            return result;
         }
 
         public override string GetHLSLDeclaration() {
@@ -58,7 +58,7 @@ namespace ImageMath{
 
         public new static ArrayParameter? Create(PropertyInfo propertyInfo) {
             var type = propertyInfo.PropertyType;
-            
+
             bool typeIsGenericIList = type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IList<>);
             if (!type.IsArray && !typeIsGenericIList) return null;
 
@@ -78,6 +78,6 @@ namespace ImageMath{
 
             return new ArrayParameter(propertyInfo, elementType, isDynamicArray, size);
 
-        } 
+        }
     }
 }

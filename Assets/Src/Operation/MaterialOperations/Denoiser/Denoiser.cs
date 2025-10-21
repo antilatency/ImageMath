@@ -52,7 +52,7 @@ namespace ImageMath{
 static const float dctBases[{n * n}] = {{{string.Join(",", bases)}}};";
             return code;
         }
-        
+
 #if UNITY_EDITOR
         public static string GetCustomCode() {
             var stringBuilder = new System.Text.StringBuilder();
@@ -68,7 +68,7 @@ static const float dctBases[{n * n}] = {{{string.Join(",", bases)}}};";
         }
 
         public static string GetFragmentShaderBody() => Embed($"{nameof(Denoiser)}.FragmentShaderBody.cginc");
- #endif       
+ #endif
     }
 
 

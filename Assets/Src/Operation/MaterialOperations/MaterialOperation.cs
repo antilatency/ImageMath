@@ -62,7 +62,7 @@ namespace ImageMath {
             var previousRT = RenderTexture.active;
             ApplyChannelMask();
             ApplyRenderTargetSize(renderTexture);
-            
+
             ApplyShaderParameters();
             ApplyCustomShaderParameters();
 

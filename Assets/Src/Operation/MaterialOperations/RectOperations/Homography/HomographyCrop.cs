@@ -26,7 +26,7 @@ namespace ImageMath {
 
         }
 
-#if UNITY_EDITOR        
+#if UNITY_EDITOR
         public static string GetFragmentShaderBody() => Embed("HomographyCrop.FragmentShaderBody.cginc");
 #endif
 
@@ -34,5 +34,5 @@ namespace ImageMath {
     }
 
 
-    
+
 }

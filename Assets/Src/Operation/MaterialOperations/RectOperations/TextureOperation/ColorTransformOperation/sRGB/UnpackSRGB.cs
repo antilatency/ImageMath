@@ -23,7 +23,7 @@ return float4(x.r, x.g, x.b, inputColor.a);";
             x.z = Convert(x.z);
             return x;
         }
-        
+
         public override ColorTransformOperation CreateInverse(Texture? texture = null) {
             return new PackSRGB {
                 Texture = texture

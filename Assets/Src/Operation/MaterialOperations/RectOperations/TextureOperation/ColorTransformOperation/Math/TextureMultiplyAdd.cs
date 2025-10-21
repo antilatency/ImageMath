@@ -1,7 +1,7 @@
 using UnityEngine;
 #nullable enable
 namespace ImageMath{
-    [FilePath]    
+    [FilePath]
     public partial record TextureMultiplyAdd : ColorTransformOperation {
         public Matrix4x4 Multiplier { get; set; } = Matrix4x4.identity;
         public Vector4 Increment { get; set; } = Vector4.zero;
@@ -51,7 +51,7 @@ return mul(Multiplier, inputColor) + Increment;";
         public override ColorTransformOperation CreateInverse(Texture? texture = null) {
             var inverseMultiplier = Multiplier.inverse;
             var inverseIncrement = -(inverseMultiplier * Increment);
-            return new TextureMultiplyAdd { 
+            return new TextureMultiplyAdd {
                 Texture = texture,
                 Multiplier = inverseMultiplier,
                 Increment = inverseIncrement

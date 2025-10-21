@@ -37,14 +37,14 @@ namespace ImageMath {
         public static void MultiplyRGB(this RenderTexture _this, float multiplier){
             _this.MultiplyRGB(Vector3.one * multiplier);
         }
-        
+
         public static void MultiplyRGB(this RenderTexture _this, Vector3 multiplier) {
             new ColorFill() {
                 ChannelMask = ChannelMask.RGB,
                 Color = multiplier
             }.MultiplyTo(_this);
         }
-        
+
         public static void Substruct(this RenderTexture _this, Texture right) {
             new TextureMultipliedByVector {
                 Texture = right,
@@ -94,7 +94,7 @@ namespace ImageMath {
                 Height = height,
                 Width = width,
                 UseMipMap = useMipMap,
-                Format = format                
+                Format = format
             };
             var item = Cache.Static.GetByDescription<RenderTexture>(description);
             if (item == null) {
@@ -114,7 +114,7 @@ namespace ImageMath {
         }
 
 
-        
+
 
         public static CacheItem<Texture2D> GetTempTexture2DFloat4(
             int width, int height = 0,
@@ -198,7 +198,7 @@ namespace ImageMath {
                 pixels = webCamTexture.GetPixels32();
             } else {
                 throw new NotImplementedException();
-            }            
+            }
             return pixels;
         }
 
@@ -245,7 +245,7 @@ namespace ImageMath {
             return pixels;
         }
 
-        public static Vector4[] GetRawTextureData(this RenderTexture renderTexture) {             
+        public static Vector4[] GetRawTextureData(this RenderTexture renderTexture) {
             using var texture = renderTexture.ToTempTexture();
             var pixels = texture.Value.GetRawTextureData<Vector4>().ToArray();
             return pixels;
@@ -295,7 +295,7 @@ namespace ImageMath {
             renderTexture.ToTexture(item.Value, apply);
             return item;
         }
-            
+
 
         public static Texture2D ToTexture(this RenderTexture renderTexture, Texture2D texture, bool apply = false) {
             if (texture == null) {
@@ -318,9 +318,9 @@ namespace ImageMath {
                  if (texture is Texture2D texture2D) {
                      renderTexture.ToTexture(texture2D, apply);
                  } else {
-                     throw new NotImplementedException();                
+                     throw new NotImplementedException();
                  }
-             }                
+             }
          }*/
 
         public static async Task SavePNGAsync(this Texture texture, string filePath) {
@@ -427,7 +427,7 @@ namespace ImageMath {
             texture.anisoLevel = 0;
             return texture;
         }
-        
+
         public static Texture2D CreateTexture2D(int width, int height, GraphicsFormat graphicsFormat, bool useMipMap = false ) {
             Texture2D texture;
             //Texture2D constructor bug avoided
@@ -442,7 +442,7 @@ namespace ImageMath {
             return texture;
         }
 
-        public static bool IsSRGBFormat(this GraphicsFormat graphicsFormat) { 
+        public static bool IsSRGBFormat(this GraphicsFormat graphicsFormat) {
             return GraphicsFormatUtility.IsSRGBFormat(graphicsFormat);
         }
 

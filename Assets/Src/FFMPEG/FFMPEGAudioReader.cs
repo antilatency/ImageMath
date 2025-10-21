@@ -16,7 +16,7 @@ namespace ImageMath {
             public short NumChannels;
             public int SampleRate;
         }
-        
+
         struct FormatChunk{
             public short AudioFormat;
             public short NumChannels;
@@ -72,7 +72,7 @@ namespace ImageMath {
 
                 if (chunkID == "fmt "){
                     formatChunk.AudioFormat = reader.ReadInt16();
-                    formatChunk.NumChannels = reader.ReadInt16();   
+                    formatChunk.NumChannels = reader.ReadInt16();
                     formatChunk.SampleRate = reader.ReadInt32();
                     formatChunk.BytePerSec = reader.ReadInt32();
                     formatChunk.BytePerBloc = reader.ReadInt16();
@@ -84,11 +84,11 @@ namespace ImageMath {
                     }
                 }
                 else if (chunkID == "data"){
-                    
-                    
+
+
                     if (formatChunk.BitsPerSample == 16 && formatChunk.NumChannels == 2 & formatChunk.AudioFormat == 1){
                         List<Vector2> samples = new();
-                        
+
                         var buffer = new byte[4096];
 
                         while (true) {
@@ -105,7 +105,7 @@ namespace ImageMath {
                                 var right = BitConverter.ToInt16(buffer, i + 2) / (float)short.MaxValue;
                                 samples.Add(new Vector2(left, right));
                             }
-                        }        
+                        }
                     }
                     else{
                         throw new Exception($"Unsupported data format: {formatChunk.BitsPerSample} bits per sample, {formatChunk.NumChannels} channels, audio format {(formatChunk.AudioFormat==0?"PCM":"IEEE 754 float")}");

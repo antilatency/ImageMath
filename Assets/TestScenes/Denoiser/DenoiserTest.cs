@@ -36,12 +36,12 @@ public class DenoiserTest : MonoBehaviour{
 		.AssignTo(output);
 
 	}
-	
+
 #if UNITY_EDITOR
 	public void OnDrawGizmos() {
 		Handles.matrix = transform.localToWorldMatrix;
-		
-		Handles.matrix = Matrix4x4.identity;		
+
+		Handles.matrix = Matrix4x4.identity;
 	}
 #endif
 }

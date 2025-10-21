@@ -6,7 +6,7 @@ using UnityEngine;
 namespace ImageMath{
     [FilePath]
     public partial record ConvexHullSelect : ColorTransformOperation{
-        
+
         [DynamicArray(64)]
         public Vector4[] Planes {get; set;} = null;
 
@@ -31,7 +31,7 @@ for (int p = 0; p < Planes_Size; p++){
     float distance = dot(plane.xyz, color) + plane.w;
     if (distance > 0){
         return 0;
-    }                 
+    }
 }
 return float4(color, 1);";
         }

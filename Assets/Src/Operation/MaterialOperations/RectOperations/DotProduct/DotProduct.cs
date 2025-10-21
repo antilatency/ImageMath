@@ -22,7 +22,7 @@ namespace ImageMath {
 
         public DotProduct(IList<Texture> textures, IList<float> weights)
             : this(textures, weights.Select(x => new Vector4(x, x, x, x)).ToList()) { }
-            
+
 
         public DotProduct(IList<Texture> textures, IList<Vector4> weights) {
             if (textures == null || weights == null) {
@@ -64,7 +64,7 @@ namespace ImageMath {
             stringBuilder.AppendLine("float4 frag(VSO input) : SV_Target {");
 
             stringBuilder.AppendLine($"float4 sum = {textureSample(0)} * Weights[0];");
-            
+
             for (int i = 1; i < 16; i++) {
                 stringBuilder.AppendLine($"#if {MakeIfStatement(i)}");
                 stringBuilder.AppendLine($"sum += {textureSample(i)} * Weights[{i}];");
@@ -75,7 +75,7 @@ namespace ImageMath {
             stringBuilder.AppendLine("}");
             return stringBuilder.ToString();
         }
-        
+
         protected override void ApplyCustomShaderParameters() {
             base.ApplyCustomShaderParameters();
             for (int i = 0; i < Textures.Count; i++) {

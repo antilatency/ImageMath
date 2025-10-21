@@ -21,7 +21,7 @@ public class CreateTestSceneAgent : MonoBehaviour {
         if (!typeof(MonoBehaviour).IsAssignableFrom(scriptType)) {
             Debug.LogError($"The script type '{scriptFullName}' is not a MonoBehaviour.");
         }
-        else { 
+        else {
             gameObject.AddComponent(scriptType);
         }
         DestroyImmediate(this);

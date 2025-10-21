@@ -22,7 +22,7 @@ public class Histogram3DTest : MonoBehaviour{
 		}*/
 		new UVFill() {
 		}.AssignTo(input);
-		new GradientFill { 
+		new GradientFill {
 			ColorB = new Vector4(0, 0, 1, 1),
 		}.AddTo(input);
 
@@ -35,7 +35,7 @@ public class Histogram3DTest : MonoBehaviour{
 		}
 	}
 
-	public bool DrawCubes = true; 
+	public bool DrawCubes = true;
 
 #if UNITY_EDITOR
 	public void OnDrawGizmos() {

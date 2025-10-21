@@ -14,7 +14,7 @@ using UnityEditor;
 [ExecuteAlways]
 public class DotProductTest : MonoBehaviour{
 	[Serializable]
-	public struct Pair { 
+	public struct Pair {
 		public Texture Texture;
 		public Color Weight;
 
@@ -34,22 +34,22 @@ public class DotProductTest : MonoBehaviour{
 		}
 
 		var result = TextureView.GetByName("Result").ResizeRenderTexture(firstTexture.width, firstTexture.height);
-		
+
 		new DotProduct(
 			Elements.Select(x => x.Texture).ToList(),
-			Elements.Select(x => { 
+			Elements.Select(x => {
 				var linearWeight = x.Weight.linear;
 				return new Vector4(linearWeight.r, linearWeight.g, linearWeight.b, linearWeight.a);
 			}).ToList()
 		).AssignTo(result);
 
 	}
-	
+
 #if UNITY_EDITOR
 	public void OnDrawGizmos() {
 		Handles.matrix = transform.localToWorldMatrix;
-		
-		Handles.matrix = Matrix4x4.identity;		
+
+		Handles.matrix = Matrix4x4.identity;
 	}
 #endif
 }

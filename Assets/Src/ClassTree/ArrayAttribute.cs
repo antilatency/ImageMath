@@ -8,12 +8,12 @@ namespace ImageMath{
         public int Size { get; protected set;}
     }
 
-    public class FixedArrayAttribute : ArrayAttribute {        
+    public class FixedArrayAttribute : ArrayAttribute {
         public FixedArrayAttribute(int size) {
             Size = size;
         }
     }
-    
+
     public class DynamicArrayAttribute : ArrayAttribute {
         public DynamicArrayAttribute(int maxSize) {
             Size = maxSize;

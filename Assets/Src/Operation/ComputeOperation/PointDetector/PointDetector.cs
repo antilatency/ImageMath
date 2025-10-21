@@ -42,7 +42,7 @@ namespace ImageMath {
         }
 
         public Segment[] GetSegments() {
-            
+
             var segments = ExecuteInternal<Segment>();
 
             return segments;
@@ -68,11 +68,11 @@ namespace ImageMath {
             return points;
         }
 
-        public List<RawPoint> GetPointsPixelSpace(out bool maxSegmantsInRowExceeded) { 
+        public List<RawPoint> GetPointsPixelSpace(out bool maxSegmantsInRowExceeded) {
             var segments = GetSegments();
             return GetPointsPixelSpace(segments, out maxSegmantsInRowExceeded);
         }
-        
+
         public List<RawPoint> GetPointsPixelSpace(Segment[] segments, out bool maxSegmantsInRowExceeded) {
 
 
@@ -178,7 +178,7 @@ namespace ImageMath {
         public struct Segment {
             public ushort length;
             public ushort start;
-            
+
             public float s;
             public float sx;
             public float sxx;

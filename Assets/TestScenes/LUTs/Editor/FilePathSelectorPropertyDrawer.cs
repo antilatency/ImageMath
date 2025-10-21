@@ -5,13 +5,13 @@ using UnityEngine;
 [CustomPropertyDrawer(typeof(FilePathSelectorAttribute))]
 public class FilePathSelectorPropertyDrawer : PropertyDrawer
 {
-    
+
     private Action delayedAction;
     public void delay() {
         delayedAction();
     }
 
-    
+
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label){
 
         FilePathSelectorAttribute filePathSelectorAttribute = (FilePathSelectorAttribute)attribute;

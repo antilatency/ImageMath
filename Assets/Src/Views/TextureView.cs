@@ -59,10 +59,10 @@ namespace ImageMath.Views{
                     material.SetInt("_DstBlend", (int)BlendMode.OneMinusSrcAlpha);
                     break;
             }
-        } 
+        }
 
         void UpdateMeshRenderer(){
-            
+
 
             if (!Texture || Texture==null)
                 return;
@@ -100,7 +100,7 @@ namespace ImageMath.Views{
             Vector3 scale = Vector3.one;
             switch (ResizeMode) {
                 case ResizeModeOptions.Height:
-                    scale.y = (float)Texture.height / Texture.width;                
+                    scale.y = (float)Texture.height / Texture.width;
                     break;
 
                 case ResizeModeOptions.Width:
@@ -182,10 +182,10 @@ namespace ImageMath.Views{
                 UpdateMeshRenderer();
             }
 
-            
 
 
-            
+
+
         }
 
 
@@ -262,7 +262,7 @@ namespace ImageMath.Views{
             if (packToSRGB){
                 using var temp = Static.GetTempRenderTexture(Texture.width, Texture.height);
                 new PackSRGB(Texture).AssignTo(temp);
-                pngData = Encode(temp.Value);                       
+                pngData = Encode(temp.Value);
             } else {
                 pngData = Encode(Texture);
             }

@@ -9,7 +9,7 @@ using UnityEngine;
 public class LUTsTest : MonoBehaviour {
     [FilePathSelector("Select LUT3D File", "cube")]
     public string? LUT3DFilePath;
-    
+
     public string? prewLUT3DFilePath = null;
 
     public FlatLUT3D? FlatLUT3D;
@@ -24,16 +24,16 @@ public class LUTsTest : MonoBehaviour {
         if (prewLUT3DFilePath != LUT3DFilePath || FlatLUT3D == null || LUT3D == null) {
 
             if (!File.Exists(LUT3DFilePath)){
-                return;            
+                return;
             }
 
             var data = File.ReadAllText(LUT3DFilePath);
 
             FlatLUT3D?.Dispose();
-            FlatLUT3D = FlatLUT3D.CreateFromCubeFileContent(data, true);            
-            
+            FlatLUT3D = FlatLUT3D.CreateFromCubeFileContent(data, true);
+
             LUT3D?.Dispose();
-            LUT3D = FlatLUT3D?.ToLUT3D();            
+            LUT3D = FlatLUT3D?.ToLUT3D();
 
             prewLUT3DFilePath = LUT3DFilePath;
         }
@@ -44,7 +44,7 @@ public class LUTsTest : MonoBehaviour {
         if (LUT3D == null) {
             return;
         }
-        
+
         LUT3D.DomainMax = DomainMax;
         LUT3D.DomainMin = DomainMin;
 
