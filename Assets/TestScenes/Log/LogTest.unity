@@ -1588,6 +1588,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c35307937551e48409cf9ef003fc7574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  transferFunction: 0
   DiffMultiplier: 1000
 --- !u!43 &1884430548
 Mesh:
