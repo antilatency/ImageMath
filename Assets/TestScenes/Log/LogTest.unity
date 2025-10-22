@@ -1589,18 +1589,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DiffMultiplier: 1000
-  ExponentScale: 16.36703
-  BlackLevel: 0.14426465
-  WhiteLevel: 0.53047216
-  Slope: 0.00015912026
-  BreakPoint: 0.1223
-  TestValue: {x: 0.2, y: 0.4, z: 0.6}
-  Packed: {x: 0.5161766, y: 0.61210966, z: 0.6719944}
-  Unpacked: {x: 0.20000002, y: 0.40000007, z: 0.60000014}
-  Coefficients:
-  - -0.06
-  - -0.63
-  - 8.38
 --- !u!43 &1884430548
 Mesh:
   m_ObjectHideFlags: 0
