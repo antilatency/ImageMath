@@ -209,20 +209,20 @@ namespace ImageMath.Views{
             return createdTexture;
         }
 
-        public RenderTexture ResizeRenderTexture(int width, int height = 0, bool useMipMap = false, RenderTextureFormat format = RenderTextureFormat.ARGBFloat) {
+        public RenderTexture ResizeRenderTexture(int width, int height = 0, bool useMipMap = false, GraphicsFormat format = GraphicsFormat.R32G32B32A32_SFloat) {
             if (height == 0) height = width;
             if (Texture) {
                 if (Texture is RenderTexture renderTexture)
                     if (Texture.width == width)
                         if (Texture.height == height)
                             if ((Texture.mipmapCount > 1) == useMipMap)
-                                if (renderTexture.format == format)
+                                if (renderTexture.graphicsFormat == format)
                                     return renderTexture;
                 if (CreatedTexture)
                     DestroyImmediate(CreatedTexture);
             }
 
-            var createdRenderTexture = ImageMath.Static.CreateRenderTexture(width, height, useMipMap, format);
+            var createdRenderTexture = CreateRenderTexture(width, height, format, useMipMap);
             CreatedTexture = createdRenderTexture;
             Texture = CreatedTexture;
             return createdRenderTexture;

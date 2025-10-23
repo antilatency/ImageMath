@@ -23,7 +23,7 @@ public class LUTsTest : MonoBehaviour {
 
         if (prewLUT3DFilePath != LUT3DFilePath || FlatLUT3D == null || LUT3D == null) {
 
-            if (!File.Exists(LUT3DFilePath)){
+            if (!File.Exists(LUT3DFilePath)) {
                 return;
             }
 

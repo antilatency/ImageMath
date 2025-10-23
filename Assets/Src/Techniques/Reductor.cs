@@ -54,7 +54,7 @@ namespace ImageMath {
                 source = dest;
             }
 
-            var result = source.GetRawTextureData();
+            var result = source.GetPixelData<Vector4>();
             for (int i = 0; i < mips.Count; i++) {
                 mips[i].Dispose();
             }

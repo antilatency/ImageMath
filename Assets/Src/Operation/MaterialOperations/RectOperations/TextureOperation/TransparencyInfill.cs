@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
+
 using static ImageMath.Static;
 namespace ImageMath {
     [FilePath]
@@ -29,7 +31,7 @@ namespace ImageMath {
             }
             var previousPowerOfTwoWidth = Mathf.NextPowerOfTwo(Texture.width) / 2;
             var previousPowerOfTwoHeight = Mathf.NextPowerOfTwo(Texture.height) / 2;
-            using var temp = GetTempRenderTexture(previousPowerOfTwoWidth, previousPowerOfTwoHeight, true, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
+            using var temp = GetTempRenderTexture(previousPowerOfTwoWidth, previousPowerOfTwoHeight, GraphicsFormat.R32G32B32A32_SFloat, true, FilterMode.Bilinear);
             new TextureCopy(Texture).AssignTo(temp.Value);
             temp.Value.GenerateMips();
             new TransparencyInfill(temp.Value) {
