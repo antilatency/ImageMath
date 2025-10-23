@@ -65,5 +65,37 @@ namespace ImageMath {
             // TODO: get rid of this cast when covariant overrides are available.
             return (UnpackPiecewiseLinearLog)(PackArriLogC3().CreateInverse(texture));
         }
+
+        public static PackPiecewiseLinearLog PackArriLogC4(Texture? texture = null) {
+
+            // https://www.arri.com/resource/blob/278790/bea879ac0d041a925bed27a096ab3ec2/2022-05-arri-logc4-specification-data.pdf
+            // ARRI LogC4: Logarithmic Color Specification, by Sean Cooper, 2025-01-23
+
+            const double ln2 = 0.69314718055994530941723212145818;
+
+            // Constants from the spec with their original names. Hoewever, the spec does not
+            // provide their numeric values directly, presenting a set of bizarre expressions
+            // instead. See Appendix A, "Reference CTL Implementation".
+            const double a = 2231.8263090676883;
+            const double b = 0.9071358748778103;
+            const double c = 0.09286412512218964;
+            const double s = 0.1135972086105891;
+            const double t = -0.01805699611991131;
+
+            return new PackPiecewiseLinearLog(texture) {
+                Threshold = (float)t,
+                LinearScale = (float)(1.0 / s),
+                LinearOffset = (float)(-t / s),
+                LogInnerScale = (float)a,
+                LogInnerOffset = 64.0f,
+                LogOuterScale = (float)(b / (14.0 * ln2)),
+                LogOuterOffset = (float)(c - 6.0*b/14.0),
+            };
+        }
+
+        public static UnpackPiecewiseLinearLog UnpackArriLogC4(Texture? texture = null) {
+            // TODO: get rid of this cast when covariant overrides are available.
+            return (UnpackPiecewiseLinearLog)(PackArriLogC4().CreateInverse(texture));
+        }
     }
 }
