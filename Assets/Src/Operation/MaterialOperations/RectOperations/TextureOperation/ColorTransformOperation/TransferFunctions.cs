@@ -89,7 +89,7 @@ namespace ImageMath {
                 LogInnerScale = (float)a,
                 LogInnerOffset = 64.0f,
                 LogOuterScale = (float)(b / (14.0 * ln2)),
-                LogOuterOffset = (float)(c - 6.0*b/14.0),
+                LogOuterOffset = (float)(c - 6.0 * b / 14.0),
             };
         }
 
