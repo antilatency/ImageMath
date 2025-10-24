@@ -11,6 +11,7 @@ public class LogTest : MonoBehaviour {
         BlackmagicDesignFilmGen5,
         ArriLogC3,
         ArriLogC4,
+        RedLog3G10,
     }
 
     public TransferFunction transferFunction;
@@ -27,6 +28,8 @@ public class LogTest : MonoBehaviour {
                     return TransferFunctions.PackArriLogC3(texture);
                 case TransferFunction.ArriLogC4:
                     return TransferFunctions.PackArriLogC4(texture);
+                case TransferFunction.RedLog3G10:
+                    return TransferFunctions.PackRedLog3G10(texture);
             }
 
             throw new System.ArgumentException();
@@ -40,6 +43,8 @@ public class LogTest : MonoBehaviour {
                     return TransferFunctions.UnpackArriLogC3(texture);
                 case TransferFunction.ArriLogC4:
                     return TransferFunctions.UnpackArriLogC4(texture);
+                case TransferFunction.RedLog3G10:
+                    return TransferFunctions.UnpackRedLog3G10(texture);
             }
 
             throw new System.ArgumentException();
