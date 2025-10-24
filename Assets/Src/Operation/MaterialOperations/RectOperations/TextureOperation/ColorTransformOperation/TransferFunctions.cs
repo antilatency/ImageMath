@@ -98,6 +98,62 @@ namespace ImageMath {
             return (UnpackPiecewiseLinearLog)(PackBlackmagicDesignFilmGen5().CreateInverse(texture));
         }
 
+        public static PackPiecewiseLogLog PackCanonLog(Texture? texture = null) {
+
+            // https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf
+            // Canon Log Gamma Curves: Description of the Canon Log, Canon Log 2 and Canon Log 3 Gamma Curves
+            // November 1st, 2018
+
+            const double ln10 = 2.3025850929940456840179914546844;
+
+            // The spec does not contain named constants, presenting only numeric values.
+            // See Appendix 1a for the formula.
+            return new PackPiecewiseLogLog(texture) {
+                Threshold = 0.0f,
+                LeftLogInnerScale = -10.1596f,
+                LeftLogInnerOffset = 1.0f,
+                LeftLogOuterScale = (float)(-0.45310179 / ln10),
+                LeftLogOuterOffset = 0.12512248f,
+                RightLogInnerScale = 10.1596f,
+                RightLogInnerOffset = 1.0f,
+                RightLogOuterScale = (float)(0.45310179 / ln10),
+                RightLogOuterOffset = 0.12512248f,
+            };
+        }
+
+        public static UnpackPiecewiseLogLog UnpackCanonLog(Texture? texture = null) {
+            // TODO: get rid of this cast when covariant overrides are available.
+            return (UnpackPiecewiseLogLog)(PackCanonLog().CreateInverse(texture));
+        }
+
+        public static PackPiecewiseLogLog PackCanonLog2(Texture? texture = null) {
+
+            // https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf
+            // Canon Log Gamma Curves: Description of the Canon Log, Canon Log 2 and Canon Log 3 Gamma Curves
+            // November 1st, 2018
+
+            const double ln10 = 2.3025850929940456840179914546844;
+
+            // The spec does not contain named constants, presenting only numeric values.
+            // See Appendix 2a for the formula.
+            return new PackPiecewiseLogLog(texture) {
+                Threshold = 0.0f,
+                LeftLogInnerScale = -87.099375f,
+                LeftLogInnerOffset = 1.0f,
+                LeftLogOuterScale = (float)(- 0.24136077 / ln10),
+                LeftLogOuterOffset = 0.092864125f,
+                RightLogInnerScale = 87.099375f,
+                RightLogInnerOffset = 1.0f,
+                RightLogOuterScale = (float)(0.24136077 / ln10),
+                RightLogOuterOffset = 0.092864125f,
+            };
+        }
+
+        public static UnpackPiecewiseLogLog UnpackCanonLog2(Texture? texture = null) {
+            // TODO: get rid of this cast when covariant overrides are available.
+            return (UnpackPiecewiseLogLog)(PackCanonLog2().CreateInverse(texture));
+        }
+
         public static PackPiecewiseLogLinearLog PackCanonLog3(Texture? texture = null) {
 
             // https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf
@@ -107,6 +163,7 @@ namespace ImageMath {
             const double ln10 = 2.3025850929940456840179914546844;
 
             // The spec does not contain named constants, presenting only numeric values.
+            // See Appendix 3a for the formula.
             return new PackPiecewiseLogLinearLog(texture) {
                 LeftThreshold = -0.014f,
                 RightThreshold = 0.014f,
