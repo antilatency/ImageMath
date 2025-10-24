@@ -10,6 +10,7 @@ public class LogTest : MonoBehaviour {
     public enum TransferFunction {
         ArriLogC3,
         ArriLogC4,
+        CanonLog3,
         BlackmagicDesignFilmGen5,
         RedLog3G10,
     }
@@ -28,6 +29,8 @@ public class LogTest : MonoBehaviour {
                     return TransferFunctions.PackArriLogC4(texture);
                 case TransferFunction.BlackmagicDesignFilmGen5:
                     return TransferFunctions.PackBlackmagicDesignFilmGen5(texture);
+                case TransferFunction.CanonLog3:
+                    return TransferFunctions.PackCanonLog3(texture);
                 case TransferFunction.RedLog3G10:
                     return TransferFunctions.PackRedLog3G10(texture);
             }
@@ -43,6 +46,8 @@ public class LogTest : MonoBehaviour {
                     return TransferFunctions.UnpackArriLogC4(texture);
                 case TransferFunction.BlackmagicDesignFilmGen5:
                     return TransferFunctions.UnpackBlackmagicDesignFilmGen5(texture);
+                case TransferFunction.CanonLog3:
+                    return TransferFunctions.UnpackCanonLog3(texture);
                 case TransferFunction.RedLog3G10:
                     return TransferFunctions.UnpackRedLog3G10(texture);
             }

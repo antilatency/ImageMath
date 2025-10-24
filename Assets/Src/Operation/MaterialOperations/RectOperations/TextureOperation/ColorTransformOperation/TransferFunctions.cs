@@ -98,6 +98,36 @@ namespace ImageMath {
             return (UnpackPiecewiseLinearLog)(PackBlackmagicDesignFilmGen5().CreateInverse(texture));
         }
 
+        public static PackPiecewiseLogLinearLog PackCanonLog3(Texture? texture = null) {
+
+            // https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf
+            // Canon Log Gamma Curves: Description of the Canon Log, Canon Log 2 and Canon Log 3 Gamma Curves
+            // November 1st, 2018
+
+            const double ln10 = 2.3025850929940456840179914546844;
+
+            // The spec does not contain named constants, presenting only numeric values.
+            return new PackPiecewiseLogLinearLog(texture) {
+                LeftThreshold = -0.014f,
+                RightThreshold = 0.014f,
+                LeftLogInnerScale = -14.98325f,
+                LeftLogInnerOffset = 1.0f,
+                LeftLogOuterScale = (float)(-0.36726845 / ln10),
+                LeftLogOuterOffset = 0.12783901f,
+                LinearScale = 1.9754798f,
+                LinearOffset = 0.12512219f,
+                RightLogInnerScale = 14.98325f,
+                RightLogInnerOffset = 1.0f,
+                RightLogOuterScale = (float)(0.36726845 / ln10),
+                RightLogOuterOffset = 0.12240537f,
+            };
+        }
+
+        public static UnpackPiecewiseLogLinearLog UnpackCanonLog3(Texture? texture = null) {
+            // TODO: get rid of this cast when covariant overrides are available.
+            return (UnpackPiecewiseLogLinearLog)(PackCanonLog3().CreateInverse(texture));
+        }
+
         public static PackPiecewiseLinearLog PackRedLog3G10(Texture? texture = null) {
 
             // https://docs.red.com/955-0187/PDF/915-0187%20Rev-C%20%20%20RED%20OPS%2C%20White%20Paper%20on%20REDWideGamutRGB%20and%20Log3G10.pdf
