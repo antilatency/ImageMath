@@ -8,9 +8,9 @@ using UnityEngine;
 public class LogTest : MonoBehaviour {
 
     public enum TransferFunction {
-        BlackmagicDesignFilmGen5,
         ArriLogC3,
         ArriLogC4,
+        BlackmagicDesignFilmGen5,
         RedLog3G10,
     }
 
@@ -22,12 +22,12 @@ public class LogTest : MonoBehaviour {
 
         ColorTransformOperation packOperation(Texture? texture = null) {
             switch (transferFunction) {
-                case TransferFunction.BlackmagicDesignFilmGen5:
-                    return TransferFunctions.PackBlackmagicDesignFilmGen5(texture);
                 case TransferFunction.ArriLogC3:
                     return TransferFunctions.PackArriLogC3(texture);
                 case TransferFunction.ArriLogC4:
                     return TransferFunctions.PackArriLogC4(texture);
+                case TransferFunction.BlackmagicDesignFilmGen5:
+                    return TransferFunctions.PackBlackmagicDesignFilmGen5(texture);
                 case TransferFunction.RedLog3G10:
                     return TransferFunctions.PackRedLog3G10(texture);
             }
@@ -37,12 +37,12 @@ public class LogTest : MonoBehaviour {
 
         ColorTransformOperation unpackOperation(Texture? texture = null) {
             switch (transferFunction) {
-                case TransferFunction.BlackmagicDesignFilmGen5:
-                    return TransferFunctions.UnpackBlackmagicDesignFilmGen5(texture);
                 case TransferFunction.ArriLogC3:
                     return TransferFunctions.UnpackArriLogC3(texture);
                 case TransferFunction.ArriLogC4:
                     return TransferFunctions.UnpackArriLogC4(texture);
+                case TransferFunction.BlackmagicDesignFilmGen5:
+                    return TransferFunctions.UnpackBlackmagicDesignFilmGen5(texture);
                 case TransferFunction.RedLog3G10:
                     return TransferFunctions.UnpackRedLog3G10(texture);
             }
