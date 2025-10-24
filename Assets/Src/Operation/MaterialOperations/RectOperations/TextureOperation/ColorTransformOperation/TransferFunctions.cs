@@ -97,5 +97,35 @@ namespace ImageMath {
             // TODO: get rid of this cast when covariant overrides are available.
             return (UnpackPiecewiseLinearLog)(PackArriLogC4().CreateInverse(texture));
         }
+
+        public static PackPiecewiseLinearLog PackRedLog3G10(Texture? texture = null) {
+
+            // https://docs.red.com/955-0187/PDF/915-0187%20Rev-C%20%20%20RED%20OPS%2C%20White%20Paper%20on%20REDWideGamutRGB%20and%20Log3G10.pdf
+            // White Paper on REDWideGamutRGB and Log3G10
+
+            // Constants from the spec with their original names and values. See the reference
+            // implementation provided in the "Equations" section, page 4.
+            const double a = 0.224282;
+            const double b = 155.975327;
+            const double c = 0.01;
+            const double g = 15.1927;
+
+            const double ln10 = 2.3025850929940456840179914546844;
+
+            return new PackPiecewiseLinearLog(texture) {
+                Threshold = (float)(-c),
+                LinearScale = (float)g,
+                LinearOffset = (float)(c*g),
+                LogInnerScale = (float)b,
+                LogInnerOffset = (float)(b*c + 1.0),
+                LogOuterScale = (float)(a / ln10),
+                LogOuterOffset = 0.0f,
+            };
+        }
+
+        public static UnpackPiecewiseLinearLog UnpackRedLog3G10(Texture? texture = null) {
+            // TODO: get rid of this cast when covariant overrides are available.
+            return (UnpackPiecewiseLinearLog)(PackRedLog3G10().CreateInverse(texture));
+        }
     }
 }
