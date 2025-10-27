@@ -1,5 +1,7 @@
 #nullable enable
 
+using Accord.Statistics.Kernels;
+
 using UnityEngine;
 
 namespace ImageMath {
@@ -213,6 +215,31 @@ namespace ImageMath {
         public static UnpackPiecewiseLinearLog UnpackRedLog3G10(Texture? texture = null) {
             // TODO: get rid of this cast when covariant overrides are available.
             return (UnpackPiecewiseLinearLog)(PackRedLog3G10().CreateInverse(texture));
+        }
+
+        public static PackPiecewiseLinearLog PackSonySlog3(Texture? texture = null) {
+
+            // https://pro.sony/s3/cms-static-content/uploadfile/06/1237494271406.pdf
+            // Technical Summary for S-Gamut3.Cine/S-Log3 and S-Gamut3/S-Log3
+
+            const double ln10 = 2.3025850929940456840179914546844;
+
+            // The spec does not contain named constants, presenting only numeric values.
+            // See Appendix for the formula.
+            return new PackPiecewiseLinearLog(texture) {
+                Threshold = 0.01125f,
+                LinearScale = (float)((171.2102946929 - 95.0) / (0.01125 * 1023.0)),
+                LinearOffset = (float)(95.0 / 1023.0),
+                LogInnerScale = (float)(1.0 / (0.18 + 0.01)),
+                LogInnerOffset = (float)(0.01 / (0.18 + 0.01)),
+                LogOuterScale = (float)(261.5 / (1023.0 * ln10)),
+                LogOuterOffset = (float)(420.0 / 1023.0),
+            };
+        }
+
+        public static UnpackPiecewiseLinearLog UnpackSonySlog3(Texture? texture = null) {
+            // TODO: get rid of this cast when covariant overrides are available.
+            return (UnpackPiecewiseLinearLog)(PackSonySlog3().CreateInverse(texture));
         }
     }
 }
