@@ -739,7 +739,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: f239a0ee60a94654ea7fd36fe5f0039d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 573edcda5582f4a428fcc0e345da54bb, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
@@ -903,7 +903,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbef73e4d2e2bc2439d486416420bef7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Texture: {fileID: 2800000, guid: f239a0ee60a94654ea7fd36fe5f0039d, type: 3}
+  Texture: {fileID: 2800000, guid: 573edcda5582f4a428fcc0e345da54bb, type: 3}
   AlphaBlending: 0
   ResizeMode: 2
   Material: {fileID: 745873105}
