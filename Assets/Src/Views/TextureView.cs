@@ -181,11 +181,6 @@ namespace ImageMath.Views{
             } else {
                 UpdateMeshRenderer();
             }
-
-
-
-
-
         }
 
 

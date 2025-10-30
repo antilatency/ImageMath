@@ -74,12 +74,12 @@ namespace ImageMath {
             [CallerFilePath] string file = "",
             [CallerLineNumber] int line = 0
         ) => GetTempRenderTexture(size.x, size.y, GraphicsFormat.R32G32B32A32_SFloat, false, FilterMode.Bilinear, file, line);
-
-        public static CacheItem<RenderTexture> GetTempRenderTexture(Texture texture,
+*/
+        public static CacheItem<RenderTexture> GetTempRenderTextureLike(Texture texture,
             [CallerFilePath] string file = "",
             [CallerLineNumber] int line = 0) {
             return GetTempRenderTexture(texture.width, texture.height, texture.graphicsFormat, false, FilterMode.Bilinear, file, line);
-        }*/
+        }
 
 
         public static CacheItem<RenderTexture> GetTempRenderTexture(

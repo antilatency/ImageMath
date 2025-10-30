@@ -3,7 +3,9 @@ using System.IO;
 using UnityEngine;
 #nullable enable
 namespace ImageMath {
-    public abstract class LUT3DBase: IDisposable {
+    [Serializable]
+    public abstract class LUT3DBase : IDisposable {
+        public abstract Texture Texture { get; }
         public string? Title { get; set; }
         public Vector3 DomainMin { get; set; } = Vector3.zero;
         public Vector3 DomainMax { get; set; } = Vector3.one;
@@ -36,8 +38,8 @@ namespace ImageMath {
 
             Texture.SetRawTextureData(cells,apply);
         }*/
-        
-        
+
+
 
 
         public static R? ParseLUT3D<R>(string content, Func<int, R> constructor) where R : LUT3DBase {

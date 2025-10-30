@@ -8,26 +8,27 @@ using static ImageMath.Static;
 namespace ImageMath {
 
     public class LUT3D : LUT3DBase {
-        public Texture3D Texture { get; protected set; } = null!; // Initialized in CreateTexture
+        public override Texture Texture => Texture3D;
+        public Texture3D Texture3D { get; protected set; } = null!; // Initialized in CreateTexture
         public LUT3D(int size) : base(size) {
         }
 
         protected override void CreateTexture(int size) {
-            Texture = Static.CreateTexture3D(new Vector3Int(size, size, size), GraphicsFormat.R32G32B32A32_SFloat, false);
+            Texture3D = Static.CreateTexture3D(new Vector3Int(size, size, size), GraphicsFormat.R32G32B32A32_SFloat, false);
         }
         public override void SetData(Vector4[] cells, bool apply = true) {
-            Texture.SetPixelData(cells);
+            Texture3D.SetPixelData(cells);
             if (apply) {
-                Texture.Apply();
+                Texture3D.Apply();
             }
         }
         public override Vector4[] GetData() {
-            var data = Texture.GetPixelData<Vector4>(0);
+            var data = Texture3D.GetPixelData<Vector4>(0);
             return data.ToArray();
         }
         public override void DestroyTexture() {
-            if (Texture) {
-                GameObject.DestroyImmediate(Texture);
+            if (Texture3D) {
+                GameObject.DestroyImmediate(Texture3D);
             }
         }
 

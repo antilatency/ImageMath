@@ -5,7 +5,7 @@ namespace ImageMath {
     [FilePath]
     public partial record LUT3DTransform : ColorTransformOperation {
         private LUT3D _lut3d;
-        public Texture3D LUT => _lut3d.Texture;
+        public Texture3D LUT => _lut3d.Texture3D;
         public Vector3 DomainMin => _lut3d.DomainMin;
         public Vector3 DomainMax => _lut3d.DomainMax;
 
