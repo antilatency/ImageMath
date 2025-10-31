@@ -18,7 +18,7 @@ public class ProceduralTest : MonoBehaviour{
 	void Update() {
 
 
-		var identity = FlatLUT3DView.GetByName("Identity").ResizeLUT(32);
+		/*var identity = FlatLUT3DView.GetByName("Identity").ResizeLUT(32);
 		identity.InitializeIdentity();
 
 		var srgb = FlatLUT3DView.GetByName("sRGB").ResizeLUTRenderable(32);
@@ -26,7 +26,7 @@ public class ProceduralTest : MonoBehaviour{
 		using var temp = GetTempRenderTextureLike(identity.Texture);
 		new TextureMultipliedByMatrix(identity.Texture, Matrix).AssignTo(temp.Value);
 
-		new PackSRGB(temp.Value).AssignTo(srgb.RenderTexture);
+		new PackSRGB(temp.Value).AssignTo(srgb.RenderTexture);*/
 
 
 	}

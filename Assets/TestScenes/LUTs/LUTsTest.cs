@@ -7,36 +7,35 @@ using UnityEngine;
 #nullable enable
 [ExecuteAlways]
 public class LUTsTest : MonoBehaviour {
-    [FilePathSelector("Select LUT3D File", "cube")]
-    public string? LUT3DFilePath;
 
-    public string? prewLUT3DFilePath = null;
 
-    public FlatLUT3D? FlatLUT3D;
 
-    public LUT3D? LUT3D;
 
-    public Vector3 DomainMin = Vector3.zero;
-    public Vector3 DomainMax = Vector3.one;
 
-    public void Update(){
+    public void Update() {
 
-        if (prewLUT3DFilePath != LUT3DFilePath || FlatLUT3D == null || LUT3D == null) {
+        var identity = FlatLUT3DView.GetByName("Identity").ResizeLUTRenderable(32);
+        new FlatLUT3DIdentity().AssignTo(identity);
 
-            if (!File.Exists(LUT3DFilePath)) {
-                return;
+        var srgb = FlatLUT3DView.GetByName("sRGB").ResizeLUTRenderable(32);
+        new PackSRGB(identity).AssignTo(srgb);
+
+        /*if (prewLUT3DFilePath != LUT3DFilePath || FlatLUT3D == null || LUT3D == null) {
+
+                if (!File.Exists(LUT3DFilePath)) {
+                    return;
+                }
+
+                var data = File.ReadAllText(LUT3DFilePath);
+
+                FlatLUT3D?.Dispose();
+                FlatLUT3D = FlatLUT3D.CreateFromCubeFileContent(data, true);
+
+                LUT3D?.Dispose();
+                LUT3D = FlatLUT3D?.ToLUT3D();
+
+                prewLUT3DFilePath = LUT3DFilePath;
             }
-
-            var data = File.ReadAllText(LUT3DFilePath);
-
-            FlatLUT3D?.Dispose();
-            FlatLUT3D = FlatLUT3D.CreateFromCubeFileContent(data, true);
-
-            LUT3D?.Dispose();
-            LUT3D = FlatLUT3D?.ToLUT3D();
-
-            prewLUT3DFilePath = LUT3DFilePath;
-        }
 
         if (FlatLUT3D == null) {
             return;
@@ -50,11 +49,11 @@ public class LUTsTest : MonoBehaviour {
 
         TextureView.GetByName("FlatLUT3D").Texture = FlatLUT3D.Texture;
 
-        var lutTransformInput = TextureView.GetByName("LUT3DTransformInput").ResizeRenderTexture(1024,1024);
+        var lutTransformInput = TextureView.GetByName("LUT3DTransformInput").ResizeRenderTexture(1024, 1024);
         new UVFill().AssignTo(lutTransformInput);
 
-        var lutTransformOutput = TextureView.GetByName("LUT3DTransformOutput").ResizeRenderTexture(1024,1024);
-        new LUT3DTransform(lutTransformInput, LUT3D).AssignTo(lutTransformOutput);
+        var lutTransformOutput = TextureView.GetByName("LUT3DTransformOutput").ResizeRenderTexture(1024, 1024);
+        new LUT3DTransform(lutTransformInput, LUT3D).AssignTo(lutTransformOutput);*/
     }
 
 }

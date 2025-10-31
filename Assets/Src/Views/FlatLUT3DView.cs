@@ -1,14 +1,30 @@
 using UnityEngine;
 using System.Linq;
+using UnityEngine.Experimental.Rendering;
+
+
 
 
 #if UNITY_EDITOR
+using UnityEditor;
 #endif
 #nullable enable
 
 namespace ImageMath.Views {
+
 	[ExecuteAlways]
     public class FlatLUT3DView : MonoBehaviour {
+		//menu items to create FlatLUT3DView
+#if UNITY_EDITOR
+		[MenuItem("GameObject/ImageMath/LUT View", false, 10)]
+		public static void CreateFlatLUT3DView(MenuCommand menuCommand) {
+			var flatLUT3DView = new GameObject("FlatLUT3DView").AddComponent<FlatLUT3DView>();
+			GameObjectUtility.SetParentAndAlign(flatLUT3DView.gameObject, menuCommand.context as GameObject);
+			Undo.RegisterCreatedObjectUndo(flatLUT3DView.gameObject, "Create " + flatLUT3DView.name);
+			Selection.activeObject = flatLUT3DView;
+		}
+#endif
+
 		private const string GridShaderName = "ImageMath/Views/FlatLUT3DViewGrid";
 		private const string PointsShaderName = "ImageMath/Views/FlatLUT3DViewPoints";
 
@@ -23,8 +39,13 @@ namespace ImageMath.Views {
 			}
 		}
 
-		private FlatLUT3DBase? CreatedLUT = null;
-		public FlatLUT3DBase? LUT;
+
+		private Texture? _createdTexture = null;
+		public Texture? Texture = null;
+
+
+		/*private FlatLUT3DBase? CreatedLUT = null;
+		public FlatLUT3DBase? LUT;*/
 
 		public Material? _gridMaterial;
 		public Material? _pointsMaterial;
@@ -38,8 +59,9 @@ namespace ImageMath.Views {
 		[Range(0.00f, 1f)]
 		public float PointSize = 0.125f;
 
-		public FlatLUT3D ResizeLUT(int newSize) {
-			if (CreatedLUT != null && CreatedLUT.Size == newSize && CreatedLUT is FlatLUT3D typed) {
+		public Texture2D ResizeLUT(int newSize) {
+
+			/*if (CreatedLUT != null && CreatedLUT.Size == newSize && CreatedLUT is FlatLUT3D typed) {
 				return typed;
 			}
 
@@ -47,27 +69,57 @@ namespace ImageMath.Views {
 			var result = new FlatLUT3D(newSize);
 			CreatedLUT = result;
 			LUT = result;
-			return result;
+			return result;*/
+			if (Texture != null) {
+				int currentSize = FlatLUT3DUtils.CalculateSizeFromTexture(Texture);
+				if (currentSize == newSize && Texture is Texture2D texture2D) {
+					return texture2D;
+				}
+			}
+			if (_createdTexture != null) {
+				DestroyImmediate(_createdTexture);
+				_createdTexture = null;
+			}
+			var dimensions = FlatLUT3DUtils.CalculateDimensions(newSize);
+			var newTexture = Static.CreateTexture2D(dimensions.x, dimensions.y, GraphicsFormat.R32G32B32A32_SFloat, false);
+			_createdTexture = newTexture;
+			Texture = _createdTexture;
+			return newTexture;
 		}
 
-		public FlatLUT3DRenderable ResizeLUTRenderable(int newSize) {
-			if (CreatedLUT != null && CreatedLUT.Size == newSize && CreatedLUT is FlatLUT3DRenderable typed) {
+		public RenderTexture ResizeLUTRenderable(int newSize) {
+			/*if (CreatedLUT != null && CreatedLUT.Size == newSize && CreatedLUT is FlatLUT3DRenderable typed) {
 				return typed;
 			}
 			CreatedLUT?.Dispose();
 			var result = new FlatLUT3DRenderable(newSize);
 			CreatedLUT = result;
 			LUT = result;
-			return result;
+			return result;*/
+			if (Texture != null) {
+				int currentSize = FlatLUT3DUtils.CalculateSizeFromTexture(Texture);
+				if (currentSize == newSize && Texture is RenderTexture renderTexture) {
+					return renderTexture;
+				}
+			}
+			if (_createdTexture != null) {
+				DestroyImmediate(_createdTexture);
+				_createdTexture = null;
+			}
+			var dimensions = FlatLUT3DUtils.CalculateDimensions(newSize);
+			var newTexture = Static.CreateRenderTexture(dimensions.x, dimensions.y);
+			_createdTexture = newTexture;
+			Texture = _createdTexture;
+			return newTexture;
 		}
 
 		void Update() {
-			if (LUT != CreatedLUT && LUT != null) {
+			/*if (LUT != CreatedLUT && LUT != null) {
 				if (CreatedLUT) {
 					CreatedLUT!.Dispose();
 					CreatedLUT = null;
 				}
-			}
+			}*/
 
 			CheckMaterial(ref _pointsMaterial, PointsShaderName);
 			CheckMaterial(ref _gridMaterial, GridShaderName);
@@ -83,7 +135,8 @@ namespace ImageMath.Views {
 			_shellMaterial.SetFloat("Alpha", ShellAlpha);
 			
 
-			if (LUT != null) {
+			if (Texture != null) {
+				int size = FlatLUT3DUtils.CalculateSizeFromTexture(Texture);
 				ConfigureMaterial(_pointsMaterial);
 				ConfigureMaterial(_gridMaterial);	
 				ConfigureMaterial(_shellMaterial);
@@ -102,9 +155,9 @@ namespace ImageMath.Views {
 					meshFilter = gameObject.AddComponent<MeshFilter>();
 				}
 				var mesh = meshFilter.sharedMesh;
-				if (mesh == null || mesh.name != LUT.Size.ToString()) {
-					mesh = GenerateMesh(LUT.Size);
-					mesh.name = LUT.Size.ToString();
+				if (mesh == null || mesh.name != size.ToString()) {
+					mesh = GenerateMesh(size);
+					mesh.name = size.ToString();
 					meshFilter.sharedMesh = mesh;
 				}
 			}
@@ -207,8 +260,8 @@ namespace ImageMath.Views {
 
 
 		void ConfigureMaterial(Material material) {
-			int size = LUT!.Size;
-			material.SetTexture("FlatLUT3D", LUT.Texture);
+			int size = FlatLUT3DUtils.CalculateSizeFromTexture(Texture!);
+			material.SetTexture("FlatLUT3D", Texture);
 			material.SetInt("Size", size);
 		}
 
