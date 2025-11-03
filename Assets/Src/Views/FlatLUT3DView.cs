@@ -71,7 +71,7 @@ namespace ImageMath.Views {
 			LUT = result;
 			return result;*/
 			if (Texture != null) {
-				int currentSize = FlatLUT3DUtils.CalculateSizeFromTexture(Texture);
+				int currentSize = FlatLUT3D.CalculateSizeFromTexture(Texture);
 				if (currentSize == newSize && Texture is Texture2D texture2D) {
 					return texture2D;
 				}
@@ -80,7 +80,7 @@ namespace ImageMath.Views {
 				DestroyImmediate(_createdTexture);
 				_createdTexture = null;
 			}
-			var dimensions = FlatLUT3DUtils.CalculateDimensions(newSize);
+			var dimensions = FlatLUT3D.CalculateDimensions(newSize);
 			var newTexture = Static.CreateTexture2D(dimensions.x, dimensions.y, GraphicsFormat.R32G32B32A32_SFloat, false);
 			_createdTexture = newTexture;
 			Texture = _createdTexture;
@@ -97,7 +97,7 @@ namespace ImageMath.Views {
 			LUT = result;
 			return result;*/
 			if (Texture != null) {
-				int currentSize = FlatLUT3DUtils.CalculateSizeFromTexture(Texture);
+				int currentSize = FlatLUT3D.CalculateSizeFromTexture(Texture);
 				if (currentSize == newSize && Texture is RenderTexture renderTexture) {
 					return renderTexture;
 				}
@@ -106,7 +106,7 @@ namespace ImageMath.Views {
 				DestroyImmediate(_createdTexture);
 				_createdTexture = null;
 			}
-			var dimensions = FlatLUT3DUtils.CalculateDimensions(newSize);
+			var dimensions = FlatLUT3D.CalculateDimensions(newSize);
 			var newTexture = Static.CreateRenderTexture(dimensions.x, dimensions.y);
 			_createdTexture = newTexture;
 			Texture = _createdTexture;
@@ -136,7 +136,7 @@ namespace ImageMath.Views {
 			
 
 			if (Texture != null) {
-				int size = FlatLUT3DUtils.CalculateSizeFromTexture(Texture);
+				int size = FlatLUT3D.CalculateSizeFromTexture(Texture);
 				ConfigureMaterial(_pointsMaterial);
 				ConfigureMaterial(_gridMaterial);	
 				ConfigureMaterial(_shellMaterial);
@@ -260,7 +260,7 @@ namespace ImageMath.Views {
 
 
 		void ConfigureMaterial(Material material) {
-			int size = FlatLUT3DUtils.CalculateSizeFromTexture(Texture!);
+			int size = FlatLUT3D.CalculateSizeFromTexture(Texture!);
 			material.SetTexture("FlatLUT3D", Texture);
 			material.SetInt("Size", size);
 		}

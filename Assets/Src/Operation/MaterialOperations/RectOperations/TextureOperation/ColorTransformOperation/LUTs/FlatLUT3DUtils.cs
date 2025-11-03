@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 #nullable enable
 namespace ImageMath {
-    public static class FlatLUT3DUtils {
+    public static class FlatLUT3D {
         public static Vector2Int CalculateDimensions(int size) {
             const int MaxTextureSize = 16384;
             int numPixels = size * size * size;
@@ -33,14 +33,17 @@ namespace ImageMath {
             return new Vector2Int(width, height);
         }
 
-        public static int CalculateSizeFromTexture(Texture texture) {
-            var totalPixels = texture.width * texture.height;
+        public static int CalculateSizeFromTextureSize(Vector2Int textureSize) {
+            var totalPixels = textureSize.x * textureSize.y;
             int size = Mathf.RoundToInt(Mathf.Pow(totalPixels, 1.0f / 3.0f));
             if (size * size * size != totalPixels) {
                 throw new Exception("Texture dimensions do not correspond to a valid 3D LUT size.");
             }
             return size;
         }
+
+        public static int CalculateSizeFromTexture(Texture texture) => CalculateSizeFromTextureSize(new Vector2Int(texture.width, texture.height));
+        
 
         public static Texture3D ToLUT3D(this Texture texture) {
             if (texture == null) {

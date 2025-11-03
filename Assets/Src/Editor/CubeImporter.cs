@@ -10,8 +10,8 @@ namespace ImageMath {
     public class CubeImporter : ScriptedImporter {
         override public void OnImportAsset(AssetImportContext context) {
             var fileContent = System.IO.File.ReadAllText(context.assetPath);
-            var data = FlatLUT3DUtils.ParseLUT3D(fileContent, out int size, out Vector3 domainMin, out Vector3 domainMax, out string? title);
-            var dimensions = FlatLUT3DUtils.CalculateDimensions(size);
+            var data = FlatLUT3D.ParseLUT3D(fileContent, out int size, out Vector3 domainMin, out Vector3 domainMax, out string? title);
+            var dimensions = FlatLUT3D.CalculateDimensions(size);
             var texture = Static.CreateTexture2D(dimensions.x, dimensions.y, GraphicsFormat.R32G32B32A32_SFloat, false);
             texture.SetPixelData(data, 0);
             texture.Apply();
