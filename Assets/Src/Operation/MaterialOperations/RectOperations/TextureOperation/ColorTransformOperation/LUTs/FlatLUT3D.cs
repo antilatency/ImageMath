@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -33,13 +36,17 @@ namespace ImageMath {
             return new Vector2Int(width, height);
         }
 
-        public static int CalculateSizeFromTextureSize(Vector2Int textureSize) {
-            var totalPixels = textureSize.x * textureSize.y;
+        public static int CalculateSizeFromTotalPixels(int totalPixels) {
             int size = Mathf.RoundToInt(Mathf.Pow(totalPixels, 1.0f / 3.0f));
             if (size * size * size != totalPixels) {
                 throw new Exception("Texture dimensions do not correspond to a valid 3D LUT size.");
             }
             return size;
+        }
+
+        public static int CalculateSizeFromTextureSize(Vector2Int textureSize) {
+            var totalPixels = textureSize.x * textureSize.y;
+            return CalculateSizeFromTotalPixels(totalPixels);
         }
 
         public static int CalculateSizeFromTexture(Texture texture) => CalculateSizeFromTextureSize(new Vector2Int(texture.width, texture.height));
@@ -135,21 +142,29 @@ namespace ImageMath {
             return line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        public static string ToCubeFileContent(this Texture texture, Vector3 domainMin, Vector3 domainMax, string? title = null) {
+        public static string ToCubeFileContent(IList<Vector3> data, Vector3 domainMin, Vector3 domainMax, string? title = null) {
             var result = new System.Text.StringBuilder();
-            var size = CalculateSizeFromTexture(texture);
+            int size = CalculateSizeFromTotalPixels(data.Count);
             result.AppendLine($"LUT_3D_SIZE {size}");
             result.AppendLine($"DOMAIN_MIN {domainMin.x} {domainMin.y} {domainMin.z}");
             result.AppendLine($"DOMAIN_MAX {domainMax.x} {domainMax.y} {domainMax.z}");
             result.AppendLine($"TITLE {title}");
 
-            var cells = texture.GetPixelData<Vector4>(0);
-            for (int i = 0; i < cells.Length; i++) {
-                var cell = cells[i];
+            for (int i = 0; i < data.Count; i++) {
+                var cell = data[i];
                 result.AppendLine($"{cell.x} {cell.y} {cell.z}");
             }
 
             return result.ToString();
+        }
+
+        public static string ToCubeFileContent(this Texture texture, Vector3 domainMin, Vector3 domainMax, string? title = null) {
+            var dataF4 = texture.GetPixelData<Vector4>(0);
+            var dataF3 = new Vector3[dataF4.Length];
+            for (int i = 0; i < dataF4.Length; i++) {
+                dataF3[i] = new Vector3(dataF4[i].x, dataF4[i].y, dataF4[i].z);
+            }
+            return ToCubeFileContent(dataF3, domainMin, domainMax, title);
         }
 
 
