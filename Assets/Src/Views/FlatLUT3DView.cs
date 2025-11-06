@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Linq;
 using UnityEngine.Experimental.Rendering;
+using System;
+
 
 
 
@@ -13,7 +15,7 @@ using UnityEditor;
 namespace ImageMath.Views {
 
 	[ExecuteAlways]
-    public class FlatLUT3DView : MonoBehaviour {
+	public class FlatLUT3DView : MonoBehaviour {
 		//menu items to create FlatLUT3DView
 #if UNITY_EDITOR
 		[MenuItem("GameObject/ImageMath/LUT View", false, 10)]
@@ -133,12 +135,12 @@ namespace ImageMath.Views {
 			_pointsMaterial.SetFloat("PointSize", PointSize);
 			_gridMaterial.SetFloat("Alpha", GridAlpha);
 			_shellMaterial.SetFloat("Alpha", ShellAlpha);
-			
+
 
 			if (Texture != null) {
 				int size = FlatLUT3D.CalculateSizeFromTexture(Texture);
 				ConfigureMaterial(_pointsMaterial);
-				ConfigureMaterial(_gridMaterial);	
+				ConfigureMaterial(_gridMaterial);
 				ConfigureMaterial(_shellMaterial);
 
 				var meshRenderer = GetComponent<MeshRenderer>();
@@ -178,7 +180,7 @@ namespace ImageMath.Views {
 					}
 				}
 			}
-			
+
 			mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
 			mesh.SetVertices(vertices);
 			mesh.subMeshCount = 3;
@@ -193,14 +195,14 @@ namespace ImageMath.Views {
 
 			mesh.RecalculateBounds();
 			return mesh;
-		}	
+		}
 
 
 		static int[] GenerateShellIndices(int size) {
 			var indices = new System.Collections.Generic.List<int>();
 			//generate 6 surfaces of the cube
-			void GenerateSurface(Vector3Int offset, Vector3Int uDir, Vector3Int vDir) { 
-				for (int u = 0; u < size-1; u++) {
+			void GenerateSurface(Vector3Int offset, Vector3Int uDir, Vector3Int vDir) {
+				for (int u = 0; u < size - 1; u++) {
 					for (int v = 0; v < size - 1; v++) {
 						int x = offset.x + u * uDir.x + v * vDir.x;
 						int y = offset.y + u * uDir.y + v * vDir.y;
@@ -212,11 +214,11 @@ namespace ImageMath.Views {
 						indices.Add(index);
 						indices.Add(index + vOffset);
 						indices.Add(index + uOffset);
-						
+
 						indices.Add(index + uOffset);
 						indices.Add(index + vOffset);
 						indices.Add(index + uOffset + vOffset);
-						
+
 					}
 				}
 			}
@@ -265,73 +267,6 @@ namespace ImageMath.Views {
 			material.SetInt("Size", size);
 		}
 
-		/*void OnRenderObject() {
-			
-			if (LUT == null) return;
-
-			int size = LUT.Size;
-			int numVertices = size * size * size;
-			if (DrawPoints) {
-				if (_pointsMaterial == null) {
-					var shader = Shader.Find(PointsShaderName);
-					if (shader == null) {
-						Debug.LogError($"Shader not found: {PointsShaderName}");
-						return;
-					}
-					_pointsMaterial = new Material(shader);
-				}
-				ConfigureMaterial(_pointsMaterial);
-
-				
-				_pointsMaterial.SetPass(0);
-				
-				Graphics.DrawProceduralNow(MeshTopology.Points, numVertices);
-			}
-			if (DrawGrid) {
-				if (_gridMaterial == null) {
-					var shader = Shader.Find(GridShaderName);
-					if (shader == null) {
-						Debug.LogError($"Shader not found: {GridShaderName}");
-						return;
-					}
-					_gridMaterial = new Material(shader);
-				}
-				ConfigureMaterial(_gridMaterial);
-
-				
-				_gridMaterial.SetPass(0);
-
-				Graphics.DrawProceduralNow(MeshTopology.Lines, numVertices);
-			}
-
-			/*if (_material == null) {
-				var shader = Shader.Find(ShaderName);
-				if (shader == null) {
-					Debug.LogError($"Shader not found: {ShaderName}");
-					return;
-				}
-				_material = new Material(shader);
-			}
-			
-			_material.SetMatrix("ObjectToWorld", transform.localToWorldMatrix);
-			_material.SetTexture("FlatLUT3D", LUT.Texture);
-			int size = LUT.Size;
-			_material.SetInt("Size", size);
-			int numVertices = size * size * size;
-
-			if (DrawGrid) {
-				_material.SetFloat("Alpha", GridAlpha);
-				_material.SetPass(1);
-				Graphics.DrawProceduralNow(MeshTopology.Lines, numVertices);
-			}
-			if (DrawPoints) {
-				_material.SetFloat("PointSize", PointSize);
-				_material.SetPass(0);
-				Graphics.DrawProceduralNow(MeshTopology.Points, numVertices);
-			}
-
-		}*/
-
 		public static FlatLUT3DView GetByName(string name) {
 			var found = FindObjectsOfType<FlatLUT3DView>(true).FirstOrDefault(x => x.name == name);
 			if (found == null) {
@@ -339,5 +274,23 @@ namespace ImageMath.Views {
 			}
 			return found;
 		}
+
+
+#if UNITY_EDITOR
+		[ContextMenu("Save As CUBE")]
+		private void SaveAsCUBE() {
+			if (!Texture) throw new Exception("No texture to save.");
+			var path = EditorUtility.SaveFilePanel("Save LUT as CUBE", "", $"{gameObject.name}.cube", "cube");
+			if (string.IsNullOrEmpty(path)) return;
+			var dataF4 = Texture.GetPixelData<Vector4>(0);
+			var dataF3 = new Vector3[dataF4.Length];
+			for (int i = 0; i < dataF4.Length; i++) {
+				dataF3[i] = new Vector3(dataF4[i].x, dataF4[i].y, dataF4[i].z);
+			}
+			var fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(path);
+			var fileContent = FlatLUT3D.ToCubeFileContent(dataF3, Vector3.zero, Vector3.one, fileNameWithoutExtension);
+			System.IO.File.WriteAllText(path, fileContent);
+		}
+#endif
 	}
 }
