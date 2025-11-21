@@ -1,5 +1,8 @@
 #nullable enable
 
+using Accord.Statistics.Filters;
+using Accord.Statistics.Kernels;
+
 using UnityEngine;
 
 namespace ImageMath {
@@ -185,6 +188,31 @@ namespace ImageMath {
             return (UnpackPiecewiseLogLinearLog)(PackCanonLog3().CreateInverse(texture));
         }
 
+        public static PiecewiseLinearPow PackRec709(Texture? texture = null) {
+
+            // https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.709-6-201506-I!!PDF-E.pdf
+            // Recommendation ITU-R BT.709-6 (06/2015): Parameter values for the HDTV standards for
+            // production and international programme exchange
+
+            // The spec does not contain named constants, presenting only numeric values.
+            // See section 1, item 1.2 for the formula.
+            return new PiecewiseLinearPow(texture) {
+                Threshold = 0.018f,
+                LinearScale = 4.5f,
+                LinearOffset = 0.0f,
+                PowInnerScale = 1.0f,
+                PowInnerOffset = 0.0f,
+                PowExponent = 0.45f,
+                PowOuterScale = 1.099f,
+                PowOuterOffset = -0.099f,
+            };
+        }
+
+        public static PiecewiseLinearPow UnpackRec709(Texture? texture = null) {
+            // TODO: get rid of this cast when covariant overrides are available.
+            return (PiecewiseLinearPow)(PackRec709().CreateInverse(texture));
+        }
+
         public static PackPiecewiseLinearLog PackRedLog3G10(Texture? texture = null) {
 
             // https://docs.red.com/955-0187/PDF/915-0187%20Rev-C%20%20%20RED%20OPS%2C%20White%20Paper%20on%20REDWideGamutRGB%20and%20Log3G10.pdf
@@ -213,6 +241,52 @@ namespace ImageMath {
         public static UnpackPiecewiseLinearLog UnpackRedLog3G10(Texture? texture = null) {
             // TODO: get rid of this cast when covariant overrides are available.
             return (UnpackPiecewiseLinearLog)(PackRedLog3G10().CreateInverse(texture));
+        }
+
+        public static PackPiecewiseLinearLog PackSonySlog3(Texture? texture = null) {
+
+            // https://pro.sony/s3/cms-static-content/uploadfile/06/1237494271406.pdf
+            // Technical Summary for S-Gamut3.Cine/S-Log3 and S-Gamut3/S-Log3
+
+            const double ln10 = 2.3025850929940456840179914546844;
+
+            // The spec does not contain named constants, presenting only numeric values.
+            // See Appendix for the formula.
+            return new PackPiecewiseLinearLog(texture) {
+                Threshold = 0.01125f,
+                LinearScale = (float)((171.2102946929 - 95.0) / (0.01125 * 1023.0)),
+                LinearOffset = (float)(95.0 / 1023.0),
+                LogInnerScale = (float)(1.0 / (0.18 + 0.01)),
+                LogInnerOffset = (float)(0.01 / (0.18 + 0.01)),
+                LogOuterScale = (float)(261.5 / (1023.0 * ln10)),
+                LogOuterOffset = (float)(420.0 / 1023.0),
+            };
+        }
+
+        public static UnpackPiecewiseLinearLog UnpackSonySlog3(Texture? texture = null) {
+            // TODO: get rid of this cast when covariant overrides are available.
+            return (UnpackPiecewiseLinearLog)(PackSonySlog3().CreateInverse(texture));
+        }
+
+        public static PiecewiseLinearPow PackSrgb(Texture? texture = null) {
+
+            // TODO: add spec later.
+
+            return new PiecewiseLinearPow(texture) {
+                Threshold = 0.0031308f,
+                LinearScale = 12.92f,
+                LinearOffset = 0.0f,
+                PowInnerScale = 1.0f,
+                PowInnerOffset = 0.0f,
+                PowExponent = (float)(1.0 / 2.4),
+                PowOuterScale = 1.055f,
+                PowOuterOffset = -0.055f,
+            };
+        }
+
+        public static PiecewiseLinearPow UnpackSrgb(Texture? texture = null) {
+            // TODO: get rid of this cast when covariant overrides are available.
+            return (PiecewiseLinearPow)(PackSrgb().CreateInverse(texture));
         }
     }
 }

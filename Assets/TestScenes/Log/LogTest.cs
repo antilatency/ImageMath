@@ -14,7 +14,10 @@ public class LogTest : MonoBehaviour {
         CanonLog2,
         CanonLog3,
         BlackmagicDesignFilmGen5,
+        Rec709,
         RedLog3G10,
+        SonySlog3,
+        Srgb,
     }
 
     public TransferFunction transferFunction;
@@ -37,8 +40,14 @@ public class LogTest : MonoBehaviour {
                     return TransferFunctions.PackCanonLog2(texture);
                 case TransferFunction.CanonLog3:
                     return TransferFunctions.PackCanonLog3(texture);
+                case TransferFunction.Rec709:
+                    return TransferFunctions.PackRec709(texture);
                 case TransferFunction.RedLog3G10:
                     return TransferFunctions.PackRedLog3G10(texture);
+                case TransferFunction.SonySlog3:
+                    return TransferFunctions.PackSonySlog3(texture);
+                case TransferFunction.Srgb:
+                    return TransferFunctions.PackSrgb(texture);
             }
 
             throw new System.ArgumentException();
@@ -58,8 +67,14 @@ public class LogTest : MonoBehaviour {
                     return TransferFunctions.UnpackCanonLog2(texture);
                 case TransferFunction.CanonLog3:
                     return TransferFunctions.UnpackCanonLog3(texture);
+                case TransferFunction.Rec709:
+                    return TransferFunctions.UnpackRec709(texture);
                 case TransferFunction.RedLog3G10:
                     return TransferFunctions.UnpackRedLog3G10(texture);
+                case TransferFunction.SonySlog3:
+                    return TransferFunctions.UnpackSonySlog3(texture);
+                case TransferFunction.Srgb:
+                    return TransferFunctions.UnpackSrgb(texture);
             }
 
             throw new System.ArgumentException();
