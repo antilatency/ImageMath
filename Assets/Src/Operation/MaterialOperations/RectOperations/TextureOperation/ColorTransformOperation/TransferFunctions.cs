@@ -188,7 +188,7 @@ namespace ImageMath {
             return (UnpackPiecewiseLogLinearLog)(PackCanonLog3().CreateInverse(texture));
         }
 
-        public static PackPiecewiseLinearPow PackRec709(Texture? texture = null) {
+        public static PiecewiseLinearPow PackRec709(Texture? texture = null) {
 
             // https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.709-6-201506-I!!PDF-E.pdf
             // Recommendation ITU-R BT.709-6 (06/2015): Parameter values for the HDTV standards for
@@ -196,7 +196,7 @@ namespace ImageMath {
 
             // The spec does not contain named constants, presenting only numeric values.
             // See section 1, item 1.2 for the formula.
-            return new PackPiecewiseLinearPow(texture) {
+            return new PiecewiseLinearPow(texture) {
                 Threshold = 0.018f,
                 LinearScale = 4.5f,
                 LinearOffset = 0.0f,
@@ -208,9 +208,9 @@ namespace ImageMath {
             };
         }
 
-        public static UnpackPiecewiseLinearPow UnpackRec709(Texture? texture = null) {
+        public static PiecewiseLinearPow UnpackRec709(Texture? texture = null) {
             // TODO: get rid of this cast when covariant overrides are available.
-            return (UnpackPiecewiseLinearPow)(PackRec709().CreateInverse(texture));
+            return (PiecewiseLinearPow)(PackRec709().CreateInverse(texture));
         }
 
         public static PackPiecewiseLinearLog PackRedLog3G10(Texture? texture = null) {
@@ -268,11 +268,11 @@ namespace ImageMath {
             return (UnpackPiecewiseLinearLog)(PackSonySlog3().CreateInverse(texture));
         }
 
-        public static PackPiecewiseLinearPow PackSrgb(Texture? texture = null) {
+        public static PiecewiseLinearPow PackSrgb(Texture? texture = null) {
 
             // TODO: add spec later.
 
-            return new PackPiecewiseLinearPow(texture) {
+            return new PiecewiseLinearPow(texture) {
                 Threshold = 0.0031308f,
                 LinearScale = 12.92f,
                 LinearOffset = 0.0f,
@@ -284,9 +284,9 @@ namespace ImageMath {
             };
         }
 
-        public static UnpackPiecewiseLinearPow UnpackSrgb(Texture? texture = null) {
+        public static PiecewiseLinearPow UnpackSrgb(Texture? texture = null) {
             // TODO: get rid of this cast when covariant overrides are available.
-            return (UnpackPiecewiseLinearPow)(PackSrgb().CreateInverse(texture));
+            return (PiecewiseLinearPow)(PackSrgb().CreateInverse(texture));
         }
     }
 }

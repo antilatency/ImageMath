@@ -1,4 +1,4 @@
-Shader "ImageMath/PackPiecewiseLinearPow"{
+Shader "ImageMath/PiecewiseLinearPow"{
     Properties {}
     SubShader {
         Cull Off ZWrite Off ZTest Always

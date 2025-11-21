@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ImageMath {
 
     [FilePath]
-    public partial record PackPiecewiseLinearPow : ColorTransformOperation {
+    public partial record PiecewiseLinearPow : ColorTransformOperation {
         public float Threshold { get; set; }
         public float LinearScale { get; set; }
         public float LinearOffset { get; set; }
@@ -15,19 +15,19 @@ namespace ImageMath {
         public float PowOuterScale { get; set; }
         public float PowOuterOffset { get; set; }
 
-        public PackPiecewiseLinearPow(Texture? texture = null) : base(texture) {
+        public PiecewiseLinearPow(Texture? texture = null) : base(texture) {
         }
 
         public override ColorTransformOperation CreateInverse(Texture? texture = null) {
-            return new UnpackPiecewiseLinearPow(texture) {
-                Threshold = Threshold,
-                LinearScale = LinearScale,
-                LinearOffset = LinearOffset,
-                PowInnerScale = PowInnerScale,
-                PowInnerOffset = PowInnerOffset,
-                PowExponent = PowExponent,
-                PowOuterScale = PowOuterScale,
-                PowOuterOffset = PowOuterOffset,
+            return new PiecewiseLinearPow(texture) {
+                Threshold = (float)(LinearScale * Threshold + LinearOffset),
+                LinearScale = (float)(1 / LinearScale),
+                LinearOffset = (float)(-LinearOffset / LinearScale),
+                PowInnerScale = (float)(1 / PowOuterScale),
+                PowInnerOffset = (float)(-PowOuterOffset / PowOuterScale),
+                PowExponent = (float)(1.0 / PowExponent),
+                PowOuterScale = (float)(1 / PowInnerScale),
+                PowOuterOffset = (float)(-PowInnerOffset / PowInnerScale),
             };
         }
 
