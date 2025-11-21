@@ -1,4 +1,4 @@
-Shader "ImageMath/AbsDiffOperation"{
+Shader "ImageMath/Finetune422"{
     Properties {}
     SubShader {
         Cull Off ZWrite Off ZTest Always
@@ -30,29 +30,22 @@ Shader "ImageMath/AbsDiffOperation"{
         #define RenderTargetSize ImageMath_RenderTargetSize.xy
         #define InverseRenderTargetSize ImageMath_RenderTargetSize.zw
 
-        float4 Multiplier;
-        Texture2D<float4> TextureA;
-        SamplerState samplerTextureA;
-        Texture2D<float4> TextureB;
-        SamplerState samplerTextureB;
-        float2 Position;
-        float2 Size;
+        float3 YAxisInRGBSpace;
+        Texture2D<float4> LinearTexture;
+        SamplerState samplerLinearTexture;
+        Texture2D<float4> GammaTexture;
+        SamplerState samplerGammaTexture;
 
         VSO vert(VSI input) {
             VSO result;
             result.position = input.position;
-            result.position.xy *= Size;
-        	result.position.xy += Position;
         	result.position = UnityObjectToClipPos(result.position);
             result.uv = input.uv;
             return result;
         }
         
         float4 frag(VSO input) : SV_Target {
-            float4 inputColorA = TextureA.Sample(samplerTextureA, input.uv);
-            float4 inputColorB = TextureB.Sample(samplerTextureB, input.uv);
-            float4 absDiff = abs(inputColorA - inputColorB) * Multiplier;
-            return absDiff;
+            #include "D:\ImageMath\Assets\Src\Operation\MaterialOperations\RectOperations\TextureOperation\Finetune422.FragmentShaderBody.cginc"
         }
 
         ENDCG

@@ -1,8 +1,11 @@
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+#nullable enable
 
 using static ImageMath.Static;
 namespace ImageMath {
+
+
     [FilePath]
     public partial record TransparencyInfill : TextureOperation {
         public float Power { get; set; } = 1.0f;

@@ -32,6 +32,7 @@ namespace ImageMath.Views{
             Both
         }
         public ResizeModeOptions ResizeMode = ResizeModeOptions.Width;
+        public float ScaleFactor = 1.0f;
 
         public Material? Material = null;
         public static Material? DefaultUIMaterial = null;
@@ -112,7 +113,7 @@ namespace ImageMath.Views{
                     scale.y = (float)Texture.height;
                     break;
             }
-            transform.localScale = scale;
+            transform.localScale = scale * ScaleFactor;
 
         }
 
@@ -234,31 +235,50 @@ namespace ImageMath.Views{
         #if UNITY_EDITOR
         [ContextMenu("Save Image As PNG")]
         private void SaveImageAsPNG() {
-            SaveImageAsPNG(false,x=>x.SavePNG(),"png");
+            SaveImageAs(false,x=>x.SavePNG(),"png");
         }
         [ContextMenu("Save Image As PNG (Pack to sRGB)")]
         private void SaveImageAsPNGPackToSRGB() {
-            SaveImageAsPNG(true,x=>x.SavePNG(),"png");
+            SaveImageAs(true,x=>x.SavePNG(),"png");
         }
 
         [ContextMenu("Save Image As EXR")]
         private void SaveImageAsEXR() {
-            SaveImageAsPNG(false,x=>x.SaveEXR(),"exr");
+            SaveImageAs(false,x=>x.SaveEXR(),"exr");
+        }
+
+        [ContextMenu("Zoom view to 100%")]
+        private void ZoomViewTo100Percent() {
+            if (Texture == null) return;
+            var sceneView = SceneView.lastActiveSceneView;
+            if (sceneView == null) return;
+            Rect pixelRect = sceneView.camera.pixelRect;
+
+            if (sceneView.in2DMode) {
+                var windowSize = pixelRect.size;
+                float minWindowDimension = Math.Min(windowSize.x, windowSize.y);
+                float pixelsPerUnit = Texture.width / transform.localScale.x;
+                sceneView.size = 0.5f * minWindowDimension / pixelsPerUnit;
+                Debug.Log(windowSize);
+                //sceneView.size = 0.5f;
+                //sceneView.size = Math.Max(Texture!.width, Texture!.height) * 0.5f;
+            }
         }
 
 
-        private void SaveImageAsPNG(bool packToSRGB, Func<Texture,byte[]> Encode, string extension) {
-            if (Texture == null){
+        private void SaveImageAs(bool packToSRGB, Func<Texture, byte[]> Encode, string extension) {
+            if (Texture == null) {
                 Debug.LogWarning("No texture assigned.");
                 return;
             }
 
             byte[] pngData;
-            if (packToSRGB){
+            if (packToSRGB) {
                 using var temp = Static.GetTempRenderTexture(Texture.width, Texture.height);
                 new PackSRGB(Texture).AssignTo(temp);
                 pngData = Encode(temp.Value);
-            } else {
+            }
+            else {
                 pngData = Encode(Texture);
             }
 
@@ -269,7 +289,7 @@ namespace ImageMath.Views{
                 extension
             );
 
-            if (!string.IsNullOrEmpty(path)){
+            if (!string.IsNullOrEmpty(path)) {
                 System.IO.File.WriteAllBytes(path, pngData);
                 Debug.Log("Image saved to: " + path);
             }

@@ -10,6 +10,15 @@ namespace ImageMath {
         public static Vector4 AverageWeightedByAlpha(this Texture texture, int downScalePerIteration = 4) {
             return Reductor<AverageWeightedByAlphaOperation>.Calculate(texture, downScalePerIteration);
         }
+        public static Vector3 AverageWeightedByAlpha_Divided(this Texture texture, int downScalePerIteration = 4) {
+            var v = Reductor<AverageWeightedByAlphaOperation>.Calculate(texture, downScalePerIteration);
+            if (v.w > 0) {
+                return new Vector3(v.x / v.w, v.y / v.w, v.z / v.w);
+            } else {
+                return new Vector3(0, 0, 0);
+            }
+        }
+
         public static Vector4 Maximum(this Texture texture, int downScalePerIteration = 4) {
             return Reductor<MaxOperation>.Calculate(texture, downScalePerIteration);
         }

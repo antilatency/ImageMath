@@ -79,7 +79,7 @@ public class LogTest : MonoBehaviour {
 
         var diff = TextureView.GetByName("Diff").ResizeRenderTexture(linear.width, linear.height);
 
-        new AbsDiffOperation(bdfg5, unpacked, DiffMultiplier).AssignTo(diff);
+        new AbsDiff(bdfg5, unpacked, DiffMultiplier).AssignTo(diff);
 
         var equal = TextureView.GetByName("Equal").ResizeRenderTexture(linear.width, linear.height);
         new TextureCompare {
@@ -92,6 +92,6 @@ public class LogTest : MonoBehaviour {
         packOperation(unpacked).AssignTo(roundTrip);
 
         var roundTripDiff = TextureView.GetByName("RoundTripDiff").ResizeRenderTexture(linear.width, linear.height);
-        new AbsDiffOperation(linear, roundTrip, DiffMultiplier).AssignTo(roundTripDiff);
+        new AbsDiff(linear, roundTrip, DiffMultiplier).AssignTo(roundTripDiff);
     }
 }
