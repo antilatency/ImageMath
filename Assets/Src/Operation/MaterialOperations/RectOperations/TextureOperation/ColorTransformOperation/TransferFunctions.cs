@@ -268,7 +268,7 @@ namespace ImageMath {
             return (UnpackPiecewiseLinearLog)(PackSonySlog3().CreateInverse(texture));
         }
 
-        public static PiecewiseLinearPow PackSrgb(Texture? texture = null) {
+        public static PiecewiseLinearPow PackSRGB(Texture? texture = null) {
 
             // TODO: add spec later.
 
@@ -284,9 +284,9 @@ namespace ImageMath {
             };
         }
 
-        public static PiecewiseLinearPow UnpackSrgb(Texture? texture = null) {
+        public static PiecewiseLinearPow UnpackSRGB(Texture? texture = null) {
             // TODO: get rid of this cast when covariant overrides are available.
-            return (PiecewiseLinearPow)(PackSrgb().CreateInverse(texture));
+            return (PiecewiseLinearPow)(PackSRGB().CreateInverse(texture));
         }
     }
 }
