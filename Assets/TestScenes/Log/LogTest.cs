@@ -47,7 +47,7 @@ public class LogTest : MonoBehaviour {
                 case TransferFunction.SonySlog3:
                     return TransferFunctions.PackSonySlog3(texture);
                 case TransferFunction.Srgb:
-                    return TransferFunctions.PackSrgb(texture);
+                    return TransferFunctions.PackSRGB(texture);
             }
 
             throw new System.ArgumentException();
@@ -74,7 +74,7 @@ public class LogTest : MonoBehaviour {
                 case TransferFunction.SonySlog3:
                     return TransferFunctions.UnpackSonySlog3(texture);
                 case TransferFunction.Srgb:
-                    return TransferFunctions.UnpackSrgb(texture);
+                    return TransferFunctions.UnpackSRGB(texture);
             }
 
             throw new System.ArgumentException();
