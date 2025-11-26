@@ -15,7 +15,7 @@ namespace ImageMath {
         public float StartWavelength = 380;
         [Newtonsoft.Json.JsonIgnore]
         public float WavelengthEnd => StartWavelength + WavelengthStep * (Values.Length - 1);
-        public float Width => WavelengthStep * Values.Length;
+        public float Width => WavelengthStep * (Values.Length - 1);
         public float WavelengthStep = 1;
         public float[] Values = new float[401];
         public Spectrum() { }

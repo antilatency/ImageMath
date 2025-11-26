@@ -1,8 +1,5 @@
 #nullable enable
 
-using Accord.Statistics.Filters;
-using Accord.Statistics.Kernels;
-
 using UnityEngine;
 
 namespace ImageMath {
