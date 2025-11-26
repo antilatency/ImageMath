@@ -28,7 +28,9 @@ namespace ImageMath.Views {
         public static SpectrumView GetByName(string name) {
             var found = GameObject.FindObjectsOfType<SpectrumView>(true).FirstOrDefault(x => x.name == name);
             if (found == null) {
-                found = new GameObject(name).AddComponent<SpectrumView>();
+                var gameObject = new GameObject(name);
+                gameObject.transform.localScale = new Vector3(0.01f, 1, 1);
+                found = gameObject.AddComponent<SpectrumView>();
             }
             return found;
         }
