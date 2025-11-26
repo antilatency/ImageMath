@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e83c1af14d20f94bab421a0052b25bc, type: 3}
   m_Name: ImageMathGeneratorSettings
   m_EditorClassIdentifier: 
-  isDebugMode: 1
+  isDebugMode: 0
