@@ -12,6 +12,7 @@ public partial record MulticompileOptionsTestOperation : RectOperation {
 
     public MulticompileOptionsTestOperation() {
     }
-
+#if UNITY_EDITOR
     public static string GetFragmentShaderBody() => IncludeOrEmbed("MulticompileOptionsTestOperation.FragmentShaderBody.cginc");
+#endif
 }

@@ -56,7 +56,7 @@ public class PointDetectorTest : MonoBehaviour {
 
             var sortedCorners = Homography.SortCorners(corners);
 
-            var homographyCropResult = TextureView.GetByName("HomographyCropResult").ResizeRenderTexture(256,256);
+            var homographyCropResult = TextureView.GetByName("HomographyCropResult").ResizeRenderTexture(256, 256);
             new HomographyCrop((a, b) => Accord.Math.Matrix.Solve(a, b), inputH.Texture, sortedCorners)
             .Scale(Vector2.one * 2f, Vector2.one * 0.5f)
             .AssignTo(homographyCropResult);
@@ -67,6 +67,8 @@ public class PointDetectorTest : MonoBehaviour {
     }
 
     public bool ShowSegments = false;
+
+#if UNITY_EDITOR
 
     public void OnDrawGizmos() {
         if (Segments == null || Points == null) return;
@@ -116,4 +118,5 @@ public class PointDetectorTest : MonoBehaviour {
 
     }
 
+#endif
 }

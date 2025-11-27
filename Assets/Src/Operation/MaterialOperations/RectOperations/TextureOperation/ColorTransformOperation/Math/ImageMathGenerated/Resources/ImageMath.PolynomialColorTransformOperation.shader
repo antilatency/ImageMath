@@ -14,11 +14,11 @@ Shader "ImageMath/PolynomialColorTransformOperation"{
         #define SquareRootOf2 1.4142135623730950488016887242097
         #define Epsilon 10e-6
 
-        float4 PrepareNormalization(float4 inputColor) {
+        float4 PrepareNormalization(float4 inputColor, float whiteLevel) {
         	#if WUsage_Transform
         	return inputColor;
         	#elif WUsage_UseForNormalization
-        	return float4(inputColor.rgb, WhiteLevel);
+        	return float4(inputColor.rgb, whiteLevel);
         	#endif
         }
         float4 FinalizeNormalization(float4 outputColor, float inputAlpha) {
@@ -45,6 +45,7 @@ Shader "ImageMath/PolynomialColorTransformOperation"{
 
         float Coefficients[16];
         int Coefficients_Size;
+        float WhiteLevel;
         Texture2D<float4> Texture;
         SamplerState samplerTexture;
         float2 Position;
@@ -62,7 +63,7 @@ Shader "ImageMath/PolynomialColorTransformOperation"{
         
         float4 frag(VSO input) : SV_Target {
             float4 inputColor = Texture.Sample(samplerTexture, input.uv);
-            float4 x = PrepareNormalization(inputColor);
+            float4 x = PrepareNormalization(inputColor, WhiteLevel);
             float4 v = 1.0;
             float4 result = 0.0;
             for (int i = 0; i < Coefficients_Size; i++) {

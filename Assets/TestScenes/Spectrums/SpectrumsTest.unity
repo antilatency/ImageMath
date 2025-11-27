@@ -679,7 +679,7 @@ Material:
     - _StartWavelength: 380
     - _YScale: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
 --- !u!1 &1464588701
 GameObject:
@@ -712,7 +712,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5e3d2cd20bc51c4195e812bd7f42481, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Color: {r: 1, g: 1, b: 1, a: 1}
+  Color: {r: 1, g: 0, b: 0, a: 1}
   SpectrumAsset: {fileID: 0}
   _spectrum:
     StartWavelength: 380

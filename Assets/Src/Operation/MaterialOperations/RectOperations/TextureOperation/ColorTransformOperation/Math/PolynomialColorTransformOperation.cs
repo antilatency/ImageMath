@@ -4,52 +4,9 @@ using UnityEngine;
 #nullable enable
 
 #if UNITY_EDITOR
-using Scopes;
-using Scopes.C;
 #endif
 
 namespace ImageMath {
-    [FilePath]
-    public abstract partial record NormalizableColorTransformOperation : ColorTransformOperation {
-        public float WhiteLevel = 1f;
-
-
-
-        public enum WUsageOptions {
-            Transform,
-            UseForNormalization
-        }
-        [MulticompileOptions]
-        public WUsageOptions WUsage { get; set; } = WUsageOptions.UseForNormalization;
-
-        public NormalizableColorTransformOperation(Texture texture) : base(texture) { }
-
-        protected NormalizableColorTransformOperation() { }
-
-#if UNITY_EDITOR
-
-        public static string GetCustomCode() {
-            return new Group() {
-                new Scope("float4 PrepareNormalization(float4 inputColor)") {
-                    "#if WUsage_Transform",
-                    "return inputColor;",
-                    "#elif WUsage_UseForNormalization",
-                    "return float4(inputColor.rgb, WhiteLevel);",
-                    "#endif"
-                },
-                new Scope("float4 FinalizeNormalization(float4 outputColor, float inputAlpha)") {
-                    "#if WUsage_Transform",
-                    "return outputColor;",
-                    "#elif WUsage_UseForNormalization",
-                    "return float4(outputColor.rgb / outputColor.a, inputAlpha);",
-                    "#endif"
-                },
-
-            }.ToString();
-        }
-
-#endif
-    }
 
 
     [FilePath]
@@ -66,7 +23,7 @@ namespace ImageMath {
         }
         public static string GetColorTransform() {
             return @"
-float4 x = PrepareNormalization(inputColor);
+float4 x = PrepareNormalization(inputColor, WhiteLevel);
 float4 v = 1.0;
 float4 result = 0.0;
 for (int i = 0; i < Coefficients_Size; i++) {
