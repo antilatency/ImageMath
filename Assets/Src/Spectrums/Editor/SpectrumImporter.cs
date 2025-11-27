@@ -1,5 +1,5 @@
+#if UNITY_EDITOR
 using ImageMath.ScriptableObjects;
-
 using UnityEngine;
 
 # nullable enable
@@ -21,3 +21,4 @@ namespace ImageMath {
 
     }
 }
+#endif

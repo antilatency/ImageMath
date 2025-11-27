@@ -1,10 +1,9 @@
+#if UNITY_EDITOR
+
 using System;
 using System.Linq;
-
 using ImageMath.ScriptableObjects;
-
 using UnityEditor;
-
 using UnityEngine;
 
 # nullable enable
@@ -81,7 +80,6 @@ namespace ImageMath {
             return result;
         }
     }
-
-
-
 }
+
+#endif

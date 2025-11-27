@@ -1,11 +1,10 @@
+#if UNITY_EDITOR
 using UnityEditor.AssetImporters;
-
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 
 #nullable enable
 namespace ImageMath {
-
     [ScriptedImporter(1, "cube")]
     public class CubeImporter : ScriptedImporter {
         override public void OnImportAsset(AssetImportContext context) {
@@ -22,5 +21,5 @@ namespace ImageMath {
             context.SetMainObject(texture);
         }
     }
-
 }
+#endif
