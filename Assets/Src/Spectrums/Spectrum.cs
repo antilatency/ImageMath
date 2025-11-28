@@ -240,6 +240,86 @@ namespace ImageMath {
             return colors;
         }
 
+        public float SpectrumSimularityIndex(Spectrum reference) {
+            /*
+https://oscars.org/sites/oscars/files/ssi_overview_2020-09-16.pdf
+
+1) Specify test and reference source SPDs (at intervals not exceeding 5 nm).
+2) Interpolate spectra to 1-nm increments from 375 nm to 675 nm (padding with zeroes if the test
+luminaire is not specified fully across that range).
+3) Integrate spectra in 10-nm intervals from 380 to 670 nm.
+4) Normalize to unity total power of test and reference sources by dividing each 10-nm sample by
+sum of all 10-nm samples for each source.
+5) Calculate relative difference vector = (normalized test source vector – normalized reference
+source vector) / (normalized reference source vector + 1/30).
+6) Calculate weighted relative difference vector = relative difference vector * spectral weighting
+vector
+{4/15, 22/45, 32/45, 8/9, 44/45, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11/15, 3/15}.
+7) Add zero to each end of weighted relative difference vector to have 32 values.
+8) Convolve with {0.22, 0.56, 0.22} to create 30-element smoothed weighted relative difference
+vector.
+9) Calculate vector magnitude = square root of sum of squares of elements of smoothed weighted
+relative difference vector.
+10) SSI value = round (100 – 32 * vector magnitude). 
+
+            */
+            const int startWavelength = 375;
+            const int endWavelength = 675;
+            
+            var a = this.Resample(startWavelength, 1, endWavelength - startWavelength);
+            var b = reference.Resample(startWavelength, 1, endWavelength - startWavelength);
+            var weights = new double[] { 12.0 / 45.0, 22.0 / 45.0, 32.0 / 45.0, 40.0 / 45.0, 44.0 / 45.0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11.0 / 15.0, 3.0 / 15.0 };
+            var aBins = new double[weights.Length];
+            var bBins = new double[weights.Length];
+            double aSum = 0;
+            double bSum = 0;
+            for (int i = 0; i < weights.Length; i++) {
+                for (int j = 0; j < 10; j++) {
+                    aBins[i] += a.Values[i * 10 + j];
+                    bBins[i] += b.Values[i * 10 + j];
+                }
+                aSum += aBins[i];
+                bSum += bBins[i];
+            }
+            for (int i = 0; i < weights.Length; i++) {
+                aBins[i] /= aSum;
+                bBins[i] /= bSum;
+            }
+            double[] difference = new double[weights.Length];
+            for (int i = 0; i < weights.Length; i++) {
+                difference[i] = aBins[i] - bBins[i];
+            }
+            double bMean = bBins.Average();
+            double[] relativeDifference = new double[weights.Length];
+            for (int i = 0; i < weights.Length; i++) {
+                relativeDifference[i] = difference[i] / (bBins[i] + bMean);
+            }
+            double[] weightedRelativeDifference = new double[weights.Length];
+            for (int i = 0; i < weights.Length; i++) {
+                weightedRelativeDifference[i] = relativeDifference[i] * weights[i];
+            }
+
+            double[] convolveKernel = new double[] { 0.22, 0.56, 0.22 };
+            double[] smoothed = new double[weights.Length];
+            for (int i = 0; i < weights.Length; i++) {
+                for (int j = 0; j < convolveKernel.Length; j++) {
+                    int index = i + j - 1;
+                    if (index >= 0 && index < weights.Length) {
+                        smoothed[i] += weightedRelativeDifference[index] * convolveKernel[j];
+                    }
+                }
+            }
+
+            double sumOfSquares = 0;
+            for (int i = 0; i < weights.Length; i++) {
+                sumOfSquares += smoothed[i] * smoothed[i];
+            }
+            double vectorMagnitude = System.Math.Sqrt(sumOfSquares);
+            double ssi = 100 - 32 * vectorMagnitude;
+
+            return (float)ssi;
+        }
+
     }
 
 }
