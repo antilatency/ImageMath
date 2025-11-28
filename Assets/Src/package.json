@@ -10,5 +10,6 @@
     "ImageMath"
   ],
   "dependencies": {
+		"newtonsoft-json" : "com.unity.nuget.newtonsoft-json"
   }
 }
