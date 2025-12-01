@@ -240,7 +240,7 @@ namespace ImageMath {
             return colors;
         }
 
-        public float SpectrumSimularityIndex(Spectrum reference) {
+        public float SpectrumSimilarityIndex(Spectrum reference) {
             /*
 https://oscars.org/sites/oscars/files/ssi_overview_2020-09-16.pdf
 

@@ -21,14 +21,14 @@ public class SpectrumsTest : MonoBehaviour{
 	void Update() {
 		var reference = ReferenceSpectrum.Value.Normalized();
 		//Spectrums.CreateBlackbodySpectrum(BlackbodyTemperature,200,800).Normalized()* RefMultiplier;
-		var blackBodyView = ImageMath.Views.SpectrumView.GetByName("BlackbodySpectrum");
+		var blackBodyView = ImageMath.Views.SpectrumView.GetByName("ReferenceSpectrum");
 		blackBodyView.Spectrum = reference;
 
 		var test = TestSpectrum.Value.Normalized();
 		var testView = ImageMath.Views.SpectrumView.GetByName("TestSpectrum");
 		testView.Spectrum = test;
 
-		SimilarityIndex = test.SpectrumSimularityIndex(reference);
+		SimilarityIndex = test.SpectrumSimilarityIndex(reference);
 
 	}
 	
