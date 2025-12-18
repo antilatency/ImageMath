@@ -69,12 +69,133 @@ namespace ImageMath {
             };
         }
 
-        public static TextureRGBMultipliedByMatrix Pack(Texture? texture = null, Standard standard = Standard.BT709) {
-            return new TextureRGBMultipliedByMatrix(texture, GetRGBToYUVMatrix(standard));
+        private static void GetQuantizationLinearTransform(
+                int bitsPerComponent, double min, double max,
+                out double scale, out double offset) {
+
+            if (bitsPerComponent < 8) {
+                throw new System.ArgumentOutOfRangeException(nameof(bitsPerComponent));
+            }
+
+            int n = bitsPerComponent;
+
+            // The following expressions are adapted from:
+            //
+            // https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.709-6-201506-I!!PDF-E.pdf
+            // Recommendation ITU-R BT.709-6 (06/2015): Parameter values for the HDTV standards for
+            // production and international programme exchange
+            // Section 3 -- Signal format, 3.4 -- Quantization of RGB, luminance and colour-difference signals
+
+            double k = (double)(1 << (n - 8)) / ((1 << n) - 1);
+            scale = (max - min) * k;
+            offset = min * k;
         }
 
-        public static TextureRGBMultipliedByMatrix Unpack(Texture? texture = null, Standard standard = Standard.BT709) {
-            return new TextureRGBMultipliedByMatrix(texture, GetYUVToRGBMatrix(standard));
+        private static void GetInvQuantizationLinearTransform(
+                int bitsPerComponent, double min, double max,
+                out double scale, out double offset) {
+
+            if (bitsPerComponent < 8) {
+                throw new System.ArgumentOutOfRangeException(nameof(bitsPerComponent));
+            }
+
+            int n = bitsPerComponent;
+
+            // Ditto. See the GetQuantizationLinearTransform comment.
+            double kInv = (double)((1 << n) - 1) / (1 << (n - 8));
+            scale = kInv / (max - min);
+            offset = -min / (max - min);
+        }
+
+        public static Matrix4x4 GetQuantizationMatrix(int bitsPerComponent) {
+
+            // https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.709-6-201506-I!!PDF-E.pdf
+            // Recommendation ITU-R BT.709-6 (06/2015): Parameter values for the HDTV standards for
+            // production and international programme exchange
+            // Section 4 -- Digital representation, 4.6 -- Quantization levels.
+            const double minY = 16;
+            const double maxY = 235;
+            const double minC = 16;
+            const double maxC = 240;
+
+            GetQuantizationLinearTransform(bitsPerComponent, minY, maxY,
+                out double kY, out double bY);
+
+            GetQuantizationLinearTransform(bitsPerComponent, minC, maxC,
+                out double kC, out double bC);
+
+            var m = Matrix4x4.zero;
+            m[0, 0] = (float)kY;
+            m[1, 1] = (float)kC;
+            m[2, 2] = (float)kC;
+
+            m[0, 3] = (float)bY;
+            m[1, 3] = (float)bC;
+            m[2, 3] = (float)bC;
+            m[3, 3] = 1.0f;
+
+            return m;
+        }
+
+        public static Matrix4x4 GetInvQuantizationMatrix(int bitsPerComponent) {
+
+            // Ditto. See the GetQuantizationMatrix comment.
+            const double minY = 16;
+            const double maxY = 235;
+            const double minC = 16;
+            const double maxC = 240;
+
+            GetInvQuantizationLinearTransform(bitsPerComponent, minY, maxY,
+                out double kY, out double bY);
+
+            GetInvQuantizationLinearTransform(bitsPerComponent, minC, maxC,
+                out double kC, out double bC);
+
+            var m = Matrix4x4.zero;
+            m[0, 0] = (float)kY;
+            m[1, 1] = (float)kC;
+            m[2, 2] = (float)kC;
+
+            m[0, 3] = (float)bY;
+            m[1, 3] = (float)bC;
+            m[2, 3] = (float)bC;
+            m[3, 3] = 1.0f;
+
+            return m;
+        }
+
+        public static Matrix4x4 GetRGBToYUVMatrix(Standard standard, int? bitsPerComponent) {
+
+            var m = GetRGBToYUVMatrix(standard);
+            if (bitsPerComponent == null) {
+                return m;
+            }
+
+            var quantMatrix = GetQuantizationMatrix(bitsPerComponent.Value);
+            return quantMatrix * m;
+        }
+
+        public static Matrix4x4 GetYUVToRGBMatrix(Standard standard, int? bitsPerComponent) {
+
+            var m = GetYUVToRGBMatrix(standard);
+            if (bitsPerComponent == null) {
+                return m;
+            }
+
+            var unquantMatrix = GetInvQuantizationMatrix(bitsPerComponent.Value);
+            return m * unquantMatrix;
+        }
+
+        public static TextureRGBMultipliedByMatrix Pack(Texture? texture = null,
+                Standard standard = Standard.BT709, int? bitsPerComponent = null) {
+
+            return new TextureRGBMultipliedByMatrix(texture, GetRGBToYUVMatrix(standard, bitsPerComponent));
+        }
+
+        public static TextureRGBMultipliedByMatrix Unpack(Texture? texture = null,
+                Standard standard = Standard.BT709, int? bitsPerComponent = null) {
+
+            return new TextureRGBMultipliedByMatrix(texture, GetYUVToRGBMatrix(standard, bitsPerComponent));
         }
 
 
