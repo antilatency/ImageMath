@@ -10,6 +10,7 @@
     "ImageMath"
   ],
   "dependencies": {
-		"com.unity.nuget.newtonsoft-json" : "3.2.2"
+        "com.unity.nuget.newtonsoft-json" : "3.2.2",
+        "com.unity.ugui": "1.0.0"
   }
 }
