@@ -6,7 +6,7 @@ using UnityEngine;
 using System.Linq;
 using System.Text;
 using UnityEngine.Experimental.Rendering;
-
+using UnityEngine;
 
 #nullable enable
 namespace ImageMath {
@@ -143,6 +143,11 @@ namespace ImageMath {
             public ScaleFlags ScaleFlags { get; set; } = ScaleFlags.Bilinear;
             public int NumberOfFrames { get; set; } = 0;
             public string Select { get; set; } = string.Empty;
+            public RectInt? CropRect { get; set; } = null;
+
+            public static string BuildCropExpression(RectInt cropRect) {
+                return $"{cropRect.width}:{cropRect.height}:{cropRect.x}:in_h-{cropRect.y + cropRect.height}";
+            }
         }
 
         public enum ScaleFlags {
@@ -172,6 +177,10 @@ namespace ImageMath {
             //arguments.Append("-an -map 0:v"); // disable audio
 
             var filters = new List<string>();
+
+            if (parameters.CropRect != null)
+                filters.Add($"crop={RunParameters.BuildCropExpression(parameters.CropRect.Value)}");
+
             if (!string.IsNullOrEmpty(parameters.Select)) {
                 filters.Add(parameters.Select);
             }
@@ -180,7 +189,8 @@ namespace ImageMath {
                 filters.Add($"scale={parameters.OutputWidth}:{parameters.OutputHeight}:flags={parameters.ScaleFlags.ToString().ToLower()}");
                 OutputWidth = parameters.OutputWidth;
                 OutputHeight = parameters.OutputHeight;
-            } else {
+            }
+            else {
                 OutputWidth = InputWidth;
                 OutputHeight = InputHeight;
             }
