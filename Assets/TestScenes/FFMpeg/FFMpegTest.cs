@@ -1,6 +1,8 @@
 using UnityEngine;
+
 using ImageMath;
 using ImageMath.Views;
+
 using System.IO;
 
 
@@ -12,7 +14,7 @@ using UnityEditor;
 #nullable enable
 
 [ExecuteAlways]
-public class FFMpegTest : MonoBehaviour{
+public class FFMpegTest : MonoBehaviour {
 
 
 	public InspectorButton _OpenVideo;
@@ -32,20 +34,21 @@ public class FFMpegTest : MonoBehaviour{
 
 	public bool _16bit = false;
 
-	[Range(0,1)]
+	[Range(0, 1)]
 	public float Seek;
 	public InspectorButton _ReadVideo;
 	public void ReadVideo() {
 		int numFramesFact = 0;
 		var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-		using var reader = new FFMPEGImageReader(VideoFilePath,_16bit ? FFMPEGImageReader.OutputFormat.RGBA64 : FFMPEGImageReader.OutputFormat.RGB24, Debug.Log);
+		using var reader = new FFMPEGImageReader(VideoFilePath, _16bit ? FFMPEGImageReader.OutputFormat.RGBA64 : FFMPEGImageReader.OutputFormat.RGB24, Debug.Log);
 		//reader.Run(192, 108, FFMPEGImageReader.ScaleFlags.Lanczos, reader.CreateSelectFilter(0..4));
 		reader.Run(new FFMPEGImageReader.RunParameters {
-			InputSeek = Seek*reader.Duration,
+			InputSeek = Seek * reader.Duration,
 			AccurateInputSeek = false,
-			OutputWidth = reader.InputWidth / 10,
-			OutputHeight = reader.InputHeight / 10,
-			ScaleFlags = FFMPEGImageReader.ScaleFlags.Lanczos,
+			ScaleFilter = new FFMPEGImageReader.RunParameters.FixedSizeScaleFilterBuilder(
+				reader.InputWidth / 10,
+				reader.InputHeight / 10,
+				FFMPEGImageReader.ScaleFlags.Lanczos),
 			NumberOfFrames = 1
 		});
 		var texture = TextureView.GetByName("Frame").ResizeTexture2D(reader.OutputWidth, reader.OutputHeight, false, reader.GraphicsFormat);
@@ -117,7 +120,7 @@ public class FFMpegTest : MonoBehaviour{
 		new UnpackSRGB(result).FlipY().AssignTo(resultUnpackedFromSRGB);
 		*/
 
-    }
+	}
 
 #if UNITY_EDITOR
 	public void OnDrawGizmos() {

@@ -146,14 +146,21 @@ namespace ImageMath {
                 public int Width { get; set; }
                 public int Height { get; set; }
 
+                public FixedSizeScaleFilterBuilder(int width, int height, ScaleFlags scaleFlags = ScaleFlags.Bilinear) {
+                    Width = width;
+                    Height = height;
+                    ScaleFlags = scaleFlags;
+                }
+
                 protected override string BuildScaleArgs() => $"{Width}:{Height}";
             }
 
             public class MaxSideScaleFilterBuilder : ScaleFilterBuilder {
                 public int MaxSide { get; set; }
-                public MaxSideScaleFilterBuilder(int maxSide) {
+                public MaxSideScaleFilterBuilder(int maxSide, ScaleFlags scaleFlags = ScaleFlags.Bilinear) {
                     if (maxSide % 2 != 0) maxSide += 1;
                     MaxSide = maxSide;
+                    ScaleFlags = scaleFlags;
                 }
 
                 protected override string BuildScaleArgs() => $"if(gt(iw,ih),{MaxSide},-1):if(gt(iw,ih),-1,{MaxSide})";
@@ -161,7 +168,7 @@ namespace ImageMath {
 
             public float InputSeek { get; set; } = 0;
             public bool AccurateInputSeek { get; set; } = false;
-            public ScaleFilterBuilder? Scale { get; set; }
+            public ScaleFilterBuilder? ScaleFilter { get; set; }
             public int NumberOfFrames { get; set; } = 0;
             public string Select { get; set; } = string.Empty;
             public RectInt? CropRect { get; set; } = null;
@@ -206,9 +213,9 @@ namespace ImageMath {
                 filters.Add(parameters.Select);
             }
 
-            if (parameters.Scale != null) {
+            if (parameters.ScaleFilter != null) {
                 filters.Add($"format={_ffmpegPixelFormat}"); //change format before scaling
-                filters.Add(parameters.Scale.BuildFilterString());
+                filters.Add(parameters.ScaleFilter.BuildFilterString());
             }
             else {
                 OutputWidth = InputWidth;
