@@ -136,16 +136,37 @@ namespace ImageMath {
         }
 
         public class RunParameters {
+            public abstract class ScaleFilterBuilder {
+                public ScaleFlags ScaleFlags { get; set; } = ScaleFlags.Bilinear;
+                public string BuildFilterString() => $"scale={BuildScaleArgs()}:flags={ScaleFlags.ToString().ToLower()}";
+                protected abstract string BuildScaleArgs();
+            }
+
+            public class FixedSizeScaleFilterBuilder : ScaleFilterBuilder {
+                public int Width { get; set; }
+                public int Height { get; set; }
+
+                protected override string BuildScaleArgs() => $"{Width}:{Height}";
+            }
+
+            public class MaxSideScaleFilterBuilder : ScaleFilterBuilder {
+                public int MaxSide { get; set; }
+                public MaxSideScaleFilterBuilder(int maxSide) {
+                    if (maxSide % 2 != 0) maxSide += 1;
+                    MaxSide = maxSide;
+                }
+
+                protected override string BuildScaleArgs() => $"if(gt(iw,ih),{MaxSide},-1):if(gt(iw,ih),-1,{MaxSide})";
+            }
+
             public float InputSeek { get; set; } = 0;
             public bool AccurateInputSeek { get; set; } = false;
-            public int OutputWidth { get; set; } = 0;
-            public int OutputHeight { get; set; } = 0;
-            public ScaleFlags ScaleFlags { get; set; } = ScaleFlags.Bilinear;
+            public ScaleFilterBuilder? Scale { get; set; }
             public int NumberOfFrames { get; set; } = 0;
             public string Select { get; set; } = string.Empty;
             public RectInt? CropRect { get; set; } = null;
 
-            public static string BuildCropExpression(RectInt cropRect) {
+            public static string BuildCropArgs(RectInt cropRect) {
                 return $"{cropRect.width}:{cropRect.height}:{cropRect.x}:in_h-{cropRect.y + cropRect.height}";
             }
         }
@@ -179,21 +200,21 @@ namespace ImageMath {
             var filters = new List<string>();
 
             if (parameters.CropRect != null)
-                filters.Add($"crop={RunParameters.BuildCropExpression(parameters.CropRect.Value)}");
+                filters.Add($"crop={RunParameters.BuildCropArgs(parameters.CropRect.Value)}");
 
             if (!string.IsNullOrEmpty(parameters.Select)) {
                 filters.Add(parameters.Select);
             }
-            if (parameters.OutputWidth > 0 && parameters.OutputHeight > 0) {
+
+            if (parameters.Scale != null) {
                 filters.Add($"format={_ffmpegPixelFormat}"); //change format before scaling
-                filters.Add($"scale={parameters.OutputWidth}:{parameters.OutputHeight}:flags={parameters.ScaleFlags.ToString().ToLower()}");
-                OutputWidth = parameters.OutputWidth;
-                OutputHeight = parameters.OutputHeight;
+                filters.Add(parameters.Scale.BuildFilterString());
             }
             else {
                 OutputWidth = InputWidth;
                 OutputHeight = InputHeight;
             }
+
             filters.Add("vflip"); // always flip vertically
 
             if (filters.Count > 0) {
