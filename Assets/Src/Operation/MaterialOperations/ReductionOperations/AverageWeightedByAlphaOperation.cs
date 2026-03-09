@@ -1,5 +1,4 @@
 using UnityEngine;
-using static ImageMath.Static;
 
 namespace ImageMath {
     [FilePath]
@@ -25,12 +24,5 @@ namespace ImageMath {
             }
             return DivideByAlpha(sum);
         }
-
-        public Color CalculateAveragePixel() {
-            using var average = GetTempRenderTexture(1);
-            new AverageWeightedByAlphaOperation(Texture).AssignTo(average);
-            return average.Value.GetPixels()[0];
-        }
-
     }
 }
