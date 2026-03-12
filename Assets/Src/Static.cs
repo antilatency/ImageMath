@@ -221,25 +221,20 @@ namespace ImageMath {
                 pixels = texture2D.GetPixels();
             }
             else
-                if (texture is RenderTexture renderTexture) {
-                    pixels = renderTexture.GetPixels();
+                if (texture is WebCamTexture webCamTexture) {
+                    pixels = webCamTexture.GetPixels();
                 }
-                else
-                    if (texture is WebCamTexture webCamTexture) {
-                        pixels = webCamTexture.GetPixels();
-                    }
-                    else {
-                        throw new NotImplementedException();
-                    }
+                else {
+                    throw new NotImplementedException();
+                }
             return pixels;
         }
 
-        /*public static Color[] GetPixels(this RenderTexture renderTexture) {
-            //FIXME: use cache
+        public static Color[] GetPixels(this RenderTexture renderTexture) {
             using var texture = renderTexture.ToTempTexture();
             var pixels = texture.Value.GetPixels();
             return pixels;
-        }*/
+        }
 
         public static T[] GetPixelData<T>(this Texture texture, int mipLevel = 0) where T : struct {
             T[] pixels;
@@ -455,6 +450,7 @@ namespace ImageMath {
             var height = textureData.pixels.Length / textureData.width;
             var result = CreateTexture2D(textureData.width, height, GraphicsFormat.R32G32B32A32_SFloat, false);
             result.SetPixelData(textureData.pixels, 0, 0);
+            if (apply) result.Apply();
             return result;
         }
 
