@@ -1,14 +1,18 @@
 using UnityEngine;
-namespace ImageMath{
+namespace ImageMath {
     [FilePath]
-    public partial record ColorFill: RectOperation {
-        public Vector4 Color {get; set;}
+    public partial record ColorFill : RectOperation {
+        public Vector4 Color { get; set; }
         public ColorFill(Vector4 color) {
             Color = color;
         }
 
         public ColorFill(Vector3 color) {
             Color = new Vector4(color.x, color.y, color.z, 1);
+        }
+
+        public ColorFill(float rgb) {
+            Color = new Vector4(rgb, rgb, rgb, 1);
         }
 
         public ColorFill() {
