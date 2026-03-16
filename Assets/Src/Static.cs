@@ -188,6 +188,8 @@ namespace ImageMath {
 
 
         public static Color32[] GetPixels32(this Texture texture) {
+            // TODO: Reconsider if the merits of this function justify a dependency
+            //       on com.unity.modules.audio caused by WebCamTexture.
             Color32[] pixels;
             if (texture is Texture2D texture2D) {
                 pixels = texture2D.GetPixels32();
@@ -211,6 +213,8 @@ namespace ImageMath {
         }
 
         public static Color[] GetPixels(this Texture texture) {
+            // TODO: Reconsider if the merits of this function justify a dependency
+            //       on com.unity.modules.audio caused by WebCamTexture.
             Color[] pixels;
             if (texture is Texture2D texture2D) {
                 pixels = texture2D.GetPixels();
