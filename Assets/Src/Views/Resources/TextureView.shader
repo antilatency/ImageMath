@@ -21,9 +21,8 @@ Shader "ImageMath/Views/TextureView" {
                 #include "UnityCG.cginc"
                 #include "UnityUI.cginc"
 
-                #pragma multi_compile_local _ UNITY_UI_CLIP_RECT
-                #pragma multi_compile_local _ UNITY_UI_ALPHACLIP
 
+                #pragma multi_compile_local Sampler_Point Sampler_Bilinear Sampler_Trilinear
 
 
                 struct VertexInput {
@@ -37,8 +36,7 @@ Shader "ImageMath/Views/TextureView" {
                 };
 
 
-                float4 _ClipRect;
-                sampler2D _MainTex;
+                
 
                 FragmentInput vertexShader(VertexInput input) {
                     FragmentInput output;
@@ -50,12 +48,21 @@ Shader "ImageMath/Views/TextureView" {
                 }
 
 
+                Texture2D _MainTex;
+                SamplerState point_clamp_sampler;
+                SamplerState bilinear_clamp_sampler;
+                SamplerState trilinear_clamp_sampler;
+
 
                 float4 fragmentShader(FragmentInput input) : SV_Target {
-                    // Sample the texture using the UV coordinates
-                    float4 color = tex2D(_MainTex, input.uv);
 
-                    return color;
+                    #ifdef Sampler_Point
+                    return _MainTex.Sample(point_clamp_sampler, input.uv);
+                    #elif Sampler_Bilinear
+                    return _MainTex.Sample(bilinear_clamp_sampler, input.uv);
+                    #elif Sampler_Trilinear
+                    return _MainTex.Sample(trilinear_clamp_sampler, input.uv);
+                    #endif
                 }
             ENDCG
         }

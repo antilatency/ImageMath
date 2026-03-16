@@ -35,6 +35,12 @@ namespace Scopes {
             Content.Add(node);
         }
 
+        public void AddRange(params object[] nodes) {
+            foreach (var node in nodes) {
+                Content.Add(node);
+            }
+        }
+
         IEnumerator IEnumerable.GetEnumerator() {
             return null;
         }

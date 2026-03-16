@@ -3,6 +3,105 @@
 using UnityEngine;
 
 namespace ImageMath {
+
+    public struct QuantizationLevels {
+        public struct MultiplyAdd {
+            public float Multiply;
+            public float Add;
+            public MultiplyAdd(float multiply, float add) {
+                Multiply = multiply;
+                Add = add;
+            }
+            public float Apply(float value) {
+                return value * Multiply + Add;
+            }
+        }
+
+        public struct Channel {
+            public uint NumLevels; //256 for 8-bit, 1024 for 10-bit, etc.
+            public uint BlackLevel;
+            public uint WhiteLevel;
+            public Channel(uint numLevels, uint blackLevel, uint whiteLevel) {
+                NumLevels = numLevels;
+                BlackLevel = blackLevel;
+                WhiteLevel = whiteLevel;
+            }
+            public MultiplyAdd Pack() { // from full range to normalized quantized value
+                float normalizedBlack = BlackLevel / (float)(NumLevels - 1);
+                float normalizedWhite = WhiteLevel / (float)(NumLevels - 1);
+                float multiply = normalizedWhite - normalizedBlack;
+                float add = normalizedBlack;
+                return new MultiplyAdd(multiply, add);
+            }
+            public MultiplyAdd Unpack() { // from normalized quantized value to full range
+                float normalizedBlack = BlackLevel / (float)(NumLevels - 1);
+                float normalizedWhite = WhiteLevel / (float)(NumLevels - 1);
+                float multiply = 1 / (normalizedWhite - normalizedBlack);
+                float add = -normalizedBlack * multiply;
+                return new MultiplyAdd(multiply, add);
+            }
+        }
+
+        public Channel R;
+        public Channel G;
+        public Channel B;
+
+        public Channel Y;
+        public Channel U;
+        public Channel V;
+
+        public static QuantizationLevels FullRange => new QuantizationLevels {
+            R = new Channel(256, 0, 255),
+            G = new Channel(256, 0, 255),
+            B = new Channel(256, 0, 255),
+            Y = new Channel(256, 0, 255),
+            U = new Channel(256, 0, 255),
+            V = new Channel(256, 0, 255),
+        };
+
+        public static QuantizationLevels VideoRange8Bit => new QuantizationLevels {
+            R = new Channel(256, 16, 235),
+            G = new Channel(256, 16, 235),
+            B = new Channel(256, 16, 235),
+            Y = new Channel(256, 16, 235),
+            U = new Channel(256, 16, 240),
+            V = new Channel(256, 16, 240),
+        };
+
+        public static QuantizationLevels VideoRange10Bit => new QuantizationLevels {
+            R = new Channel(1024, 64, 940),
+            G = new Channel(1024, 64, 940),
+            B = new Channel(1024, 64, 940),
+            Y = new Channel(1024, 64, 940),
+            U = new Channel(1024, 64, 960),
+            V = new Channel(1024, 64, 960),
+        };
+
+        public static QuantizationLevels VideoRange12Bit => new QuantizationLevels {
+            R = new Channel(4096, 256, 3760),
+            G = new Channel(4096, 256, 3760),
+            B = new Channel(4096, 256, 3760),
+            Y = new Channel(4096, 256, 3760),
+            U = new Channel(4096, 256, 4080),
+            V = new Channel(4096, 256, 4080),
+        };
+
+        public (Vector3 multiply, Vector3 add) YUVPack() {
+            var yPack = Y.Pack();
+            var uPack = U.Pack();
+            var vPack = V.Pack();
+            return (new Vector3(yPack.Multiply, uPack.Multiply, vPack.Multiply),
+                    new Vector3(yPack.Add, uPack.Add, vPack.Add));
+        }
+        public (Vector3 multiply, Vector3 add) YUVUnpack() {
+            var yUnpack = Y.Unpack();
+            var uUnpack = U.Unpack();
+            var vUnpack = V.Unpack();
+            return (new Vector3(yUnpack.Multiply, uUnpack.Multiply, vUnpack.Multiply),
+                    new Vector3(yUnpack.Add, uUnpack.Add, vUnpack.Add));
+        }
+    }
+
     public static class YUV {
         public enum Standard {
             BT601,
@@ -59,7 +158,7 @@ namespace ImageMath {
                 _ => BT709_YCbCrFromRGB,
             };
         }
-        
+
         public static Matrix4x4 GetYUVToRGBMatrix(Standard standard) {
             return standard switch {
                 Standard.BT601 => BT601_RGBFromYCbCr,

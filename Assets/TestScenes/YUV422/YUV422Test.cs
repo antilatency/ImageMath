@@ -13,7 +13,7 @@ using UnityEditor;
 public class YUV422Test : MonoBehaviour{
 
 
-
+	public float NoiseAmplitude = 0.01f;
 	public InspectorButton _GenerateTestImage;
 	public void GenerateTestImage() {
 		//load Shader "Custom/VertexColor"
@@ -69,13 +69,24 @@ public class YUV422Test : MonoBehaviour{
 		inputTexture.filterMode = FilterMode.Point;
 		new TextureCopy(renderTexture512).AssignTo(inputTexture);
 
+		new GaussianNoiseRGBAFill(NoiseAmplitude).AddTo(inputTexture);
+
+		new ColorFill(new Vector4(0,0,0,0)).MaxTo(inputTexture);
+
 	}
+
+
 
 
 	public Unpack422.UpsamplingAlgorithm Algorithm = Unpack422.UpsamplingAlgorithm.LinearInterpolation;
 
-	public float Power = 1.0f;
+	[Range(0.0f, 0.2f)]
+	public float AntiNoiseProtection = 0.01f;
+
+	[Range(0.0f, 500.0f)]
+	public float ErrorMultiplier = 100.0f;
 	public float Error;
+	public float Error2;
 	void Update() {
 
 		var inputTexture = TextureView.GetByName("InputTexture").Texture;
@@ -86,16 +97,10 @@ public class YUV422Test : MonoBehaviour{
 
 		var yuvTexture = TextureView.GetByName("YUVTexture").ResizeRenderTexture(inputTexture.width, inputTexture.height);
 		YUV.Pack(transferFunctionAppliedTexture).AssignTo(yuvTexture);
-		/*new TextureMultipliedByMatrix(inputTexture,
-			new Matrix4x4(
-				new Vector4(1/3.0f, 0, 0, 0),
-				new Vector4(1/3.0f, 1, 0, 0),
-				new Vector4(1/3.0f, 0, 1, 0),
-				new Vector4(0, 0, 0, 1)
-			)
-		).AssignTo(yuvTexture);*/
 
-		var packed422Texture = TextureView.GetByName("Packed422Texture").ResizeRenderTexture(inputTexture.width, 2 * inputTexture.height);
+		var packedTextureDimensions = Pack422.GetOutputTextureDimensions(new Vector2Int(inputTexture.width, inputTexture.height), Layout422.Cb0Y0Cr0Y1);
+
+		var packed422Texture = TextureView.GetByName("Packed422Texture").ResizeRenderTexture(packedTextureDimensions.x, packedTextureDimensions.y);
 		packed422Texture.filterMode = FilterMode.Point;
 		new Pack422(yuvTexture).AssignTo(packed422Texture);
 
@@ -104,7 +109,7 @@ public class YUV422Test : MonoBehaviour{
 		unpacked422Texture.filterMode = FilterMode.Point;
 		new Unpack422(packed422Texture) {
 			Algorithm = Algorithm,
-			Power = Power
+			AntiNoiseProtection = AntiNoiseProtection
 		}.AssignTo(unpacked422Texture);
 		unpacked422Texture.filterMode = FilterMode.Point;
 
@@ -120,17 +125,35 @@ public class YUV422Test : MonoBehaviour{
 		new ImageMath.TextureCompare(yuvTexture, TextureCompare.CompareOperation.Less, 0).AssignTo(negativeCheckTexture);
 
 		var errorTexture = TextureView.GetByName("ErrorTexture").ResizeRenderTexture(inputTexture.width, inputTexture.height);
-		new SquaredDiff(inputTexture, transferFunctionRemovedTexture, 100).AssignTo(errorTexture);
+		new SquaredDiff(inputTexture, transferFunctionRemovedTexture, ErrorMultiplier).AssignTo(errorTexture);
 		errorTexture.ClearAlpha();
 
 		var error = errorTexture.AverageWeightedByAlpha_Divided();
 		Error = Mathf.Sqrt(error.x + error.y + error.z);
 
-		var finetunedTexture = TextureView.GetByName("FinetunedTexture").ResizeRenderTexture(inputTexture.width, inputTexture.height);
-		new Finetune422(transferFunctionRemovedTexture, rgbTexture).AssignTo(finetunedTexture);
+		var yuv2 = TextureView.GetByName("YUV2").ResizeRenderTexture(inputTexture.width, inputTexture.height);
+		YUV.Pack(transferFunctionRemovedTexture).AssignTo(yuv2);
 
-		var errorTexture2 = TextureView.GetByName("ErrorTexture2").ResizeRenderTexture(inputTexture.width, inputTexture.height);
-		new SquaredDiff(inputTexture, finetunedTexture, 100).AssignTo(errorTexture2);
+		var new422 = TextureView.GetByName("New422").ResizeRenderTexture(packedTextureDimensions.x, packedTextureDimensions.y);
+
+		new Pack422(yuv2).AssignTo(new422);
+
+		var unpacked2 = TextureView.GetByName("Unpacked2").ResizeRenderTexture(inputTexture.width, inputTexture.height);
+		new Unpack422(new422) {
+			Algorithm = Algorithm,
+			AntiNoiseProtection = AntiNoiseProtection
+		}.AssignTo(unpacked2);
+
+		var rgb2 = TextureView.GetByName("RGB2").ResizeRenderTexture(inputTexture.width, inputTexture.height);
+		YUV.Unpack(unpacked2).AssignTo(rgb2);
+
+		var error2Texture = TextureView.GetByName("Error2Texture").ResizeRenderTexture(inputTexture.width, inputTexture.height);
+		new SquaredDiff(inputTexture, rgb2, ErrorMultiplier).AssignTo(error2Texture);
+		error2Texture.ClearAlpha();
+
+
+		var error2 = error2Texture.AverageWeightedByAlpha_Divided();
+		Error2 = Mathf.Sqrt(error2.x + error2.y + error2.z);
 
 
     }

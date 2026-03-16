@@ -21,9 +21,16 @@ namespace ImageMath.Views{
             PremultipliedAlpha
         }
 
+        public enum SamplerOptions {
+            Point,
+            Bilinear,
+            Trilinear
+        }
+
         private Texture? CreatedTexture = null;
         public Texture? Texture  = null;
         public AlphaBlendingOptions AlphaBlending = AlphaBlendingOptions.Opaque;
+        public SamplerOptions Sampler = SamplerOptions.Point;
 
         public enum ResizeModeOptions {
             None,
@@ -39,11 +46,6 @@ namespace ImageMath.Views{
         public static Mesh? DefaultMesh = null;
 
         void UpdateAlphaBlending(Material material) {
-            /*
-            if (AlphaBlending == AlphaBlendingOptions.Opaque) {
-                material.SetInt("_SrcBlend", (int)BlendMode.One);
-                material.SetInt("_DstBlend", (int)BlendMode.Zero);
-            }*/
             switch (AlphaBlending) {
                 case AlphaBlendingOptions.Opaque:
                     material.SetInt("_SrcBlend", (int)BlendMode.One);
@@ -60,6 +62,18 @@ namespace ImageMath.Views{
                     material.SetInt("_DstBlend", (int)BlendMode.OneMinusSrcAlpha);
                     break;
             }
+        }
+
+        void UpdateSampler(Material material) {
+            var name = Sampler.ToString();
+            foreach (var option in (SamplerOptions[])Enum.GetValues(typeof(SamplerOptions))) {
+                if (option == Sampler) {
+                    material.EnableKeyword("Sampler_" + option.ToString());
+                } else {
+                    material.DisableKeyword("Sampler_" + option.ToString());
+                }
+            }
+            
         }
 
         void UpdateMeshRenderer(){
@@ -129,6 +143,7 @@ namespace ImageMath.Views{
                 }
             }
             UpdateAlphaBlending(Material!);
+            UpdateSampler(Material!);
             return Material!;
         }
 

@@ -6,7 +6,7 @@ Shader "ImageMath/Pack422"{
 
         CGINCLUDE
 
-
+        #pragma multi_compile_local Layout_Cb0Y0Cr0Y1
         
         #include "UnityCG.cginc"
 
@@ -14,7 +14,21 @@ Shader "ImageMath/Pack422"{
         #define SquareRootOf2 1.4142135623730950488016887242097
         #define Epsilon 10e-6
 
-
+        uint2 outputDimensions(uint w, uint h) {
+        	#ifdef Layout_Cb0Y0Cr0Y1
+        	return uint2(w * 2, h);
+        	#endif
+        }
+        uint2 sourcePosition(uint x, uint y, uint w, uint h) {
+        	#ifdef Layout_Cb0Y0Cr0Y1
+        	return uint2(((x/4*2) + uint4(0,0,0,1))[x%4], y);
+        	#endif
+        }
+        uint sourceComponent(uint x, uint y, uint w, uint h) {
+        	#ifdef Layout_Cb0Y0Cr0Y1
+        	return uint4(1,0,2,0)[x%4];
+        	#endif
+        }
 
         struct VSI {
             float4 position : POSITION;
@@ -46,39 +60,7 @@ Shader "ImageMath/Pack422"{
         }
         
         float4 frag(VSO input) : SV_Target {
-            //assuming target texture height is double source texture height
-            uint2 textureSize = 0;
-            uint levels = 0;
-            Texture.GetDimensions(0, textureSize.x, textureSize.y, levels);
-            uint2 halfTextureSize = textureSize / 2;
-            uint2 pixelPosition = input.position.xy;
-            /*
-            float2 uv = input.uv;
-            if (uv.y > 0.5){
-                uv.y = (uv.y - 0.5) * 2.0;
-                return Texture.Sample(samplerTexture, uv).r;
-            }
-            uv.y = uv.y * 2.0;
-            if (uv.x > 0.5){
-                uv.x = (uv.x - 0.5) * 2.0;
-                return Texture.Sample(samplerTexture, uv).b;
-            } else {
-                uv.x = uv.x * 2.0;
-                return Texture.Sample(samplerTexture, uv).g;
-            }*/
-            if (pixelPosition.y >= textureSize.y){
-                float r = Texture.Load(int3(pixelPosition.x, pixelPosition.y - textureSize.y, 0)).r;
-                return r;
-            }
-            if (pixelPosition.x >= halfTextureSize.x) {
-                    int x = 2 * (pixelPosition.x - halfTextureSize.x);
-                    float b = Texture.Load(int3(x, pixelPosition.y, 0)).b;
-                    return b;
-            }
-            int x = 2 * pixelPosition.x;
-            float g = Texture.Load(int3(x, pixelPosition.y, 0)).g;
-            return g;
-            
+            #include "D:\ImageMath\Assets\Src\Operation\MaterialOperations\RectOperations\TextureOperation\Pack422.FragmentShaderBody.cginc"
         }
 
         ENDCG

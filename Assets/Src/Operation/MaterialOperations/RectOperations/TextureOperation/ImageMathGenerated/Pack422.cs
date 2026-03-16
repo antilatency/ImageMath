@@ -4,6 +4,7 @@ namespace ImageMath {
 	public partial record Pack422 {
 		protected override void ApplyShaderParameters() {
 			base.ApplyShaderParameters();
+			SetEnumKeyword("Layout", Layout);
 		}
 	}
 }
