@@ -34,10 +34,21 @@ namespace ImageMath{
 
 
         public override string GetShaderParameterAssignmentCode() {
+            if (_propertyInfo.PropertyType == typeof(bool)) {
+                return $"SetInt(\"{GetShaderVariableName()}\", {_propertyInfo.Name} ? 1 : 0);";
+            }
+            if (_propertyInfo.PropertyType.IsEnum) {
+                return $"SetInt(\"{GetShaderVariableName()}\", (int){_propertyInfo.Name});";
+            }
+
             return $"{SupportedTypes[_propertyInfo.PropertyType].setMethodName}(\"{GetShaderVariableName()}\", {_propertyInfo.Name});";
         }
 
         public override string GetHLSLDeclaration() {
+            if (_propertyInfo.PropertyType == typeof(bool) || _propertyInfo.PropertyType.IsEnum) {
+                return $"int {GetShaderVariableName()};";
+            }
+
             var info = SupportedTypes[_propertyInfo.PropertyType];
             return $"{info.hlslType}{info.hlslTypeSize} {GetShaderVariableName()};";
         }
@@ -45,6 +56,10 @@ namespace ImageMath{
         private StructParameter(PropertyInfo propertyInfo) : base(propertyInfo) { }
 
         public static new StructParameter? Create(PropertyInfo propertyInfo) {
+            if (propertyInfo.PropertyType == typeof(bool) || propertyInfo.PropertyType.IsEnum) {
+                return new StructParameter(propertyInfo);
+            }
+
             if (SupportedTypes.ContainsKey(propertyInfo.PropertyType)) {
                 return new StructParameter(propertyInfo);
             }
