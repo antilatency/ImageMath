@@ -263,27 +263,13 @@ namespace ImageMath {
 
         public static void SetPixelData<T>(this Texture texture, T[] pixels, int mipLevel = 0, bool apply = true) where T : struct {
             if (texture is Texture2D texture2D) {
-                if (pixels.Length != texture2D.width * texture2D.height) {
-                    //resize array
-                    var newPixels = new T[texture2D.width * texture2D.height];
-                    Array.Copy(pixels, newPixels, Math.Min(pixels.Length, newPixels.Length));
-                    pixels = newPixels;
-                }
                 texture2D.SetPixelData(pixels, mipLevel, 0);
-                if (apply)
-                    texture2D.Apply();
+                if (apply) texture2D.Apply();
             }
             else
                 if (texture is Texture3D texture3D) {
-                    if (pixels.Length != texture3D.width * texture3D.height * texture3D.depth) {
-                        //resize array
-                        var newPixels = new T[texture3D.width * texture3D.height * texture3D.depth];
-                        Array.Copy(pixels, newPixels, Math.Min(pixels.Length, newPixels.Length));
-                        pixels = newPixels;
-                    }
                     texture3D.SetPixelData(pixels, mipLevel, 0);
-                    if (apply)
-                        texture3D.Apply();
+                    if (apply) texture3D.Apply();
                 }
                 else
                     if (texture is RenderTexture renderTexture) {
