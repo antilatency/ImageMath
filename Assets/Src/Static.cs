@@ -220,17 +220,18 @@ namespace ImageMath {
             if (texture is Texture2D texture2D) {
                 pixels = texture2D.GetPixels();
             }
-            if (texture is RenderTexture renderTexture) {
+            else if (texture is RenderTexture renderTexture) {
                 using var temp = renderTexture.ToTempTexture();
                 pixels = temp.Value.GetPixels();
             }
-            else
+            else {
                 if (texture is WebCamTexture webCamTexture) {
                     pixels = webCamTexture.GetPixels();
                 }
                 else {
                     throw new NotImplementedException();
                 }
+            }
             return pixels;
         }
 
