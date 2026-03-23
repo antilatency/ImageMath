@@ -220,6 +220,10 @@ namespace ImageMath {
             if (texture is Texture2D texture2D) {
                 pixels = texture2D.GetPixels();
             }
+            if (texture is RenderTexture renderTexture) {
+                using var temp = renderTexture.ToTempTexture();
+                pixels = temp.Value.GetPixels();
+            }
             else
                 if (texture is WebCamTexture webCamTexture) {
                     pixels = webCamTexture.GetPixels();
@@ -230,11 +234,6 @@ namespace ImageMath {
             return pixels;
         }
 
-        public static Color[] GetPixels(this RenderTexture renderTexture) {
-            using var texture = renderTexture.ToTempTexture();
-            var pixels = texture.Value.GetPixels();
-            return pixels;
-        }
 
         public static T[] GetPixelData<T>(this Texture texture, int mipLevel = 0) where T : struct {
             T[] pixels;
