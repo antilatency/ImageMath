@@ -6,7 +6,7 @@ using UnityEngine;
 using System.Linq;
 using System.Text;
 using UnityEngine.Experimental.Rendering;
-
+using UnityEngine;
 
 #nullable enable
 namespace ImageMath {
@@ -136,13 +136,53 @@ namespace ImageMath {
         }
 
         public class RunParameters {
+            public abstract class ScaleFilterBuilder {
+                public ScaleFlags ScaleFlags { get; set; } = ScaleFlags.Bilinear;
+                public string BuildFilterString() => $"scale={BuildScaleArgs()}:flags={ScaleFlags.ToString().ToLower()}";
+                protected abstract string BuildScaleArgs();
+                public abstract Vector2Int GetOutputSize(int inputWidth, int inputHeight);
+            }
+
+            public class FixedSizeScaleFilterBuilder : ScaleFilterBuilder {
+                public int Width { get; set; }
+                public int Height { get; set; }
+
+                public FixedSizeScaleFilterBuilder(int width, int height, ScaleFlags scaleFlags = ScaleFlags.Bilinear) {
+                    Width = width;
+                    Height = height;
+                    ScaleFlags = scaleFlags;
+                }
+
+                protected override string BuildScaleArgs() => $"{Width}:{Height}";
+                public override Vector2Int GetOutputSize(int inputWidth, int inputHeight) => new Vector2Int(Width, Height);
+            }
+
+            public class MaxSideScaleFilterBuilder : ScaleFilterBuilder {
+                public int MaxSide { get; set; }
+                public MaxSideScaleFilterBuilder(int maxSide, ScaleFlags scaleFlags = ScaleFlags.Bilinear) {
+                    if (maxSide % 2 != 0) maxSide += 1;
+                    MaxSide = maxSide;
+                    ScaleFlags = scaleFlags;
+                }
+
+
+                protected override string BuildScaleArgs() => $@"if(gt(iw\,ih)\,{MaxSide}\,-1):if(gt(iw\,ih)\,-1\,{MaxSide})";
+                public override Vector2Int GetOutputSize(int inputWidth, int inputHeight) {
+                    if (inputWidth >= inputHeight) return new Vector2Int(MaxSide, Mathf.RoundToInt((float)inputHeight / inputWidth * MaxSide));
+                    else return new Vector2Int(Mathf.RoundToInt((float)inputWidth / inputHeight * MaxSide), MaxSide);
+                }
+            }
+
             public float InputSeek { get; set; } = 0;
             public bool AccurateInputSeek { get; set; } = false;
-            public int OutputWidth { get; set; } = 0;
-            public int OutputHeight { get; set; } = 0;
-            public ScaleFlags ScaleFlags { get; set; } = ScaleFlags.Bilinear;
+            public ScaleFilterBuilder? ScaleFilter { get; set; }
             public int NumberOfFrames { get; set; } = 0;
             public string Select { get; set; } = string.Empty;
+            public RectInt? CropRect { get; set; } = null;
+
+            public static string BuildCropArgs(RectInt cropRect) {
+                return $"{cropRect.width}:{cropRect.height}:{cropRect.x}:in_h-{cropRect.y + cropRect.height}";
+            }
         }
 
         public enum ScaleFlags {
@@ -172,18 +212,30 @@ namespace ImageMath {
             //arguments.Append("-an -map 0:v"); // disable audio
 
             var filters = new List<string>();
+            var outputWidth = InputWidth;
+            var outputHeight = InputHeight;
+
+            if (parameters.CropRect != null) {
+                filters.Add($"crop={RunParameters.BuildCropArgs(parameters.CropRect.Value)}");
+                outputWidth = parameters.CropRect.Value.width;
+                outputHeight = parameters.CropRect.Value.height;
+            }
+
             if (!string.IsNullOrEmpty(parameters.Select)) {
                 filters.Add(parameters.Select);
             }
-            if (parameters.OutputWidth > 0 && parameters.OutputHeight > 0) {
+
+            if (parameters.ScaleFilter != null) {
                 filters.Add($"format={_ffmpegPixelFormat}"); //change format before scaling
-                filters.Add($"scale={parameters.OutputWidth}:{parameters.OutputHeight}:flags={parameters.ScaleFlags.ToString().ToLower()}");
-                OutputWidth = parameters.OutputWidth;
-                OutputHeight = parameters.OutputHeight;
-            } else {
-                OutputWidth = InputWidth;
-                OutputHeight = InputHeight;
+                filters.Add(parameters.ScaleFilter.BuildFilterString());
+                var outputSize = parameters.ScaleFilter.GetOutputSize(outputWidth, outputHeight);
+                outputWidth = outputSize.x;
+                outputHeight = outputSize.y;
             }
+
+            OutputWidth = outputWidth;
+            OutputHeight = outputHeight;
+
             filters.Add("vflip"); // always flip vertically
 
             if (filters.Count > 0) {
@@ -214,6 +266,7 @@ namespace ImageMath {
         }*/
 
         void RunInternal(string arguments) {
+            UnityEngine.Debug.Log($"Running FFMPEG with arguments: {arguments}");
             Finished = false;
             var frameSize = OutputWidth * OutputHeight * _pixelSize;
             FrameBuffer = new byte[frameSize];

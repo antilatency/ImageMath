@@ -6,6 +6,15 @@ namespace ImageMath {
         public ColorFill(Vector4 color) {
             Color = color;
         }
+
+        public ColorFill(Vector3 color) {
+            Color = new Vector4(color.x, color.y, color.z, 1);
+        }
+
+        public ColorFill(float rgb) {
+            Color = new Vector4(rgb, rgb, rgb, 1);
+        }
+
         public ColorFill() {
             Color = new Vector4(0, 0, 0, 1);
         }

@@ -3,8 +3,10 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+
 using Cache;
 
 namespace ImageMath {
@@ -34,7 +36,7 @@ namespace ImageMath {
                 Texture = increment
             }.AddTo(_this);
         }
-        public static void MultiplyRGB(this RenderTexture _this, float multiplier){
+        public static void MultiplyRGB(this RenderTexture _this, float multiplier) {
             _this.MultiplyRGB(Vector3.one * multiplier);
         }
 
@@ -155,7 +157,7 @@ namespace ImageMath {
             return new RenderTexture(GetDefaultRenderTextureDescriptor(width, height, useMipMap, format));
         }
 
-        public static Texture3D CreateTexture3D(Vector3Int size, GraphicsFormat format = GraphicsFormat.R32G32B32A32_SFloat, bool useMipMap = false){
+        public static Texture3D CreateTexture3D(Vector3Int size, GraphicsFormat format = GraphicsFormat.R32G32B32A32_SFloat, bool useMipMap = false) {
             var flags = useMipMap ? TextureCreationFlags.MipChain : TextureCreationFlags.None;
             var result = new Texture3D(size.x, size.y, size.z, format, flags);
             return result;
@@ -163,7 +165,7 @@ namespace ImageMath {
 
         public static CacheItem<Texture3D> GetTempTexture3DFloat4(Vector3Int size, GraphicsFormat format = GraphicsFormat.R32G32B32A32_SFloat, bool useMipMap = false,
             [CallerFilePath] string file = "",
-            [CallerLineNumber] int line = 0){
+            [CallerLineNumber] int line = 0) {
             var description = new {
                 Size = size,
                 Format = format,
@@ -193,15 +195,18 @@ namespace ImageMath {
             Color32[] pixels;
             if (texture is Texture2D texture2D) {
                 pixels = texture2D.GetPixels32();
-            } else
-            if (texture is RenderTexture renderTexture) {
-                pixels = renderTexture.GetPixels32();
-            } else
-            if (texture is WebCamTexture webCamTexture){
-                pixels = webCamTexture.GetPixels32();
-            } else {
-                throw new NotImplementedException();
             }
+            else
+                if (texture is RenderTexture renderTexture) {
+                    pixels = renderTexture.GetPixels32();
+                }
+                else
+                    if (texture is WebCamTexture webCamTexture) {
+                        pixels = webCamTexture.GetPixels32();
+                    }
+                    else {
+                        throw new NotImplementedException();
+                    }
             return pixels;
         }
 
@@ -218,39 +223,39 @@ namespace ImageMath {
             Color[] pixels;
             if (texture is Texture2D texture2D) {
                 pixels = texture2D.GetPixels();
-            } else
-            if (texture is RenderTexture renderTexture) {
-                pixels = renderTexture.GetPixels();
-            } else
-            if (texture is WebCamTexture webCamTexture) {
-                pixels = webCamTexture.GetPixels();
-            } else {
-                throw new NotImplementedException();
+            }
+            else if (texture is RenderTexture renderTexture) {
+                using var temp = renderTexture.ToTempTexture();
+                pixels = temp.Value.GetPixels();
+            }
+            else {
+                if (texture is WebCamTexture webCamTexture) {
+                    pixels = webCamTexture.GetPixels();
+                }
+                else {
+                    throw new NotImplementedException();
+                }
             }
             return pixels;
         }
 
-        /*public static Color[] GetPixels(this RenderTexture renderTexture) {
-            //FIXME: use cache
-            using var texture = renderTexture.ToTempTexture();
-            var pixels = texture.Value.GetPixels();
-            return pixels;
-        }*/
 
         public static T[] GetPixelData<T>(this Texture texture, int mipLevel = 0) where T : struct {
             T[] pixels;
             if (texture is Texture2D texture2D) {
                 pixels = texture2D.GetPixelData<T>(mipLevel).ToArray();
-            } else
-            if (texture is Texture3D texture3D) {
-                pixels = texture3D.GetPixelData<T>(mipLevel).ToArray();
-            } else
-            if (texture is RenderTexture renderTexture) {
-                pixels = renderTexture.GetPixelData<T>(mipLevel);
             }
-            else {
-                throw new NotImplementedException();
-            }
+            else
+                if (texture is Texture3D texture3D) {
+                    pixels = texture3D.GetPixelData<T>(mipLevel).ToArray();
+                }
+                else
+                    if (texture is RenderTexture renderTexture) {
+                        pixels = renderTexture.GetPixelData<T>(mipLevel);
+                    }
+                    else {
+                        throw new NotImplementedException();
+                    }
             return pixels;
         }
 
@@ -262,36 +267,25 @@ namespace ImageMath {
 
         public static void SetPixelData<T>(this Texture texture, T[] pixels, int mipLevel = 0, bool apply = true) where T : struct {
             if (texture is Texture2D texture2D) {
-                if (pixels.Length != texture2D.width * texture2D.height) {
-                    //resize array
-                    var newPixels = new T[texture2D.width * texture2D.height];
-                    Array.Copy(pixels, newPixels, Math.Min(pixels.Length, newPixels.Length));
-                    pixels = newPixels;
-                }
                 texture2D.SetPixelData(pixels, mipLevel, 0);
-                if (apply)
-                    texture2D.Apply();
-            } else
-            if (texture is Texture3D texture3D) {
-                if (pixels.Length != texture3D.width * texture3D.height * texture3D.depth) {
-                    //resize array
-                    var newPixels = new T[texture3D.width * texture3D.height * texture3D.depth];
-                    Array.Copy(pixels, newPixels, Math.Min(pixels.Length, newPixels.Length));
-                    pixels = newPixels;
-                }
-                texture3D.SetPixelData(pixels, mipLevel, 0);
-                if (apply)
-                    texture3D.Apply();
-            } else
-            if (texture is RenderTexture renderTexture) {
-                var mipWidth = Math.Max(1, renderTexture.width >> mipLevel);
-                var mipHeight = Math.Max(1, renderTexture.height >> mipLevel);
-                using var tempTexture = GetTempTexture2D(mipWidth, mipHeight, renderTexture.graphicsFormat, false);
-                tempTexture.Value.SetPixelData<T>(pixels, mipLevel, 0);
-                renderTexture.Assign(tempTexture.Value, mipLevel);
-            } else {
-                throw new NotImplementedException();
+                if (apply) texture2D.Apply();
             }
+            else
+                if (texture is Texture3D texture3D) {
+                    texture3D.SetPixelData(pixels, mipLevel, 0);
+                    if (apply) texture3D.Apply();
+                }
+                else
+                    if (texture is RenderTexture renderTexture) {
+                        var mipWidth = Math.Max(1, renderTexture.width >> mipLevel);
+                        var mipHeight = Math.Max(1, renderTexture.height >> mipLevel);
+                        using var tempTexture = GetTempTexture2D(mipWidth, mipHeight, renderTexture.graphicsFormat, false);
+                        tempTexture.Value.SetPixelData<T>(pixels, mipLevel, 0);
+                        renderTexture.Assign(tempTexture.Value, mipLevel);
+                    }
+                    else {
+                        throw new NotImplementedException();
+                    }
         }
 
 
@@ -368,7 +362,8 @@ namespace ImageMath {
         }
 
 
-        public static string SimpleFormatExtension = ".f4a2d";
+        public const string SimpleFormatExtension = ".f4a2d";
+        public const string PngFormatExtension = ".png";
 
         public static void ClearAlpha(this RenderTexture renderTexture, float value = 1) {
             new ColorFill() {
@@ -410,6 +405,23 @@ namespace ImageMath {
             return result;
         }
 
+        public static Texture2D LoadImage(string path) {
+            switch (Path.GetExtension(path)) {
+                case SimpleFormatExtension: return LoadSimpleFormat(path);
+                case PngFormatExtension: return LoadPng(path);
+            }
+
+            throw new NotImplementedException("");
+        }
+
+        public static Texture2D LoadPng(string path) {
+            var bytes = File.ReadAllBytes(path);
+            var texture = new Texture2D(0, 0, GraphicsFormat.R8G8B8A8_SRGB, TextureCreationFlags.None);
+            texture.LoadImage(bytes);
+            texture.Apply();
+            return texture;
+        }
+
         public static async Task<Texture2D> LoadSimpleFormatAsync(string filePath, bool apply = true) {
             filePath = Path.ChangeExtension(filePath, SimpleFormatExtension);
             var data = await File.ReadAllBytesAsync(filePath);
@@ -428,6 +440,7 @@ namespace ImageMath {
             var height = textureData.pixels.Length / textureData.width;
             var result = CreateTexture2D(textureData.width, height, GraphicsFormat.R32G32B32A32_SFloat, false);
             result.SetPixelData(textureData.pixels, 0, 0);
+            if (apply) result.Apply();
             return result;
         }
 
@@ -442,12 +455,12 @@ namespace ImageMath {
             return texture;
         }*/
 
-        public static Texture2D CreateTexture2D(int width, int height, GraphicsFormat format = GraphicsFormat.R32G32B32A32_SFloat, bool useMipMap = false ) {
+        public static Texture2D CreateTexture2D(int width, int height, GraphicsFormat format = GraphicsFormat.R32G32B32A32_SFloat, bool useMipMap = false) {
             Texture2D texture;
             //Texture2D constructor bug avoided
             var textureFormat = format.ToTextureFormat();
             if (textureFormat == null) {
-                texture = new Texture2D(width, height, format, useMipMap? TextureCreationFlags.MipChain : TextureCreationFlags.None);
+                texture = new Texture2D(width, height, format, useMipMap ? TextureCreationFlags.MipChain : TextureCreationFlags.None);
             }
             else {
                 texture = new Texture2D(width, height, textureFormat.Value.textureFormat, useMipMap, !textureFormat.Value.sRGB);
@@ -528,8 +541,8 @@ namespace ImageMath {
 
         public static Color GetPixelBilinearPixelPosition(this Texture2D texture, Vector2 pixelPosition) {
             var uv = new Vector2(
-                (pixelPosition.x-0.5f) / texture.width,
-                (pixelPosition.y-0.5f) / texture.height
+                (pixelPosition.x - 0.5f) / texture.width,
+                (pixelPosition.y - 0.5f) / texture.height
             );
             return texture.GetPixelBilinear(uv.x, uv.y);
         }
