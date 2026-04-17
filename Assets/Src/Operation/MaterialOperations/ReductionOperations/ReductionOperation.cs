@@ -15,10 +15,5 @@ namespace ImageMath {
         public static string GetFinalization() => "";
 #endif
 
-        public Color RenderToPixel() {
-            using var average = GetTempRenderTexture(1);
-            new AverageWeightedByAlphaOperation(Texture).AssignTo(average);
-            return average.Value.GetPixels()[0];
-        }
     }
 }
