@@ -416,7 +416,7 @@ namespace ImageMath {
 
         public static Texture2D LoadPng(string path) {
             var bytes = File.ReadAllBytes(path);
-            var texture = new Texture2D(0, 0, GraphicsFormat.R8G8B8A8_SRGB, TextureCreationFlags.None);
+            var texture = new Texture2D(2, 2, GraphicsFormat.R8G8B8A8_SRGB, TextureCreationFlags.None);
             texture.LoadImage(bytes);
             texture.Apply();
             return texture;
