@@ -3,6 +3,8 @@ using System;
 #nullable enable
 
 namespace ImageMath{
+
+
     [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
     public abstract class ArrayAttribute : Attribute {
         public int Size { get; protected set;}

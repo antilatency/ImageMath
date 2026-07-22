@@ -52,5 +52,5 @@
         "Temp/": true
     },
     "dotnet.preferCSharpExtension": true,
-    "dotnet.defaultSolution": "ImageMath.sln"
+    "dotnet.defaultSolution": "ImageMath.slnx"
 }

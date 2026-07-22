@@ -11,12 +11,22 @@ namespace ImageMath{
             return $"SetTexture(\"{GetShaderVariableName()}\", {_propertyInfo.Name});";
         }
 
+
         string GetHLSLTextureType() {
             var type = _propertyInfo.PropertyType;
+            
+            
+
+            string pixelTypeName =  "float4"; 
+            var textureFormatAttribute = _propertyInfo.GetCustomAttribute<TextureFormatAttribute>();
+            if (textureFormatAttribute!=null) {
+                pixelTypeName = textureFormatAttribute.GetHLSLType();
+            }
+
             if (type == typeof(Texture3D)) {
-                return "Texture3D<float4>";
+                return $"Texture3D<{pixelTypeName}>";
             } else {
-                return "Texture2D<float4>";
+                return $"Texture2D<{pixelTypeName}>";
             }
         }
 
